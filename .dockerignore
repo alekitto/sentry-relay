@@ -6,6 +6,7 @@
 !.git/
 !.gitmodules
 
+!migrations/
 !relay*/
 !tools/
 !Cargo.toml
