@@ -183,8 +183,7 @@ jobs:
     timeout-minutes: 30
     strategy:
       matrix:
-        # the arm64 build takes too long, so disable for now
-        arch: [amd64]
+        arch: [amd64, arm64]
         image_name: [relay, relay-pop]
 
     name: Build Docker Image
@@ -195,7 +194,6 @@ jobs:
 
     env:
       IMG_BASE: ghcr.io/getsentry/${{ matrix.image_name }}
-      IMG_DEPS: ghcr.io/getsentry/${{ matrix.image_name }}-deps:${{ matrix.arch }}
       # GITHUB_SHA in pull requests points to the merge commit
       IMG_VERSIONED: ghcr.io/getsentry/${{ matrix.image_name }}:${{ github.event.pull_request.head.sha || github.sha }}
       ARCH: ${{ matrix.arch }}
@@ -234,7 +232,6 @@ jobs:
         run: |
           set -euxo pipefail
           docker login --username '${{ github.actor }}' --password '${{ secrets.GITHUB_TOKEN }}' ghcr.io
-          docker push $IMG_DEPS
           docker push $IMG_VERSIONED
 
       - name: Push nightly to ghcr.io

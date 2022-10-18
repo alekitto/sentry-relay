@@ -1,6 +1,7 @@
 SHELL=/bin/bash
 export RELAY_PYTHON_VERSION := python3
 export RELAY_FEATURES :=
+export OBJCOPY := objcopy
 
 all: check test ## run all checks and tests
 .PHONY: all
@@ -25,9 +26,9 @@ release: setup-git ## build production binary of the relay with debug info
 
 build-linux-release: setup-git ## build linux release of the relay
 	cd relay && cargo build --release --locked $(if ${RELAY_FEATURES}, --features ${RELAY_FEATURES}) --target=${TARGET}
-	objcopy --only-keep-debug target/${TARGET}/release/relay{,.debug}
-	objcopy --strip-debug --strip-unneeded target/${TARGET}/release/relay
-	objcopy --add-gnu-debuglink target/${TARGET}/release/relay{.debug,}
+	${OBJCOPY} --only-keep-debug target/${TARGET}/release/relay{,.debug}
+	${OBJCOPY} --strip-debug --strip-unneeded target/${TARGET}/release/relay
+	${OBJCOPY} --add-gnu-debuglink target/${TARGET}/release/relay{.debug,}
 .PHONY: build-linux-release
 
 collect-source-bundle: setup-git ## copy the built relay binary to current folder and collects debug bundles
