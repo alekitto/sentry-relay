@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"attr":["catch_unwind"],"fn":["set_panic_hook","take_last_error","with_last_error"],"struct":["Panic"]};

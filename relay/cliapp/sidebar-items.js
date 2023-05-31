@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"constant":["ABOUT","VERSION"],"fn":["make_app"]};

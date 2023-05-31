@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AcceptTransactionNames","ErrorBoundary","Feature"],"fn":["validate_json"],"struct":["CustomMeasurementConfig","LimitedProjectConfig","ProjectConfig","SessionMetricsConfig","TaggingRule","TransactionMetricsConfig"]};

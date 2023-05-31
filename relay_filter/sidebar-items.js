@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["FilterStatKey","LegacyBrowser"],"fn":["should_filter"],"mod":["browser_extensions","client_ips","csp","error_messages","legacy_browsers","localhost","web_crawlers"],"struct":["ClientIpsFilterConfig","CspFilterConfig","ErrorMessagesFilterConfig","FilterConfig","FiltersConfig","GlobPatterns","LegacyBrowsersFilterConfig","ReleasesFilterConfig"]};

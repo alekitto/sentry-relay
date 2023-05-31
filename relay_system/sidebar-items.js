@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["ShutdownMode"],"fn":["channel"],"struct":["Addr","AsyncResponse","BroadcastChannel","BroadcastRequest","BroadcastResponse","BroadcastSender","Controller","NoResponse","Receiver","Recipient","Request","SendError","Sender","Shutdown","ShutdownHandle"],"trait":["FromMessage","Interface","MessageResponse","Service"]};
