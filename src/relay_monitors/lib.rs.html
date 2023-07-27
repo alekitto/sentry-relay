@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-monitors/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relay_monitors/index.html">
-                        <img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-monitors/src/lib.rs`."><title>lib.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relay_monitors" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relay_monitors/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -287,11 +286,7 @@
 <a href="#286" id="286">286</a>
 <a href="#287" id="287">287</a>
 <a href="#288" id="288">288</a>
-<a href="#289" id="289">289</a>
-<a href="#290" id="290">290</a>
-<a href="#291" id="291">291</a>
-<a href="#292" id="292">292</a>
-</pre><pre class="rust"><code><span class="doccomment">//! Monitors protocol and processing for Sentry.
+</pre></div><pre class="rust"><code><span class="doccomment">//! Monitors protocol and processing for Sentry.
 //!
 //! [Monitors] allow you to monitor the uptime and performance of any scheduled, recurring job in
 //! Sentry. Once implemented, it&#39;ll allow you to get alerts and metrics to help you solve errors,
@@ -309,9 +304,7 @@
 </span>)]
 #![warn(missing_docs)]
 
-</span><span class="kw">use </span>once_cell::sync::Lazy;
-<span class="kw">use </span>regex::Regex;
-<span class="kw">use </span>relay_common::Uuid;
+</span><span class="kw">use </span>relay_common::Uuid;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="doccomment">/// Maximum length of monitor slugs.
@@ -332,7 +325,7 @@
 <span class="doccomment">///
 </span><span class="attr">#[derive(Clone, Copy, Debug, PartialEq, Deserialize, Serialize)]
 #[serde(rename_all = <span class="string">&quot;snake_case&quot;</span>)]
-</span><span class="kw">enum </span>CheckInStatus {
+</span><span class="kw">pub enum </span>CheckInStatus {
     <span class="doccomment">/// Check-in had no issues during execution.
     </span><span class="prelude-val">Ok</span>,
     <span class="doccomment">/// Check-in failed or otherwise had some issues.
@@ -372,9 +365,9 @@
     Minute,
 }
 
-<span class="doccomment">/// The monitor configuration playload for upserting monitors during check-in
+<span class="doccomment">/// The monitor configuration payload for upserting monitors during check-in
 </span><span class="attr">#[derive(Debug, Deserialize, Serialize)]
-</span><span class="kw">struct </span>MonitorConfig {
+</span><span class="kw">pub struct </span>MonitorConfig {
     <span class="doccomment">/// The monitor schedule configuration
     </span>schedule: Schedule,
 
@@ -393,30 +386,51 @@
     </span>timezone: <span class="prelude-ty">Option</span>&lt;String&gt;,
 }
 
+<span class="doccomment">/// The trace context sent with a check-in.
+</span><span class="attr">#[derive(Debug, Deserialize, Serialize)]
+</span><span class="kw">pub struct </span>CheckInTrace {
+    <span class="doccomment">/// Trace-ID of the check-in.
+    </span><span class="attr">#[serde(serialize_with = <span class="string">&quot;uuid_simple&quot;</span>)]
+    </span>trace_id: Uuid,
+}
+
+<span class="doccomment">/// Any contexts sent in the check-in payload.
+</span><span class="attr">#[derive(Debug, Deserialize, Serialize)]
+</span><span class="kw">pub struct </span>CheckInContexts {
+    <span class="doccomment">/// Trace context sent with a check-in.
+    </span><span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span>trace: <span class="prelude-ty">Option</span>&lt;CheckInTrace&gt;,
+}
+
 <span class="doccomment">/// The monitor check-in payload.
 </span><span class="attr">#[derive(Debug, Deserialize, Serialize)]
-</span><span class="kw">struct </span>CheckIn {
+</span><span class="kw">pub struct </span>CheckIn {
     <span class="doccomment">/// Unique identifier of this check-in.
     </span><span class="attr">#[serde(serialize_with = <span class="string">&quot;uuid_simple&quot;</span>)]
-    </span>check_in_id: Uuid,
+    </span><span class="kw">pub </span>check_in_id: Uuid,
 
     <span class="doccomment">/// Identifier of the monitor for this check-in.
-    </span>monitor_slug: String,
+    </span><span class="kw">pub </span>monitor_slug: String,
 
     <span class="doccomment">/// Status of this check-in. Defaults to `&quot;unknown&quot;`.
-    </span>status: CheckInStatus,
+    </span><span class="kw">pub </span>status: CheckInStatus,
 
     <span class="doccomment">/// The environment to associate the check-in with
     </span><span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    </span>environment: <span class="prelude-ty">Option</span>&lt;String&gt;,
+    </span><span class="kw">pub </span>environment: <span class="prelude-ty">Option</span>&lt;String&gt;,
 
     <span class="doccomment">/// Duration of this check since it has started in seconds.
     </span><span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    </span>duration: <span class="prelude-ty">Option</span>&lt;f64&gt;,
+    </span><span class="kw">pub </span>duration: <span class="prelude-ty">Option</span>&lt;f64&gt;,
 
     <span class="doccomment">/// monitor configuration to support upserts.
     </span><span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
-    </span>monitor_config: <span class="prelude-ty">Option</span>&lt;MonitorConfig&gt;,
+    </span><span class="kw">pub </span>monitor_config: <span class="prelude-ty">Option</span>&lt;MonitorConfig&gt;,
+
+    <span class="doccomment">/// Contexts describing the associated environment of the job run.
+    /// Only supports trace for now.
+    </span><span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
+    </span><span class="kw">pub </span>contexts: <span class="prelude-ty">Option</span>&lt;CheckInContexts&gt;,
 }
 
 <span class="doccomment">/// Normalizes a monitor check-in payload.
@@ -428,7 +442,8 @@
         check_in.status = CheckInStatus::Unknown;
     }
 
-    check_in.monitor_slug = slugify(<span class="kw-2">&amp;</span>check_in.monitor_slug);
+    trim_slug(<span class="kw-2">&amp;mut </span>check_in.monitor_slug);
+
     <span class="kw">if </span>check_in.monitor_slug.is_empty() {
         <span class="kw">return </span><span class="prelude-val">Err</span>(ProcessCheckInError::EmptySlug);
     }
@@ -436,25 +451,10 @@
     <span class="prelude-val">Ok</span>(serde_json::to_vec(<span class="kw-2">&amp;</span>check_in)<span class="question-mark">?</span>)
 }
 
-<span class="kw">fn </span>slugify(input: <span class="kw-2">&amp;</span>str) -&gt; String {
-    <span class="kw">static </span>SLUG_CLEANER: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(<span class="string">r&quot;[^a-zA-Z0-9\s_-]&quot;</span>).unwrap());
-    <span class="kw">static </span>SLUGIFIER: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(<span class="string">r&quot;[\s\-]+&quot;</span>).unwrap());
-
-    <span class="kw">let </span>cleaned = SLUG_CLEANER.replace_all(input, <span class="string">&quot;&quot;</span>);
-    <span class="kw">let </span><span class="kw-2">mut </span>slug = SLUGIFIER
-        .replace_all(<span class="kw-2">&amp;</span>cleaned, <span class="string">&quot;-&quot;</span>)
-        .trim_matches(<span class="string">&#39;-&#39;</span>)
-        .to_owned();
-
-    slug.truncate(SLUG_LENGTH);
-
-    <span class="comment">// Truncate may leave a trailing &#39;-&#39;, so we may need to truncate again.
-    </span><span class="kw">if </span>slug.ends_with(<span class="string">&#39;-&#39;</span>) {
-        slug.truncate(slug.len() - <span class="number">1</span>);
+<span class="kw">fn </span>trim_slug(slug: <span class="kw-2">&amp;mut </span>String) {
+    <span class="kw">if let </span><span class="prelude-val">Some</span>((overflow, <span class="kw">_</span>)) = slug.char_indices().nth(SLUG_LENGTH) {
+        slug.truncate(overflow);
     }
-
-    slug.make_ascii_lowercase();
-    slug
 }
 
 <span class="attr">#[cfg(test)]
@@ -464,13 +464,29 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
 
     <span class="attr">#[test]
+    </span><span class="kw">fn </span>truncate_basic() {
+        <span class="kw">let </span><span class="kw-2">mut </span>test1 = <span class="string">&quot;test_&quot;</span>.repeat(<span class="number">50</span>);
+        trim_slug(<span class="kw-2">&amp;mut </span>test1);
+        <span class="macro">assert_eq!</span>(<span class="string">&quot;test_test_test_test_test_test_test_test_test_test_&quot;</span>, test1,);
+
+        <span class="kw">let </span><span class="kw-2">mut </span>test2 = <span class="string">&quot;🦀&quot;</span>.repeat(SLUG_LENGTH + <span class="number">10</span>);
+        trim_slug(<span class="kw-2">&amp;mut </span>test2);
+        <span class="macro">assert_eq!</span>(<span class="string">&quot;🦀&quot;</span>.repeat(SLUG_LENGTH), test2);
+    }
+
+    <span class="attr">#[test]
     </span><span class="kw">fn </span>process_json_roundtrip() {
         <span class="kw">let </span>json = <span class="string">r#&quot;{
   &quot;check_in_id&quot;: &quot;a460c25ff2554577b920fcfacae4e5eb&quot;,
   &quot;monitor_slug&quot;: &quot;my-monitor&quot;,
   &quot;status&quot;: &quot;in_progress&quot;,
   &quot;environment&quot;: &quot;production&quot;,
-  &quot;duration&quot;: 21.0
+  &quot;duration&quot;: 21.0,
+  &quot;contexts&quot;: {
+    &quot;trace&quot;: {
+      &quot;trace_id&quot;: &quot;8f431b7aa08441bbbd5a0100fd91f9fe&quot;
+    }
+  }
 }&quot;#</span>;
 
         <span class="kw">let </span>check_in = serde_json::from_str::&lt;CheckIn&gt;(json).unwrap();
@@ -550,38 +566,12 @@
     </span><span class="kw">fn </span>process_empty_slug() {
         <span class="kw">let </span>json = <span class="string">r#&quot;{
           &quot;check_in_id&quot;: &quot;a460c25ff2554577b920fcfacae4e5eb&quot;,
-          &quot;monitor_slug&quot;: &quot;🚀🚀🚀&quot;,
+          &quot;monitor_slug&quot;: &quot;&quot;,
           &quot;status&quot;: &quot;in_progress&quot;
         }&quot;#</span>;
 
         <span class="kw">let </span>result = process_check_in(json.as_bytes());
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(result, <span class="prelude-val">Err</span>(ProcessCheckInError::EmptySlug)));
     }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>slugify_empty_string() {
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;&quot;</span>, slugify(<span class="string">&quot;&quot;</span>));
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>slugify_truncate_honors_trim() {
-        <span class="kw">let </span>input = <span class="string">&quot;-&quot;</span>.repeat(SLUG_LENGTH + <span class="number">10</span>) + <span class="string">&quot;hello&quot;</span>;
-        <span class="macro">assert_eq!</span>(<span class="string">&quot;hello&quot;</span>, slugify(<span class="kw-2">&amp;</span>input));
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>slugify_trim_at_truncate() {
-        <span class="kw">let </span>expected = <span class="string">&quot;a&quot;</span>.repeat(SLUG_LENGTH - <span class="number">1</span>);
-        <span class="kw">let </span>input = expected.clone() + <span class="string">&quot;-stripped&quot;</span>;
-        <span class="macro">assert_eq!</span>(expected, slugify(<span class="kw-2">&amp;</span>input));
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>slugify_unicode() {
-        <span class="kw">let </span>input = <span class="string">&quot;🚀🚀🚀\tmyComplicated_slug\u{200A}name is here...&quot;</span>;
-        <span class="kw">let </span>expected = <span class="string">&quot;mycomplicated_slug-name-is-here&quot;</span>;
-        <span class="macro">assert_eq!</span>(expected, slugify(input));
-    }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relay_monitors" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

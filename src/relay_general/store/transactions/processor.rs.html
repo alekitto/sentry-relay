@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-general/src/store/transactions/processor.rs`."><title>processor.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../relay_general/index.html">
-                        <img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-general/src/store/transactions/processor.rs`."><title>processor.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="relay_general" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../relay_general/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2460,255 +2459,7 @@
 <a href="#2459" id="2459">2459</a>
 <a href="#2460" id="2460">2460</a>
 <a href="#2461" id="2461">2461</a>
-<a href="#2462" id="2462">2462</a>
-<a href="#2463" id="2463">2463</a>
-<a href="#2464" id="2464">2464</a>
-<a href="#2465" id="2465">2465</a>
-<a href="#2466" id="2466">2466</a>
-<a href="#2467" id="2467">2467</a>
-<a href="#2468" id="2468">2468</a>
-<a href="#2469" id="2469">2469</a>
-<a href="#2470" id="2470">2470</a>
-<a href="#2471" id="2471">2471</a>
-<a href="#2472" id="2472">2472</a>
-<a href="#2473" id="2473">2473</a>
-<a href="#2474" id="2474">2474</a>
-<a href="#2475" id="2475">2475</a>
-<a href="#2476" id="2476">2476</a>
-<a href="#2477" id="2477">2477</a>
-<a href="#2478" id="2478">2478</a>
-<a href="#2479" id="2479">2479</a>
-<a href="#2480" id="2480">2480</a>
-<a href="#2481" id="2481">2481</a>
-<a href="#2482" id="2482">2482</a>
-<a href="#2483" id="2483">2483</a>
-<a href="#2484" id="2484">2484</a>
-<a href="#2485" id="2485">2485</a>
-<a href="#2486" id="2486">2486</a>
-<a href="#2487" id="2487">2487</a>
-<a href="#2488" id="2488">2488</a>
-<a href="#2489" id="2489">2489</a>
-<a href="#2490" id="2490">2490</a>
-<a href="#2491" id="2491">2491</a>
-<a href="#2492" id="2492">2492</a>
-<a href="#2493" id="2493">2493</a>
-<a href="#2494" id="2494">2494</a>
-<a href="#2495" id="2495">2495</a>
-<a href="#2496" id="2496">2496</a>
-<a href="#2497" id="2497">2497</a>
-<a href="#2498" id="2498">2498</a>
-<a href="#2499" id="2499">2499</a>
-<a href="#2500" id="2500">2500</a>
-<a href="#2501" id="2501">2501</a>
-<a href="#2502" id="2502">2502</a>
-<a href="#2503" id="2503">2503</a>
-<a href="#2504" id="2504">2504</a>
-<a href="#2505" id="2505">2505</a>
-<a href="#2506" id="2506">2506</a>
-<a href="#2507" id="2507">2507</a>
-<a href="#2508" id="2508">2508</a>
-<a href="#2509" id="2509">2509</a>
-<a href="#2510" id="2510">2510</a>
-<a href="#2511" id="2511">2511</a>
-<a href="#2512" id="2512">2512</a>
-<a href="#2513" id="2513">2513</a>
-<a href="#2514" id="2514">2514</a>
-<a href="#2515" id="2515">2515</a>
-<a href="#2516" id="2516">2516</a>
-<a href="#2517" id="2517">2517</a>
-<a href="#2518" id="2518">2518</a>
-<a href="#2519" id="2519">2519</a>
-<a href="#2520" id="2520">2520</a>
-<a href="#2521" id="2521">2521</a>
-<a href="#2522" id="2522">2522</a>
-<a href="#2523" id="2523">2523</a>
-<a href="#2524" id="2524">2524</a>
-<a href="#2525" id="2525">2525</a>
-<a href="#2526" id="2526">2526</a>
-<a href="#2527" id="2527">2527</a>
-<a href="#2528" id="2528">2528</a>
-<a href="#2529" id="2529">2529</a>
-<a href="#2530" id="2530">2530</a>
-<a href="#2531" id="2531">2531</a>
-<a href="#2532" id="2532">2532</a>
-<a href="#2533" id="2533">2533</a>
-<a href="#2534" id="2534">2534</a>
-<a href="#2535" id="2535">2535</a>
-<a href="#2536" id="2536">2536</a>
-<a href="#2537" id="2537">2537</a>
-<a href="#2538" id="2538">2538</a>
-<a href="#2539" id="2539">2539</a>
-<a href="#2540" id="2540">2540</a>
-<a href="#2541" id="2541">2541</a>
-<a href="#2542" id="2542">2542</a>
-<a href="#2543" id="2543">2543</a>
-<a href="#2544" id="2544">2544</a>
-<a href="#2545" id="2545">2545</a>
-<a href="#2546" id="2546">2546</a>
-<a href="#2547" id="2547">2547</a>
-<a href="#2548" id="2548">2548</a>
-<a href="#2549" id="2549">2549</a>
-<a href="#2550" id="2550">2550</a>
-<a href="#2551" id="2551">2551</a>
-<a href="#2552" id="2552">2552</a>
-<a href="#2553" id="2553">2553</a>
-<a href="#2554" id="2554">2554</a>
-<a href="#2555" id="2555">2555</a>
-<a href="#2556" id="2556">2556</a>
-<a href="#2557" id="2557">2557</a>
-<a href="#2558" id="2558">2558</a>
-<a href="#2559" id="2559">2559</a>
-<a href="#2560" id="2560">2560</a>
-<a href="#2561" id="2561">2561</a>
-<a href="#2562" id="2562">2562</a>
-<a href="#2563" id="2563">2563</a>
-<a href="#2564" id="2564">2564</a>
-<a href="#2565" id="2565">2565</a>
-<a href="#2566" id="2566">2566</a>
-<a href="#2567" id="2567">2567</a>
-<a href="#2568" id="2568">2568</a>
-<a href="#2569" id="2569">2569</a>
-<a href="#2570" id="2570">2570</a>
-<a href="#2571" id="2571">2571</a>
-<a href="#2572" id="2572">2572</a>
-<a href="#2573" id="2573">2573</a>
-<a href="#2574" id="2574">2574</a>
-<a href="#2575" id="2575">2575</a>
-<a href="#2576" id="2576">2576</a>
-<a href="#2577" id="2577">2577</a>
-<a href="#2578" id="2578">2578</a>
-<a href="#2579" id="2579">2579</a>
-<a href="#2580" id="2580">2580</a>
-<a href="#2581" id="2581">2581</a>
-<a href="#2582" id="2582">2582</a>
-<a href="#2583" id="2583">2583</a>
-<a href="#2584" id="2584">2584</a>
-<a href="#2585" id="2585">2585</a>
-<a href="#2586" id="2586">2586</a>
-<a href="#2587" id="2587">2587</a>
-<a href="#2588" id="2588">2588</a>
-<a href="#2589" id="2589">2589</a>
-<a href="#2590" id="2590">2590</a>
-<a href="#2591" id="2591">2591</a>
-<a href="#2592" id="2592">2592</a>
-<a href="#2593" id="2593">2593</a>
-<a href="#2594" id="2594">2594</a>
-<a href="#2595" id="2595">2595</a>
-<a href="#2596" id="2596">2596</a>
-<a href="#2597" id="2597">2597</a>
-<a href="#2598" id="2598">2598</a>
-<a href="#2599" id="2599">2599</a>
-<a href="#2600" id="2600">2600</a>
-<a href="#2601" id="2601">2601</a>
-<a href="#2602" id="2602">2602</a>
-<a href="#2603" id="2603">2603</a>
-<a href="#2604" id="2604">2604</a>
-<a href="#2605" id="2605">2605</a>
-<a href="#2606" id="2606">2606</a>
-<a href="#2607" id="2607">2607</a>
-<a href="#2608" id="2608">2608</a>
-<a href="#2609" id="2609">2609</a>
-<a href="#2610" id="2610">2610</a>
-<a href="#2611" id="2611">2611</a>
-<a href="#2612" id="2612">2612</a>
-<a href="#2613" id="2613">2613</a>
-<a href="#2614" id="2614">2614</a>
-<a href="#2615" id="2615">2615</a>
-<a href="#2616" id="2616">2616</a>
-<a href="#2617" id="2617">2617</a>
-<a href="#2618" id="2618">2618</a>
-<a href="#2619" id="2619">2619</a>
-<a href="#2620" id="2620">2620</a>
-<a href="#2621" id="2621">2621</a>
-<a href="#2622" id="2622">2622</a>
-<a href="#2623" id="2623">2623</a>
-<a href="#2624" id="2624">2624</a>
-<a href="#2625" id="2625">2625</a>
-<a href="#2626" id="2626">2626</a>
-<a href="#2627" id="2627">2627</a>
-<a href="#2628" id="2628">2628</a>
-<a href="#2629" id="2629">2629</a>
-<a href="#2630" id="2630">2630</a>
-<a href="#2631" id="2631">2631</a>
-<a href="#2632" id="2632">2632</a>
-<a href="#2633" id="2633">2633</a>
-<a href="#2634" id="2634">2634</a>
-<a href="#2635" id="2635">2635</a>
-<a href="#2636" id="2636">2636</a>
-<a href="#2637" id="2637">2637</a>
-<a href="#2638" id="2638">2638</a>
-<a href="#2639" id="2639">2639</a>
-<a href="#2640" id="2640">2640</a>
-<a href="#2641" id="2641">2641</a>
-<a href="#2642" id="2642">2642</a>
-<a href="#2643" id="2643">2643</a>
-<a href="#2644" id="2644">2644</a>
-<a href="#2645" id="2645">2645</a>
-<a href="#2646" id="2646">2646</a>
-<a href="#2647" id="2647">2647</a>
-<a href="#2648" id="2648">2648</a>
-<a href="#2649" id="2649">2649</a>
-<a href="#2650" id="2650">2650</a>
-<a href="#2651" id="2651">2651</a>
-<a href="#2652" id="2652">2652</a>
-<a href="#2653" id="2653">2653</a>
-<a href="#2654" id="2654">2654</a>
-<a href="#2655" id="2655">2655</a>
-<a href="#2656" id="2656">2656</a>
-<a href="#2657" id="2657">2657</a>
-<a href="#2658" id="2658">2658</a>
-<a href="#2659" id="2659">2659</a>
-<a href="#2660" id="2660">2660</a>
-<a href="#2661" id="2661">2661</a>
-<a href="#2662" id="2662">2662</a>
-<a href="#2663" id="2663">2663</a>
-<a href="#2664" id="2664">2664</a>
-<a href="#2665" id="2665">2665</a>
-<a href="#2666" id="2666">2666</a>
-<a href="#2667" id="2667">2667</a>
-<a href="#2668" id="2668">2668</a>
-<a href="#2669" id="2669">2669</a>
-<a href="#2670" id="2670">2670</a>
-<a href="#2671" id="2671">2671</a>
-<a href="#2672" id="2672">2672</a>
-<a href="#2673" id="2673">2673</a>
-<a href="#2674" id="2674">2674</a>
-<a href="#2675" id="2675">2675</a>
-<a href="#2676" id="2676">2676</a>
-<a href="#2677" id="2677">2677</a>
-<a href="#2678" id="2678">2678</a>
-<a href="#2679" id="2679">2679</a>
-<a href="#2680" id="2680">2680</a>
-<a href="#2681" id="2681">2681</a>
-<a href="#2682" id="2682">2682</a>
-<a href="#2683" id="2683">2683</a>
-<a href="#2684" id="2684">2684</a>
-<a href="#2685" id="2685">2685</a>
-<a href="#2686" id="2686">2686</a>
-<a href="#2687" id="2687">2687</a>
-<a href="#2688" id="2688">2688</a>
-<a href="#2689" id="2689">2689</a>
-<a href="#2690" id="2690">2690</a>
-<a href="#2691" id="2691">2691</a>
-<a href="#2692" id="2692">2692</a>
-<a href="#2693" id="2693">2693</a>
-<a href="#2694" id="2694">2694</a>
-<a href="#2695" id="2695">2695</a>
-<a href="#2696" id="2696">2696</a>
-<a href="#2697" id="2697">2697</a>
-<a href="#2698" id="2698">2698</a>
-<a href="#2699" id="2699">2699</a>
-<a href="#2700" id="2700">2700</a>
-<a href="#2701" id="2701">2701</a>
-<a href="#2702" id="2702">2702</a>
-<a href="#2703" id="2703">2703</a>
-<a href="#2704" id="2704">2704</a>
-<a href="#2705" id="2705">2705</a>
-<a href="#2706" id="2706">2706</a>
-<a href="#2707" id="2707">2707</a>
-<a href="#2708" id="2708">2708</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
-<span class="kw">use </span>std::collections::BTreeMap;
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 
 <span class="kw">use </span>once_cell::sync::Lazy;
 <span class="kw">use </span>regex::Regex;
@@ -2716,38 +2467,51 @@
 
 <span class="kw">use </span><span class="kw">super</span>::TransactionNameRule;
 <span class="kw">use </span><span class="kw">crate</span>::processor::{ProcessValue, ProcessingState, Processor};
-<span class="kw">use </span><span class="kw">crate</span>::protocol::{
-    Context, ContextInner, Event, EventType, Span, Timestamp, TransactionInfo, TransactionSource,
-};
-<span class="kw">use </span><span class="kw">crate</span>::store::regexes::{
-    CACHE_NORMALIZER_REGEX, RESOURCE_NORMALIZER_REGEX, SQL_NORMALIZER_REGEX,
-    TRANSACTION_NAME_NORMALIZER_REGEX,
-};
-<span class="kw">use </span><span class="kw">crate</span>::types::{
-    Annotated, Meta, ProcessingAction, ProcessingResult, Remark, RemarkType, Value,
-};
+<span class="kw">use </span><span class="kw">crate</span>::protocol::{Event, EventType, Span, Timestamp, TraceContext, TransactionSource};
+<span class="kw">use </span><span class="kw">crate</span>::store::normalize::span::description::scrub_span_description;
+<span class="kw">use </span><span class="kw">crate</span>::store::regexes::TRANSACTION_NAME_NORMALIZER_REGEX;
+<span class="kw">use </span><span class="kw">crate</span>::store::span::tag_extraction::{<span class="self">self</span>, extract_span_tags};
+<span class="kw">use </span><span class="kw">crate</span>::store::SpanDescriptionRule;
+<span class="kw">use </span><span class="kw">crate</span>::types::{Annotated, Meta, ProcessingAction, ProcessingResult, Remark, RemarkType};
 
 <span class="doccomment">/// Configuration around removing high-cardinality parts of URL transactions.
 </span><span class="attr">#[derive(Clone, Debug, Default)]
 </span><span class="kw">pub struct </span>TransactionNameConfig&lt;<span class="lifetime">&#39;r</span>&gt; {
     <span class="doccomment">/// Rules for identifier replacement that were discovered by Sentry&#39;s transaction clusterer.
     </span><span class="kw">pub </span>rules: <span class="kw-2">&amp;</span><span class="lifetime">&#39;r </span>[TransactionNameRule],
-    <span class="doccomment">/// True if URL transactions should be marked as sanitized, even if there are no rules.
-    </span><span class="kw">pub </span>ready: bool,
 }
 
 <span class="doccomment">/// Rejects transactions based on required fields.
 </span><span class="attr">#[derive(Default)]
 </span><span class="kw">pub struct </span>TransactionsProcessor&lt;<span class="lifetime">&#39;r</span>&gt; {
     name_config: TransactionNameConfig&lt;<span class="lifetime">&#39;r</span>&gt;,
-    scrub_span_descriptions: bool,
+    span_desc_rules: Vec&lt;SpanDescriptionRule&gt;,
+    enrich_spans: bool,
+    max_tag_value_size: usize,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;r</span>&gt; TransactionsProcessor&lt;<span class="lifetime">&#39;r</span>&gt; {
-    <span class="kw">pub fn </span>new(name_config: TransactionNameConfig&lt;<span class="lifetime">&#39;r</span>&gt;, scrub_span_descriptions: bool) -&gt; <span class="self">Self </span>{
+    <span class="kw">pub fn </span>new(
+        name_config: TransactionNameConfig&lt;<span class="lifetime">&#39;r</span>&gt;,
+        enrich_spans: bool,
+        span_description_rules: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Vec&lt;SpanDescriptionRule&gt;&gt;,
+        max_tag_value_size: usize,
+    ) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span><span class="kw-2">mut </span>span_desc_rules = <span class="kw">if let </span><span class="prelude-val">Some</span>(span_desc_rules) = span_description_rules {
+            span_desc_rules.clone()
+        } <span class="kw">else </span>{
+            <span class="macro">vec!</span>[]
+        };
+
+        <span class="kw">if </span>enrich_spans &amp;&amp; !name_config.rules.is_empty() {
+            span_desc_rules.extend(name_config.rules.iter().map(SpanDescriptionRule::from));
+        }
+
         <span class="self">Self </span>{
             name_config,
-            scrub_span_descriptions,
+            span_desc_rules,
+            enrich_spans,
+            max_tag_value_size,
         }
     }
 
@@ -2763,53 +2527,82 @@
     </span><span class="kw">pub fn </span>apply_transaction_rename_rule(
         <span class="kw-2">&amp;</span><span class="self">self</span>,
         transaction: <span class="kw-2">&amp;mut </span>Annotated&lt;String&gt;,
-        info: <span class="kw-2">&amp;mut </span>std::option::Option&lt;TransactionInfo&gt;,
     ) -&gt; ProcessingResult {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(info) = info.as_mut() {
-            transaction.apply(|transaction, meta| {
-                <span class="kw">let </span>result = <span class="self">self</span>.name_config.rules.iter().find_map(|rule| {
-                    rule.match_and_apply(Cow::Borrowed(transaction), info)
-                        .map(|applied_result| (rule.pattern.compiled().pattern(), applied_result))
-                });
+        transaction.apply(|transaction, meta| {
+            <span class="kw">let </span>result = <span class="self">self</span>.name_config.rules.iter().find_map(|rule| {
+                rule.match_and_apply(Cow::Borrowed(transaction))
+                    .map(|applied_result| (rule.pattern.compiled().pattern(), applied_result))
+            });
 
-                <span class="kw">if let </span><span class="prelude-val">Some</span>((rule, result)) = result {
-                    <span class="kw">if </span><span class="kw-2">*</span>transaction != result {
-                        <span class="comment">// If another rule was applied before, we don&#39;t want to
-                        // rename the transaction name to keep the original one.
-                        // We do want to continue adding remarks though, in
-                        // order to keep track of all rules applied.
-                        </span><span class="kw">if </span>meta.original_value().is_none() {
-                            meta.set_original_value(<span class="prelude-val">Some</span>(transaction.clone()));
-                        }
-                        <span class="comment">// add also the rule which was applied to the transaction name
-                        </span>meta.add_remark(Remark::new(RemarkType::Substituted, rule));
-                        <span class="kw-2">*</span>transaction = result;
-                        info.source
-                            .value_mut()
-                            .replace(TransactionSource::Sanitized);
+            <span class="kw">if let </span><span class="prelude-val">Some</span>((rule, result)) = result {
+                <span class="kw">if </span><span class="kw-2">*</span>transaction != result {
+                    <span class="comment">// If another rule was applied before, we don&#39;t want to
+                    // rename the transaction name to keep the original one.
+                    // We do want to continue adding remarks though, in
+                    // order to keep track of all rules applied.
+                    </span><span class="kw">if </span>meta.original_value().is_none() {
+                        meta.set_original_value(<span class="prelude-val">Some</span>(transaction.clone()));
                     }
+                    <span class="comment">// add also the rule which was applied to the transaction name
+                    </span>meta.add_remark(Remark::new(RemarkType::Substituted, rule));
+                    <span class="kw-2">*</span>transaction = result;
                 }
+            }
 
-                <span class="prelude-val">Ok</span>(())
-            })<span class="question-mark">?</span>;
-        }
+            <span class="prelude-val">Ok</span>(())
+        })<span class="question-mark">?</span>;
+
         <span class="prelude-val">Ok</span>(())
     }
-}
 
-<span class="doccomment">/// Get the value for a measurement, e.g. lcp -&gt; event.measurements.lcp
-</span><span class="kw">pub fn </span>get_measurement(transaction: <span class="kw-2">&amp;</span>Event, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;f64&gt; {
-    <span class="kw">let </span>measurements = transaction.measurements.value()<span class="question-mark">?</span>;
-    <span class="kw">let </span>annotated = measurements.get(name)<span class="question-mark">?</span>;
-    <span class="kw">let </span>value = annotated.value().and_then(|m| m.value.value())<span class="question-mark">?</span>;
-    <span class="prelude-val">Some</span>(<span class="kw-2">*</span>value)
-}
+    <span class="doccomment">/// Returns `true` if the given transaction name should be treated as a URL.
+    ///
+    /// We treat a transaction as URL if one of the following conditions apply:
+    ///
+    /// 1. It is marked with `source:url`
+    /// 2. It is marked with `source:sanitized`, in which case we run normalization again.
+    /// 3. It has no source attribute because it&#39;s from an old SDK version,
+    ///    but it contains slashes and we expect it to be high-cardinality
+    ///    based on the SDK information (see [`set_default_transaction_source`]).
+    </span><span class="kw">fn </span>treat_transaction_as_url(<span class="kw-2">&amp;</span><span class="self">self</span>, event: <span class="kw-2">&amp;</span>Event) -&gt; bool {
+        <span class="kw">let </span>source = event
+            .transaction_info
+            .value()
+            .and_then(|i| i.source.value());
 
-<span class="kw">pub fn </span>get_transaction_op(transaction: <span class="kw-2">&amp;</span>Event) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
-    <span class="kw">let </span>context = transaction.contexts.value()<span class="question-mark">?</span>.get(<span class="string">&quot;trace&quot;</span>)<span class="question-mark">?</span>.value()<span class="question-mark">?</span>;
-    <span class="kw">match </span><span class="kw-2">**</span>context {
-        Context::Trace(<span class="kw-2">ref </span>trace_context) =&gt; <span class="prelude-val">Some</span>(trace_context.op.value()<span class="question-mark">?</span>),
-        <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        <span class="macro">matches!</span>(
+            source,
+            <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>TransactionSource::Url | <span class="kw-2">&amp;</span>TransactionSource::Sanitized)
+        ) || (<span class="macro">matches!</span>(source, <span class="prelude-val">None</span>)
+            &amp;&amp; event.transaction.value().map_or(<span class="bool-val">false</span>, |t| t.contains(<span class="string">&#39;/&#39;</span>)))
+    }
+
+    <span class="kw">fn </span>normalize_transaction_name(<span class="kw-2">&amp;</span><span class="self">self</span>, event: <span class="kw-2">&amp;mut </span>Event) -&gt; ProcessingResult {
+        <span class="kw">if </span><span class="self">self</span>.treat_transaction_as_url(event) {
+            <span class="comment">// Normalize transaction names for URLs and Sanitized transaction sources.
+            // This in addition to renaming rules can catch some high cardinality parts.
+            </span>scrub_identifiers(<span class="kw-2">&amp;mut </span>event.transaction)<span class="question-mark">?</span>;
+
+            <span class="comment">// Apply rules discovered by the transaction clusterer in sentry.
+            </span><span class="kw">if </span>!<span class="self">self</span>.name_config.rules.is_empty() {
+                <span class="self">self</span>.apply_transaction_rename_rule(<span class="kw-2">&amp;mut </span>event.transaction)<span class="question-mark">?</span>;
+            }
+
+            <span class="comment">// Always mark URL transactions as sanitized, even if no modification were made by
+            // clusterer rules or regex matchers. This has the consequence that the transaction name
+            // is always extracted as a tag on transaction metrics.
+            // Instead of changing the source to &quot;sanitized&quot;, we could have changed metrics extraction
+            // to also extract the transaction name for URL transactions. But this is the safer way,
+            // because the product currently uses queries that assume that `source:url` is equivalent
+            // to `transaction:&lt;&lt; unparameterized &gt;&gt;`.
+            </span>event
+                .transaction_info
+                .get_or_insert_with(Default::default)
+                .source
+                .set_value(<span class="prelude-val">Some</span>(TransactionSource::Sanitized));
+        }
+
+        <span class="prelude-val">Ok</span>(())
     }
 }
 
@@ -2847,78 +2640,77 @@
 <span class="kw">fn </span>validate_transaction(event: <span class="kw-2">&amp;mut </span>Event) -&gt; ProcessingResult {
     validate_timestamps(event)<span class="question-mark">?</span>;
 
-    <span class="kw">let </span>err_trace_context_required = <span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
-        <span class="string">&quot;trace context hard-required for transaction events&quot;</span>,
-    ));
-
-    <span class="kw">let </span>contexts = <span class="kw">match </span>event.contexts.value_mut() {
-        <span class="prelude-val">Some</span>(contexts) =&gt; contexts,
-        <span class="prelude-val">None </span>=&gt; <span class="kw">return </span>err_trace_context_required,
+    <span class="kw">let </span><span class="prelude-val">Some</span>(trace_context) = event.context_mut::&lt;TraceContext&gt;() <span class="kw">else </span>{
+        <span class="kw">return </span><span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
+            <span class="string">&quot;missing valid trace context&quot;</span>,
+        ));
     };
 
-    <span class="kw">let </span>trace_context = <span class="kw">match </span>contexts.get_mut(<span class="string">&quot;trace&quot;</span>).map(Annotated::value_mut) {
-        <span class="prelude-val">Some</span>(<span class="prelude-val">Some</span>(trace_context)) =&gt; trace_context,
-        <span class="kw">_ </span>=&gt; <span class="kw">return </span>err_trace_context_required,
-    };
-
-    <span class="kw">match </span>trace_context {
-        ContextInner(Context::Trace(trace_context)) =&gt; {
-            <span class="kw">if </span>trace_context.trace_id.value().is_none() {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
-                    <span class="string">&quot;trace context is missing trace_id&quot;</span>,
-                ));
-            }
-            <span class="kw">if </span>trace_context.span_id.value().is_none() {
-                <span class="kw">return </span><span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
-                    <span class="string">&quot;trace context is missing span_id&quot;</span>,
-                ));
-            }
-
-            trace_context.op.get_or_insert_with(|| <span class="string">&quot;default&quot;</span>.to_owned());
-            <span class="prelude-val">Ok</span>(())
-        }
-        <span class="kw">_ </span>=&gt; <span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
-            <span class="string">&quot;context at event.contexts.trace must be of type trace.&quot;</span>,
-        )),
+    <span class="kw">if </span>trace_context.trace_id.value().is_none() {
+        <span class="kw">return </span><span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
+            <span class="string">&quot;trace context is missing trace_id&quot;</span>,
+        ));
     }
+
+    <span class="kw">if </span>trace_context.span_id.value().is_none() {
+        <span class="kw">return </span><span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
+            <span class="string">&quot;trace context is missing span_id&quot;</span>,
+        ));
+    }
+
+    trace_context.op.get_or_insert_with(|| <span class="string">&quot;default&quot;</span>.to_owned());
+    <span class="prelude-val">Ok</span>(())
 }
+
+<span class="doccomment">/// Span status codes for the Ruby Rack integration that indicate raw URLs being sent as
+/// transaction names. These cases are considered as high-cardinality.
+///
+/// See &lt;https://github.com/getsentry/sentry-ruby/blob/ad4828f6d8d60e98217b2edb1ab003fb627d6bdb/sentry-ruby/lib/sentry/span.rb#L7-L19&gt;
+</span><span class="kw">const </span>RUBY_URL_STATUSES: <span class="kw-2">&amp;</span>[SpanStatus] = <span class="kw-2">&amp;</span>[
+    SpanStatus::InvalidArgument,
+    SpanStatus::Unauthenticated,
+    SpanStatus::PermissionDenied,
+    SpanStatus::NotFound,
+    SpanStatus::AlreadyExists,
+    SpanStatus::ResourceExhausted,
+    SpanStatus::Cancelled,
+    SpanStatus::InternalError,
+    SpanStatus::Unimplemented,
+    SpanStatus::Unavailable,
+    SpanStatus::DeadlineExceeded,
+];
 
 <span class="doccomment">/// List of SDKs which we assume to produce high cardinality transaction names, such as
 /// &quot;/user/123134/login&quot;.
-/// Newer SDK send the [`TransactionSource`] attribute, which we can rely on to determine cardinality,
-/// but for old SDKs, we fall back to this list.
+</span><span class="kw">const </span>RAW_URL_SDKS: <span class="kw-2">&amp;</span>[<span class="kw-2">&amp;</span>str] = <span class="kw-2">&amp;</span>[
+    <span class="string">&quot;sentry.javascript.angular&quot;</span>,
+    <span class="string">&quot;sentry.javascript.browser&quot;</span>,
+    <span class="string">&quot;sentry.javascript.ember&quot;</span>,
+    <span class="string">&quot;sentry.javascript.gatsby&quot;</span>,
+    <span class="string">&quot;sentry.javascript.react&quot;</span>,
+    <span class="string">&quot;sentry.javascript.remix&quot;</span>,
+    <span class="string">&quot;sentry.javascript.vue&quot;</span>,
+    <span class="string">&quot;sentry.javascript.nextjs&quot;</span>,
+    <span class="string">&quot;sentry.php.laravel&quot;</span>,
+    <span class="string">&quot;sentry.php.symfony&quot;</span>,
+];
+
+<span class="doccomment">/// Returns `true` if the event&#39;s transaction name is known to contain unsanitized values.
+///
+/// Newer SDK send the [`TransactionSource`] attribute, which we can rely on to determine
+/// cardinality. If the source is missing, this function gives an indication whether the transaction
+/// name should be sanitized.
 </span><span class="kw">pub fn </span>is_high_cardinality_sdk(event: <span class="kw-2">&amp;</span>Event) -&gt; bool {
-    <span class="kw">let </span>client_sdk = <span class="kw">match </span>event.client_sdk.value() {
-        <span class="prelude-val">Some</span>(info) =&gt; info,
-        <span class="prelude-val">None </span>=&gt; {
-            <span class="kw">return </span><span class="bool-val">false</span>;
-        }
+    <span class="kw">let </span><span class="prelude-val">Some</span>(client_sdk) = event.client_sdk.value() <span class="kw">else </span>{
+        <span class="kw">return </span><span class="bool-val">false</span>;
     };
 
-    <span class="kw">let </span>sdk_name = client_sdk
-        .name
-        .value()
-        .map(|s| s.as_str())
-        .unwrap_or_default();
-
-    <span class="kw">if </span>[
-        <span class="string">&quot;sentry.javascript.angular&quot;</span>,
-        <span class="string">&quot;sentry.javascript.browser&quot;</span>,
-        <span class="string">&quot;sentry.javascript.ember&quot;</span>,
-        <span class="string">&quot;sentry.javascript.gatsby&quot;</span>,
-        <span class="string">&quot;sentry.javascript.react&quot;</span>,
-        <span class="string">&quot;sentry.javascript.remix&quot;</span>,
-        <span class="string">&quot;sentry.javascript.vue&quot;</span>,
-        <span class="string">&quot;sentry.javascript.nextjs&quot;</span>,
-        <span class="string">&quot;sentry.php.laravel&quot;</span>,
-        <span class="string">&quot;sentry.php.symfony&quot;</span>,
-    ]
-    .contains(<span class="kw-2">&amp;</span>sdk_name)
-    {
+    <span class="kw">let </span>sdk_name = event.sdk_name();
+    <span class="kw">if </span>RAW_URL_SDKS.contains(<span class="kw-2">&amp;</span>sdk_name) {
         <span class="kw">return </span><span class="bool-val">true</span>;
     }
 
-    <span class="kw">let </span>is_http_status_404 = event.get_tag_value(<span class="string">&quot;http.status_code&quot;</span>) == <span class="prelude-val">Some</span>(<span class="string">&quot;404&quot;</span>);
+    <span class="kw">let </span>is_http_status_404 = event.tag_value(<span class="string">&quot;http.status_code&quot;</span>) == <span class="prelude-val">Some</span>(<span class="string">&quot;404&quot;</span>);
     <span class="kw">if </span>sdk_name == <span class="string">&quot;sentry.python&quot; </span>&amp;&amp; is_http_status_404 &amp;&amp; client_sdk.has_integration(<span class="string">&quot;django&quot;</span>) {
         <span class="kw">return </span><span class="bool-val">true</span>;
     }
@@ -2928,6 +2720,7 @@
         .value()
         .and_then(|r| r.method.as_str())
         .unwrap_or_default();
+
     <span class="kw">if </span>sdk_name == <span class="string">&quot;sentry.javascript.node&quot;
         </span>&amp;&amp; http_method.eq_ignore_ascii_case(<span class="string">&quot;options&quot;</span>)
         &amp;&amp; client_sdk.has_integration(<span class="string">&quot;Express&quot;</span>)
@@ -2936,29 +2729,8 @@
     }
 
     <span class="kw">if </span>sdk_name == <span class="string">&quot;sentry.ruby&quot; </span>&amp;&amp; event.has_module(<span class="string">&quot;rack&quot;</span>) {
-        <span class="kw">let </span>trace = event
-            .contexts
-            .value()
-            .and_then(|c| c.get(<span class="string">&quot;trace&quot;</span>))
-            .and_then(Annotated::value);
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(ContextInner(Context::Trace(trace_context))) = trace {
-            <span class="kw">let </span>status = trace_context.status.value().unwrap_or(<span class="kw-2">&amp;</span>SpanStatus::Unknown);
-            <span class="kw">if </span>[
-                <span class="comment">// See https://github.com/getsentry/sentry-ruby/blob/ad4828f6d8d60e98217b2edb1ab003fb627d6bdb/sentry-ruby/lib/sentry/span.rb#L7-L19
-                </span>SpanStatus::InvalidArgument,
-                SpanStatus::Unauthenticated,
-                SpanStatus::PermissionDenied,
-                SpanStatus::NotFound,
-                SpanStatus::AlreadyExists,
-                SpanStatus::ResourceExhausted,
-                SpanStatus::Cancelled,
-                SpanStatus::InternalError,
-                SpanStatus::Unimplemented,
-                SpanStatus::Unavailable,
-                SpanStatus::DeadlineExceeded,
-            ]
-            .contains(status)
-            {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(trace) = event.context::&lt;TraceContext&gt;() {
+            <span class="kw">if </span>RUBY_URL_STATUSES.contains(trace.status.value().unwrap_or(<span class="kw-2">&amp;</span>SpanStatus::Unknown)) {
                 <span class="kw">return </span><span class="bool-val">true</span>;
             }
         }
@@ -2973,39 +2745,35 @@
 /// not extracted as a tag on the corresponding metrics, because
 ///     source == null &lt;=&gt; transaction name == null
 /// See `relay_server::metrics_extraction::transactions::get_transaction_name`.
-</span><span class="kw">fn </span>set_default_transaction_source(event: <span class="kw-2">&amp;mut </span>Event) {
+</span><span class="kw">pub fn </span>set_default_transaction_source(event: <span class="kw-2">&amp;mut </span>Event) {
     <span class="kw">let </span>source = event
         .transaction_info
         .value()
         .and_then(|info| info.source.value());
 
-    <span class="kw">if </span>source.is_none() &amp;&amp; !is_high_cardinality_sdk(event) {
-        <span class="kw">let </span>transaction_info = event.transaction_info.get_or_insert_with(Default::default);
+    <span class="kw">if </span>source.is_none() &amp;&amp; !is_high_cardinality_transaction(event) {
+        <span class="comment">// Assume low cardinality, set transaction source &quot;Unknown&quot; to signal that the transaction
+        // tag can be safely added to transaction metrics.
+        </span><span class="kw">let </span>transaction_info = event.transaction_info.get_or_insert_with(Default::default);
         transaction_info
             .source
             .set_value(<span class="prelude-val">Some</span>(TransactionSource::Unknown));
     }
 }
 
+<span class="kw">fn </span>is_high_cardinality_transaction(event: <span class="kw-2">&amp;</span>Event) -&gt; bool {
+    <span class="kw">let </span>transaction = event.transaction.as_str().unwrap_or_default();
+    <span class="comment">// We treat transactions from legacy SDKs as URLs if they contain slashes.
+    // Otherwise, we assume low cardinality.
+    </span>transaction.contains(<span class="string">&#39;/&#39;</span>) &amp;&amp; is_high_cardinality_sdk(event)
+}
+
 <span class="doccomment">/// Normalize the given string.
 ///
 /// Replaces UUIDs, SHAs and numerical IDs in transaction names by placeholders.
 /// Returns `Ok(true)` if the name was changed.
-</span><span class="kw">fn </span>scrub_identifiers(string: <span class="kw-2">&amp;mut </span>Annotated&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;bool, ProcessingAction&gt; {
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>scrub_identifiers(string: <span class="kw-2">&amp;mut </span>Annotated&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;bool, ProcessingAction&gt; {
     scrub_identifiers_with_regex(string, <span class="kw-2">&amp;</span>TRANSACTION_NAME_NORMALIZER_REGEX, <span class="string">&quot;*&quot;</span>)
-}
-
-<span class="doccomment">/// Normalize the given SQL-query-like string.
-</span><span class="kw">fn </span>scrub_sql_queries(string: <span class="kw-2">&amp;mut </span>Annotated&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;bool, ProcessingAction&gt; {
-    scrub_identifiers_with_regex(string, <span class="kw-2">&amp;</span>SQL_NORMALIZER_REGEX, <span class="string">&quot;%s&quot;</span>)
-}
-
-<span class="kw">fn </span>scrub_cache_keys(string: <span class="kw-2">&amp;mut </span>Annotated&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;bool, ProcessingAction&gt; {
-    scrub_identifiers_with_regex(string, <span class="kw-2">&amp;</span>CACHE_NORMALIZER_REGEX, <span class="string">&quot;*&quot;</span>)
-}
-
-<span class="kw">fn </span>scrub_resource_identifiers(string: <span class="kw-2">&amp;mut </span>Annotated&lt;String&gt;) -&gt; <span class="prelude-ty">Result</span>&lt;bool, ProcessingAction&gt; {
-    scrub_identifiers_with_regex(string, <span class="kw-2">&amp;</span>RESOURCE_NORMALIZER_REGEX, <span class="string">&quot;*&quot;</span>)
 }
 
 <span class="kw">fn </span>scrub_identifiers_with_regex(
@@ -3060,6 +2828,24 @@
     <span class="prelude-val">Ok</span>(did_change)
 }
 
+<span class="kw">fn </span>end_all_spans(event: <span class="kw-2">&amp;mut </span>Event) -&gt; ProcessingResult {
+    <span class="kw">let </span>spans = event.spans.value_mut().get_or_insert_with(|| Vec::new());
+    <span class="kw">for </span>span <span class="kw">in </span>spans {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(span) = span.value_mut() {
+            <span class="kw">if </span>span.timestamp.value().is_none() {
+                <span class="comment">// event timestamp guaranteed to be `Some` due to validate_transaction call
+                </span>span.timestamp.set_value(event.timestamp.value().cloned());
+                span.status = Annotated::new(SpanStatus::DeadlineExceeded);
+            }
+        } <span class="kw">else </span>{
+            <span class="kw">return </span><span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
+                <span class="string">&quot;spans must be valid in transaction event&quot;</span>,
+            ));
+        }
+    }
+    <span class="prelude-val">Ok</span>(())
+}
+
 <span class="kw">impl </span>Processor <span class="kw">for </span>TransactionsProcessor&lt;<span class="lifetime">&#39;_</span>&gt; {
     <span class="kw">fn </span>process_event(
         <span class="kw-2">&amp;mut </span><span class="self">self</span>,
@@ -3082,58 +2868,24 @@
                 .set_value(<span class="prelude-val">Some</span>(<span class="string">&quot;&lt;unlabeled transaction&gt;&quot;</span>.to_owned()))
         }
 
-        <span class="comment">// If the project is marked as &#39;ready&#39;, always set the transaction source to sanitized.
-        </span><span class="kw">let </span><span class="kw-2">mut </span>mark_as_sanitized = <span class="self">self</span>.name_config.ready;
-
-        <span class="kw">if </span><span class="macro">matches!</span>(
-            event.get_transaction_source(),
-            <span class="kw-2">&amp;</span>TransactionSource::Url | <span class="kw-2">&amp;</span>TransactionSource::Sanitized
-        ) {
-            <span class="comment">// Normalize transaction names for URLs and Sanitized transaction sources.
-            // This in addition to renaming rules can catch some high cardinality parts.
-            </span>scrub_identifiers(<span class="kw-2">&amp;mut </span>event.transaction)<span class="question-mark">?</span>.then(|| {
-                mark_as_sanitized = <span class="bool-val">true</span>;
-            });
-        }
-
-        <span class="kw">if </span>!<span class="self">self</span>.name_config.rules.is_empty() {
-            <span class="self">self</span>.apply_transaction_rename_rule(
-                <span class="kw-2">&amp;mut </span>event.transaction,
-                event.transaction_info.value_mut(),
-            )<span class="question-mark">?</span>;
-
-            mark_as_sanitized = <span class="bool-val">true</span>;
-        }
-
-        <span class="kw">if </span>mark_as_sanitized &amp;&amp; <span class="macro">matches!</span>(event.get_transaction_source(), <span class="kw-2">&amp;</span>TransactionSource::Url) {
-            event
-                .transaction_info
-                .get_or_insert_with(Default::default)
-                .source
-                .set_value(<span class="prelude-val">Some</span>(TransactionSource::Sanitized));
-        }
+        set_default_transaction_source(event);
+        <span class="self">self</span>.normalize_transaction_name(event)<span class="question-mark">?</span>;
 
         validate_transaction(event)<span class="question-mark">?</span>;
 
-        <span class="kw">let </span>spans = event.spans.value_mut().get_or_insert_with(|| Vec::new());
-
-        <span class="kw">for </span>span <span class="kw">in </span>spans {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(span) = span.value_mut() {
-                <span class="kw">if </span>span.timestamp.value().is_none() {
-                    <span class="comment">// event timestamp guaranteed to be `Some` due to validate_transaction call
-                    </span>span.timestamp.set_value(event.timestamp.value().cloned());
-                    span.status = Annotated::new(SpanStatus::DeadlineExceeded);
-                }
-            } <span class="kw">else </span>{
-                <span class="kw">return </span><span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
-                    <span class="string">&quot;spans must be valid in transaction event&quot;</span>,
-                ));
-            }
-        }
-
-        set_default_transaction_source(event);
+        end_all_spans(event)<span class="question-mark">?</span>;
 
         event.process_child_values(<span class="self">self</span>, state)<span class="question-mark">?</span>;
+
+        <span class="comment">// After processing spans, add span tags:
+        </span><span class="kw">if </span><span class="self">self</span>.enrich_spans {
+            extract_span_tags(
+                event,
+                <span class="kw-2">&amp;</span>tag_extraction::Config {
+                    max_tag_value_size: <span class="self">self</span>.max_tag_value_size,
+                },
+            );
+        }
 
         <span class="prelude-val">Ok</span>(())
     }
@@ -3180,8 +2932,8 @@
 
         span.op.get_or_insert_with(|| <span class="string">&quot;default&quot;</span>.to_owned());
 
-        <span class="kw">if </span><span class="self">self</span>.scrub_span_descriptions {
-            scrub_span_description(span)<span class="question-mark">?</span>;
+        <span class="kw">if </span><span class="self">self</span>.enrich_spans {
+            scrub_span_description(span, <span class="kw-2">&amp;</span><span class="self">self</span>.span_desc_rules);
         }
 
         span.process_child_values(<span class="self">self</span>, state)<span class="question-mark">?</span>;
@@ -3190,40 +2942,8 @@
     }
 }
 
-<span class="kw">fn </span>scrub_span_description(span: <span class="kw-2">&amp;mut </span>Span) -&gt; <span class="prelude-ty">Result</span>&lt;(), ProcessingAction&gt; {
-    <span class="kw">if </span>span.description.value().is_none() {
-        <span class="kw">return </span><span class="prelude-val">Ok</span>(());
-    }
-
-    <span class="kw">let </span><span class="kw-2">mut </span>scrubbed = span.description.clone();
-
-    <span class="kw">let </span>did_scrub = <span class="kw">match </span>span.op.value() {
-        <span class="prelude-val">Some</span>(op) <span class="kw">if </span>op.starts_with(<span class="string">&quot;http&quot;</span>) =&gt; scrub_identifiers(<span class="kw-2">&amp;mut </span>scrubbed)<span class="question-mark">?</span>,
-        <span class="prelude-val">Some</span>(op) <span class="kw">if </span>op.starts_with(<span class="string">&quot;db&quot;</span>) =&gt; scrub_sql_queries(<span class="kw-2">&amp;mut </span>scrubbed)<span class="question-mark">?</span>,
-        <span class="prelude-val">Some</span>(op) <span class="kw">if </span>op.starts_with(<span class="string">&quot;cache&quot;</span>) =&gt; scrub_cache_keys(<span class="kw-2">&amp;mut </span>scrubbed)<span class="question-mark">?</span>,
-        <span class="prelude-val">Some</span>(op) <span class="kw">if </span>op.starts_with(<span class="string">&quot;resource&quot;</span>) =&gt; scrub_resource_identifiers(<span class="kw-2">&amp;mut </span>scrubbed)<span class="question-mark">?</span>,
-        <span class="kw">_ </span>=&gt; <span class="bool-val">false</span>,
-    };
-
-    <span class="kw">if </span>did_scrub {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(new_desc) = scrubbed.into_value() {
-            span.data
-                .get_or_insert_with(BTreeMap::new)
-                <span class="comment">// We don&#39;t care what the cause of scrubbing was, since we assume
-                // that after scrubbing the value is sanitized.
-                </span>.insert(
-                    <span class="string">&quot;description.scrubbed&quot;</span>.to_owned(),
-                    Annotated::new(Value::String(new_desc)),
-                );
-        };
-    }
-
-    <span class="prelude-val">Ok</span>(())
-}
-
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
-
     <span class="kw">use </span>chrono::offset::TimeZone;
     <span class="kw">use </span>chrono::{Duration, Utc};
     <span class="kw">use </span>insta::assert_debug_snapshot;
@@ -3231,8 +2951,8 @@
 
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::processor::process_value;
-    <span class="kw">use </span><span class="kw">crate</span>::protocol::{Contexts, SpanId, TraceContext, TraceId, TransactionSource};
-    <span class="kw">use </span><span class="kw">crate</span>::store::{LazyGlob, RedactionRule, RuleScope};
+    <span class="kw">use </span><span class="kw">crate</span>::protocol::{ClientSdkInfo, Contexts, SpanId, TraceId, TransactionSource};
+    <span class="kw">use </span><span class="kw">crate</span>::store::{LazyGlob, RedactionRule};
     <span class="kw">use </span><span class="kw">crate</span>::testutils::assert_annotated_snapshot;
     <span class="kw">use </span><span class="kw">crate</span>::types::Object;
 
@@ -3244,21 +2964,16 @@
             transaction: Annotated::new(<span class="string">&quot;/&quot;</span>.to_owned()),
             start_timestamp: Annotated::new(start.into()),
             timestamp: Annotated::new(end.into()),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             spans: Annotated::new(<span class="macro">vec!</span>[Annotated::new(Span {
                 start_timestamp: Annotated::new(start.into()),
                 timestamp: Annotated::new(end.into()),
@@ -3378,7 +3093,7 @@
                 ProcessingState::root()
             ),
             <span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
-                <span class="string">&quot;trace context hard-required for transaction events&quot;
+                <span class="string">&quot;missing valid trace context&quot;
             </span>))
         );
     }
@@ -3391,7 +3106,7 @@
             start_timestamp: Annotated::new(
                 Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
             ),
-            contexts: Annotated::new(Contexts(Object::new())),
+            contexts: Annotated::new(Contexts::new()),
             ..Default::default()
         });
 
@@ -3402,7 +3117,7 @@
                 ProcessingState::root()
             ),
             <span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
-                <span class="string">&quot;trace context hard-required for transaction events&quot;
+                <span class="string">&quot;missing valid trace context&quot;
             </span>))
         );
     }
@@ -3430,7 +3145,7 @@
                 ProcessingState::root()
             ),
             <span class="prelude-val">Err</span>(ProcessingAction::InvalidTransaction(
-                <span class="string">&quot;trace context hard-required for transaction events&quot;
+                <span class="string">&quot;missing valid trace context&quot;
             </span>))
         );
     }
@@ -3443,16 +3158,11 @@
             start_timestamp: Annotated::new(
                 Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
             ),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext::default());
+                Annotated::new(contexts)
+            },
             ..Default::default()
         });
 
@@ -3476,19 +3186,14 @@
             start_timestamp: Annotated::new(
                 Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
             ),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             ..Default::default()
         });
 
@@ -3514,20 +3219,15 @@
             transaction: Annotated::new(<span class="string">&quot;/&quot;</span>.to_owned()),
             timestamp: Annotated::new(end.into()),
             start_timestamp: Annotated::new(start.into()),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             ..Default::default()
         });
 
@@ -3568,21 +3268,16 @@
             start_timestamp: Annotated::new(
                 Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
             ),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             ..Default::default()
         });
 
@@ -3603,21 +3298,16 @@
             start_timestamp: Annotated::new(
                 Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
             ),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             spans: Annotated::new(<span class="macro">vec!</span>[]),
             ..Default::default()
         });
@@ -3679,21 +3369,16 @@
             start_timestamp: Annotated::new(
                 Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
             ),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             spans: Annotated::new(<span class="macro">vec!</span>[Annotated::empty()]),
             ..Default::default()
         });
@@ -3718,21 +3403,16 @@
             start_timestamp: Annotated::new(
                 Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
             ),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             spans: Annotated::new(<span class="macro">vec!</span>[Annotated::new(Span {
                 timestamp: Annotated::new(
                     Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
@@ -3762,21 +3442,16 @@
             start_timestamp: Annotated::new(
                 Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
             ),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             spans: Annotated::new(<span class="macro">vec!</span>[Annotated::new(Span {
                 timestamp: Annotated::new(
                     Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
@@ -3809,21 +3484,16 @@
             start_timestamp: Annotated::new(
                 Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
             ),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             spans: Annotated::new(<span class="macro">vec!</span>[Annotated::new(Span {
                 timestamp: Annotated::new(
                     Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>).unwrap().into(),
@@ -3859,21 +3529,16 @@
             transaction: Annotated::new(<span class="string">&quot;/&quot;</span>.to_owned()),
             timestamp: Annotated::new(end.into()),
             start_timestamp: Annotated::new(start.into()),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             spans: Annotated::new(<span class="macro">vec!</span>[Annotated::new(Span {
                 timestamp: Annotated::new(
                     Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">10</span>).unwrap().into(),
@@ -3968,44 +3633,6 @@
             .unwrap();
 
         <span class="macro">assert_eq!</span>(source, <span class="kw-2">&amp;</span>TransactionSource::Unknown);
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>test_default_transaction_source_none() {
-        <span class="kw">let </span><span class="kw-2">mut </span>event = Annotated::&lt;Event&gt;::from_json(
-            <span class="string">r###&quot;
-            {
-                &quot;type&quot;: &quot;transaction&quot;,
-                &quot;transaction&quot;: &quot;/&quot;,
-                &quot;timestamp&quot;: 946684810.0,
-                &quot;start_timestamp&quot;: 946684800.0,
-                &quot;contexts&quot;: {
-                    &quot;trace&quot;: {
-                    &quot;trace_id&quot;: &quot;4c79f60c11214eb38604f4ae0781bfb2&quot;,
-                    &quot;span_id&quot;: &quot;fa90fdead5f74053&quot;,
-                    &quot;op&quot;: &quot;http.server&quot;,
-                    &quot;type&quot;: &quot;trace&quot;
-                    }
-                },
-                &quot;sdk&quot;: {
-                    &quot;name&quot;: &quot;sentry.javascript.browser&quot;
-                },
-                &quot;spans&quot;: []
-            }
-        &quot;###</span>,
-        )
-        .unwrap();
-
-        process_value(
-            <span class="kw-2">&amp;mut </span>event,
-            <span class="kw-2">&amp;mut </span>TransactionsProcessor::default(),
-            ProcessingState::root(),
-        )
-        .unwrap();
-
-        <span class="kw">let </span>transaction_info = <span class="kw-2">&amp;</span>event.value().unwrap().transaction_info;
-
-        <span class="macro">assert!</span>(transaction_info.value().is_none());
     }
 
     <span class="attr">#[test]
@@ -4222,7 +3849,7 @@
 
         process_value(
             <span class="kw-2">&amp;mut </span>event,
-            <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(TransactionNameConfig::default(), <span class="bool-val">false</span>),
+            <span class="kw-2">&amp;mut </span>TransactionsProcessor::default(),
             ProcessingState::root(),
         )
         .unwrap();
@@ -4306,7 +3933,7 @@
 
         process_value(
             <span class="kw-2">&amp;mut </span>event,
-            <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(TransactionNameConfig::default(), <span class="bool-val">false</span>),
+            <span class="kw-2">&amp;mut </span>TransactionsProcessor::default(),
             ProcessingState::root(),
         )
         .unwrap();
@@ -4340,7 +3967,7 @@
 
         process_value(
             <span class="kw-2">&amp;mut </span>event,
-            <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(TransactionNameConfig::default(), <span class="bool-val">false</span>),
+            <span class="kw-2">&amp;mut </span>TransactionsProcessor::default(),
             ProcessingState::root(),
         )
         .unwrap();
@@ -4416,13 +4043,7 @@
 
         process_value(
             <span class="kw-2">&amp;mut </span>event,
-            <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(
-                TransactionNameConfig {
-                    rules: <span class="kw-2">&amp;</span>[],
-                    ready: <span class="bool-val">true</span>,
-                },
-                <span class="bool-val">false</span>,
-            ),
+            <span class="kw-2">&amp;mut </span>TransactionsProcessor::default(),
             ProcessingState::root(),
         )
         .unwrap();
@@ -4478,20 +4099,17 @@
         <span class="kw">let </span>rule1 = TransactionNameRule {
             pattern: LazyGlob::new(<span class="string">&quot;/foo/*/user/*/**&quot;</span>.to_string()),
             expiry: Utc::now() + Duration::hours(<span class="number">1</span>),
-            scope: Default::default(),
             redaction: Default::default(),
         };
         <span class="kw">let </span>rule2 = TransactionNameRule {
             pattern: LazyGlob::new(<span class="string">&quot;/foo/*/**&quot;</span>.to_string()),
             expiry: Utc::now() + Duration::hours(<span class="number">1</span>),
-            scope: Default::default(),
             redaction: Default::default(),
         };
         <span class="comment">// This should not happend, such rules shouldn&#39;t be sent to relay at all.
         </span><span class="kw">let </span>rule3 = TransactionNameRule {
             pattern: LazyGlob::new(<span class="string">&quot;/*/**&quot;</span>.to_string()),
             expiry: Utc::now() + Duration::hours(<span class="number">1</span>),
-            scope: Default::default(),
             redaction: Default::default(),
         };
         <span class="kw">let </span><span class="kw-2">mut </span>rules = <span class="macro">vec!</span>[rule1, rule2, rule3];
@@ -4503,9 +4121,10 @@
             <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(
                 TransactionNameConfig {
                     rules: rules.as_ref(),
-                    ready: <span class="bool-val">false</span>,
                 },
                 <span class="bool-val">false</span>,
+                <span class="prelude-val">None</span>,
+                usize::MAX,
             ),
             ProcessingState::root(),
         )
@@ -4568,9 +4187,10 @@
             <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(
                 TransactionNameConfig {
                     rules: rules.as_ref(),
-                    ready: <span class="bool-val">false</span>,
                 },
                 <span class="bool-val">false</span>,
+                <span class="prelude-val">None</span>,
+                usize::MAX,
             ),
             ProcessingState::root(),
         )
@@ -4625,6 +4245,131 @@
     }
 
     <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_normalize_twice() {
+        <span class="comment">// Simulate going through a chain of relays.
+        </span><span class="kw">let </span>json = <span class="string">r#&quot;
+        {
+            &quot;type&quot;: &quot;transaction&quot;,
+            &quot;transaction&quot;: &quot;/foo/rule-target/user/123/0/&quot;,
+            &quot;transaction_info&quot;: {
+              &quot;source&quot;: &quot;url&quot;
+            },
+            &quot;timestamp&quot;: &quot;2021-04-26T08:00:00+0100&quot;,
+            &quot;start_timestamp&quot;: &quot;2021-04-26T07:59:01+0100&quot;,
+            &quot;contexts&quot;: {
+                &quot;trace&quot;: {
+                    &quot;trace_id&quot;: &quot;4c79f60c11214eb38604f4ae0781bfb2&quot;,
+                    &quot;span_id&quot;: &quot;fa90fdead5f74053&quot;,
+                    &quot;op&quot;: &quot;rails.request&quot;
+                }
+            }
+        }
+        &quot;#</span>;
+
+        <span class="kw">let </span>rules = <span class="macro">vec!</span>[TransactionNameRule {
+            pattern: LazyGlob::new(<span class="string">&quot;/foo/*/user/*/**&quot;</span>.to_string()),
+            expiry: Utc::now() + Duration::hours(<span class="number">1</span>),
+            redaction: Default::default(),
+        }];
+
+        <span class="kw">let </span><span class="kw-2">mut </span>event = Annotated::&lt;Event&gt;::from_json(json).unwrap();
+
+        <span class="kw">let </span><span class="kw-2">mut </span>processor = TransactionsProcessor::new(
+            TransactionNameConfig {
+                rules: rules.as_ref(),
+            },
+            <span class="bool-val">false</span>,
+            <span class="prelude-val">None</span>,
+            usize::MAX,
+        );
+        process_value(<span class="kw-2">&amp;mut </span>event, <span class="kw-2">&amp;mut </span>processor, ProcessingState::root()).unwrap();
+
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        {
+          &quot;type&quot;: &quot;transaction&quot;,
+          &quot;transaction&quot;: &quot;/foo/*/user/*/0/&quot;,
+          &quot;transaction_info&quot;: {
+            &quot;source&quot;: &quot;sanitized&quot;
+          },
+          &quot;timestamp&quot;: 1619420400.0,
+          &quot;start_timestamp&quot;: 1619420341.0,
+          &quot;contexts&quot;: {
+            &quot;trace&quot;: {
+              &quot;trace_id&quot;: &quot;4c79f60c11214eb38604f4ae0781bfb2&quot;,
+              &quot;span_id&quot;: &quot;fa90fdead5f74053&quot;,
+              &quot;op&quot;: &quot;rails.request&quot;,
+              &quot;type&quot;: &quot;trace&quot;
+            }
+          },
+          &quot;spans&quot;: [],
+          &quot;_meta&quot;: {
+            &quot;transaction&quot;: {
+              &quot;&quot;: {
+                &quot;rem&quot;: [
+                  [
+                    &quot;int&quot;,
+                    &quot;s&quot;,
+                    22,
+                    25
+                  ],
+                  [
+                    &quot;/foo/*/user/*/**&quot;,
+                    &quot;s&quot;
+                  ]
+                ],
+                &quot;val&quot;: &quot;/foo/rule-target/user/123/0/&quot;
+              }
+            }
+          }
+        }
+        &quot;###</span>);
+
+        <span class="comment">// Process again:
+        </span>process_value(<span class="kw-2">&amp;mut </span>event, <span class="kw-2">&amp;mut </span>processor, ProcessingState::root()).unwrap();
+
+        <span class="comment">// _meta entry is unchanged, because only updated when &quot;transaction&quot; changed:
+        </span><span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        {
+          &quot;type&quot;: &quot;transaction&quot;,
+          &quot;transaction&quot;: &quot;/foo/*/user/*/0/&quot;,
+          &quot;transaction_info&quot;: {
+            &quot;source&quot;: &quot;sanitized&quot;
+          },
+          &quot;timestamp&quot;: 1619420400.0,
+          &quot;start_timestamp&quot;: 1619420341.0,
+          &quot;contexts&quot;: {
+            &quot;trace&quot;: {
+              &quot;trace_id&quot;: &quot;4c79f60c11214eb38604f4ae0781bfb2&quot;,
+              &quot;span_id&quot;: &quot;fa90fdead5f74053&quot;,
+              &quot;op&quot;: &quot;rails.request&quot;,
+              &quot;type&quot;: &quot;trace&quot;
+            }
+          },
+          &quot;spans&quot;: [],
+          &quot;_meta&quot;: {
+            &quot;transaction&quot;: {
+              &quot;&quot;: {
+                &quot;rem&quot;: [
+                  [
+                    &quot;int&quot;,
+                    &quot;s&quot;,
+                    22,
+                    25
+                  ],
+                  [
+                    &quot;/foo/*/user/*/**&quot;,
+                    &quot;s&quot;
+                  ]
+                ],
+                &quot;val&quot;: &quot;/foo/rule-target/user/123/0/&quot;
+              }
+            }
+          }
+        }
+        &quot;###</span>);
+    }
+
+    <span class="attr">#[test]
     </span><span class="kw">fn </span>test_transaction_name_unsupported_source() {
         <span class="kw">let </span>json = <span class="string">r#&quot;
         {
@@ -4649,14 +4394,12 @@
         <span class="kw">let </span>rule1 = TransactionNameRule {
             pattern: LazyGlob::new(<span class="string">&quot;/foo/*/**&quot;</span>.to_string()),
             expiry: Utc::now() + Duration::hours(<span class="number">1</span>),
-            scope: Default::default(),
             redaction: Default::default(),
         };
         <span class="comment">// This should not happend, such rules shouldn&#39;t be sent to relay at all.
         </span><span class="kw">let </span>rule2 = TransactionNameRule {
             pattern: LazyGlob::new(<span class="string">&quot;/*/**&quot;</span>.to_string()),
             expiry: Utc::now() + Duration::hours(<span class="number">1</span>),
-            scope: Default::default(),
             redaction: Default::default(),
         };
         <span class="kw">let </span>rules = <span class="macro">vec!</span>[rule1, rule2];
@@ -4667,9 +4410,10 @@
             <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(
                 TransactionNameConfig {
                     rules: rules.as_ref(),
-                    ready: <span class="bool-val">false</span>,
                 },
                 <span class="bool-val">false</span>,
+                <span class="prelude-val">None</span>,
+                usize::MAX,
             ),
             ProcessingState::root(),
         )
@@ -4692,6 +4436,128 @@
               &quot;status&quot;: &quot;ok&quot;,
               &quot;type&quot;: &quot;trace&quot;
             }
+          },
+          &quot;spans&quot;: []
+        }
+        &quot;###</span>);
+    }
+
+    <span class="kw">fn </span>run_with_unknown_source(sdk: <span class="kw-2">&amp;</span>str) -&gt; Annotated&lt;Event&gt; {
+        <span class="kw">let </span>json = <span class="string">r#&quot;
+        {
+            &quot;type&quot;: &quot;transaction&quot;,
+            &quot;transaction&quot;: &quot;/user/jane/blog/&quot;,
+            &quot;timestamp&quot;: &quot;2021-04-26T08:00:00+0100&quot;,
+            &quot;start_timestamp&quot;: &quot;2021-04-26T07:59:01+0100&quot;,
+            &quot;contexts&quot;: {
+                &quot;trace&quot;: {
+                    &quot;trace_id&quot;: &quot;4c79f60c11214eb38604f4ae0781bfb2&quot;,
+                    &quot;span_id&quot;: &quot;fa90fdead5f74053&quot;,
+                    &quot;op&quot;: &quot;rails.request&quot;,
+                    &quot;status&quot;: &quot;ok&quot;
+                }
+            }
+        }
+        &quot;#</span>;
+        <span class="kw">let </span><span class="kw-2">mut </span>event = Annotated::&lt;Event&gt;::from_json(json).unwrap();
+        event
+            .value_mut()
+            .as_mut()
+            .unwrap()
+            .client_sdk
+            .set_value(<span class="prelude-val">Some</span>(ClientSdkInfo {
+                name: sdk.to_owned().into(),
+                ..Default::default()
+            }));
+        <span class="kw">let </span>rules: Vec&lt;TransactionNameRule&gt; = serde_json::from_value(<span class="macro">serde_json::json!</span>([
+            {<span class="string">&quot;pattern&quot;</span>: <span class="string">&quot;/user/*/**&quot;</span>, <span class="string">&quot;expiry&quot;</span>: <span class="string">&quot;3021-04-26T07:59:01+0100&quot;</span>, <span class="string">&quot;redaction&quot;</span>: {<span class="string">&quot;method&quot;</span>: <span class="string">&quot;replace&quot;</span>}}
+        ]))
+        .unwrap();
+
+        process_value(
+            <span class="kw-2">&amp;mut </span>event,
+            <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(
+                TransactionNameConfig {
+                    rules: rules.as_ref(),
+                },
+                <span class="bool-val">false</span>,
+                <span class="prelude-val">None</span>,
+                usize::MAX,
+            ),
+            ProcessingState::root(),
+        )
+        .unwrap();
+        event
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_normalize_legacy_javascript() {
+        <span class="comment">// Javascript without source annotation gets sanitized.
+        </span><span class="kw">let </span>event = run_with_unknown_source(<span class="string">&quot;sentry.javascript.browser&quot;</span>);
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        {
+          &quot;type&quot;: &quot;transaction&quot;,
+          &quot;transaction&quot;: &quot;/user/*/blog/&quot;,
+          &quot;transaction_info&quot;: {
+            &quot;source&quot;: &quot;sanitized&quot;
+          },
+          &quot;timestamp&quot;: 1619420400.0,
+          &quot;start_timestamp&quot;: 1619420341.0,
+          &quot;contexts&quot;: {
+            &quot;trace&quot;: {
+              &quot;trace_id&quot;: &quot;4c79f60c11214eb38604f4ae0781bfb2&quot;,
+              &quot;span_id&quot;: &quot;fa90fdead5f74053&quot;,
+              &quot;op&quot;: &quot;rails.request&quot;,
+              &quot;status&quot;: &quot;ok&quot;,
+              &quot;type&quot;: &quot;trace&quot;
+            }
+          },
+          &quot;sdk&quot;: {
+            &quot;name&quot;: &quot;sentry.javascript.browser&quot;
+          },
+          &quot;spans&quot;: [],
+          &quot;_meta&quot;: {
+            &quot;transaction&quot;: {
+              &quot;&quot;: {
+                &quot;rem&quot;: [
+                  [
+                    &quot;/user/*/**&quot;,
+                    &quot;s&quot;
+                  ]
+                ],
+                &quot;val&quot;: &quot;/user/jane/blog/&quot;
+              }
+            }
+          }
+        }
+        &quot;###</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_normalize_legacy_python() {
+        <span class="comment">// Python without source annotation does not get sanitized, because we assume it to be
+        // low cardinality.
+        </span><span class="kw">let </span>event = run_with_unknown_source(<span class="string">&quot;sentry.python&quot;</span>);
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        {
+          &quot;type&quot;: &quot;transaction&quot;,
+          &quot;transaction&quot;: &quot;/user/jane/blog/&quot;,
+          &quot;transaction_info&quot;: {
+            &quot;source&quot;: &quot;unknown&quot;
+          },
+          &quot;timestamp&quot;: 1619420400.0,
+          &quot;start_timestamp&quot;: 1619420341.0,
+          &quot;contexts&quot;: {
+            &quot;trace&quot;: {
+              &quot;trace_id&quot;: &quot;4c79f60c11214eb38604f4ae0781bfb2&quot;,
+              &quot;span_id&quot;: &quot;fa90fdead5f74053&quot;,
+              &quot;op&quot;: &quot;rails.request&quot;,
+              &quot;status&quot;: &quot;ok&quot;,
+              &quot;type&quot;: &quot;trace&quot;
+            }
+          },
+          &quot;sdk&quot;: {
+            &quot;name&quot;: &quot;sentry.python&quot;
           },
           &quot;spans&quot;: []
         }
@@ -4726,7 +4592,6 @@
         <span class="kw">let </span>rule = TransactionNameRule {
             pattern: LazyGlob::new(<span class="string">&quot;/foo/*/**&quot;</span>.to_string()),
             expiry: Utc::now() + Duration::hours(<span class="number">1</span>),
-            scope: Default::default(),
             redaction: Default::default(),
         };
 
@@ -4735,11 +4600,10 @@
         process_value(
             <span class="kw-2">&amp;mut </span>event,
             <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(
-                TransactionNameConfig {
-                    rules: <span class="kw-2">&amp;</span>[rule],
-                    ready: <span class="bool-val">false</span>,
-                },
+                TransactionNameConfig { rules: <span class="kw-2">&amp;</span>[rule] },
                 <span class="bool-val">false</span>,
+                <span class="prelude-val">None</span>,
+                usize::MAX,
             ),
             ProcessingState::root(),
         )
@@ -4834,7 +4698,7 @@
 
                 process_value(
                     <span class="kw-2">&amp;mut </span>event,
-                    <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(TransactionNameConfig::default(), <span class="bool-val">false</span>),
+                    <span class="kw-2">&amp;mut </span>TransactionsProcessor::default(),
                     ProcessingState::root(),
                 )
                 .unwrap();
@@ -4964,12 +4828,12 @@
                     rules: <span class="kw-2">&amp;</span>[TransactionNameRule {
                         pattern: LazyGlob::new(<span class="string">&quot;/remains/*/1234567890/&quot;</span>.to_owned()),
                         expiry: Utc.with_ymd_and_hms(<span class="number">3000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>).unwrap(),
-                        scope: RuleScope::default(),
                         redaction: RedactionRule::default(),
                     }],
-                    ready: <span class="bool-val">false</span>,
                 },
                 <span class="bool-val">false</span>,
+                <span class="prelude-val">None</span>,
+                usize::MAX,
             ),
             ProcessingState::root(),
         )
@@ -5011,12 +4875,12 @@
                     rules: <span class="kw-2">&amp;</span>[TransactionNameRule {
                         pattern: LazyGlob::new(<span class="string">&quot;/remains/*/**&quot;</span>.to_owned()),
                         expiry: Utc.with_ymd_and_hms(<span class="number">3000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>).unwrap(),
-                        scope: RuleScope::default(),
                         redaction: RedactionRule::default(),
                     }],
-                    ready: <span class="bool-val">false</span>,
                 },
                 <span class="bool-val">false</span>,
+                <span class="prelude-val">None</span>,
+                usize::MAX,
             ),
             ProcessingState::root(),
         )
@@ -5048,372 +4912,12 @@
 
         process_value(
             <span class="kw-2">&amp;mut </span>event,
-            <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(TransactionNameConfig::default(), <span class="bool-val">false</span>),
+            <span class="kw-2">&amp;mut </span>TransactionsProcessor::default(),
             ProcessingState::root(),
         )
         .unwrap();
 
         <span class="macro">assert_annotated_snapshot!</span>(event);
     }
-
-    <span class="macro">macro_rules! </span>span_description_test {
-        <span class="comment">// Tests the scrubbed span description for the given op.
-        // An empty output `&quot;&quot;` means the span description was not scrubbed at all.
-        </span>(<span class="macro-nonterminal">$name</span>:ident, <span class="macro-nonterminal">$description_in</span>:literal, <span class="macro-nonterminal">$op_in</span>:literal, <span class="macro-nonterminal">$output</span>:literal) =&gt; {
-            <span class="attr">#[test]
-            </span><span class="kw">fn </span><span class="macro-nonterminal">$name</span>() {
-                <span class="kw">let </span>json = <span class="macro">format!</span>(
-                    <span class="string">r#&quot;
-                    {{
-                        &quot;description&quot;: &quot;{}&quot;,
-                        &quot;span_id&quot;: &quot;bd2eb23da2beb459&quot;,
-                        &quot;start_timestamp&quot;: 1597976393.4619668,
-                        &quot;timestamp&quot;: 1597976393.4718769,
-                        &quot;trace_id&quot;: &quot;ff62a8b040f340bda5d830223def1d81&quot;,
-                        &quot;op&quot;: &quot;{}&quot;
-                    }}
-                &quot;#</span>,
-                    <span class="macro-nonterminal">$description_in</span>, <span class="macro-nonterminal">$op_in
-                </span>);
-
-                <span class="kw">let </span><span class="kw-2">mut </span>span = Annotated::&lt;Span&gt;::from_json(<span class="kw-2">&amp;</span>json).unwrap();
-
-                process_value(
-                    <span class="kw-2">&amp;mut </span>span,
-                    <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(TransactionNameConfig::default(), <span class="bool-val">true</span>),
-                    ProcessingState::root(),
-                )
-                .unwrap();
-
-                <span class="comment">// The input description may contain escaped characters, and the
-                // default formatter (when taking the value from the span
-                // description) automatically escapes them. The goal is to
-                // compute raw values, so we want to get rid of character
-                // escaping, and the debug formatter does that. The debug
-                // formatter doesn&#39;t remove the leading and trailing `&quot;`s, so we
-                // manually add them to the input literal.
-                </span><span class="macro">assert_eq!</span>(
-                    <span class="macro">format!</span>(<span class="string">&quot;\&quot;{}\&quot;&quot;</span>, <span class="macro-nonterminal">$description_in</span>),
-                    <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, span.value().unwrap().description.value().unwrap())
-                );
-
-                <span class="kw">if </span><span class="macro-nonterminal">$output </span>== <span class="string">&quot;&quot; </span>{
-                    <span class="macro">assert!</span>(span
-                        .value()
-                        .and_then(|span| span.data.value())
-                        .and_then(|data| data.get(<span class="string">&quot;description.scrubbed&quot;</span>))
-                        .is_none());
-                } <span class="kw">else </span>{
-                    <span class="macro">assert_eq!</span>(
-                        <span class="macro-nonterminal">$output</span>,
-                        span.value()
-                            .and_then(|span| span.data.value())
-                            .and_then(|data| data.get(<span class="string">&quot;description.scrubbed&quot;</span>))
-                            .and_then(|an_value| an_value.as_str())
-                            .unwrap()
-                    );
-                }
-            }
-        };
-    }
-
-    <span class="macro">span_description_test!</span>(span_description_scrub_empty, <span class="string">&quot;&quot;</span>, <span class="string">&quot;http.client&quot;</span>, <span class="string">&quot;&quot;</span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_only_domain,
-        <span class="string">&quot;GET http://service.io&quot;</span>,
-        <span class="string">&quot;http.client&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_only_urllike_on_http_ops,
-        <span class="string">&quot;GET https://www.service.io/resources/01234&quot;</span>,
-        <span class="string">&quot;http.client&quot;</span>,
-        <span class="string">&quot;GET https://www.service.io/resources/*&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_path_ids_end,
-        <span class="string">&quot;GET https://www.service.io/resources/01234&quot;</span>,
-        <span class="string">&quot;http.client&quot;</span>,
-        <span class="string">&quot;GET https://www.service.io/resources/*&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_path_ids_middle,
-        <span class="string">&quot;GET https://www.service.io/resources/01234/details&quot;</span>,
-        <span class="string">&quot;http.client&quot;</span>,
-        <span class="string">&quot;GET https://www.service.io/resources/*/details&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_path_multiple_ids,
-        <span class="string">&quot;GET https://www.service.io/users/01234-qwerty/settings/98765-adfghj&quot;</span>,
-        <span class="string">&quot;http.client&quot;</span>,
-        <span class="string">&quot;GET https://www.service.io/users/*/settings/*&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_path_md5_hashes,
-        <span class="string">&quot;GET /clients/563712f9722fb0996ac8f3905b40786f/project/01234&quot;</span>,
-        <span class="string">&quot;http.client&quot;</span>,
-        <span class="string">&quot;GET /clients/*/project/*&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_path_sha_hashes,
-        <span class="string">&quot;GET /clients/403926033d001b5279df37cbbe5287b7c7c267fa/project/01234&quot;</span>,
-        <span class="string">&quot;http.client&quot;</span>,
-        <span class="string">&quot;GET /clients/*/project/*&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_path_uuids,
-        <span class="string">&quot;GET /clients/8ff81d74-606d-4c75-ac5e-cee65cbbc866/project/01234&quot;</span>,
-        <span class="string">&quot;http.client&quot;</span>,
-        <span class="string">&quot;GET /clients/*/project/*&quot;
-    </span>);
-
-    <span class="comment">// TODO(iker): Add span description test for URLs with paths
-
-    </span><span class="macro">span_description_test!</span>(
-        span_description_scrub_only_dblike_on_db_ops,
-        <span class="string">&quot;SELECT count() FROM table WHERE id IN (%s, %s)&quot;</span>,
-        <span class="string">&quot;http.client&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_various_parameterized_ins_percentage,
-        <span class="string">&quot;SELECT count() FROM table WHERE id IN (%s, %s) AND id IN (%s, %s, %s)&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT count() FROM table WHERE id IN (%s) AND id IN (%s)&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_various_parameterized_ins_dollar,
-        <span class="string">&quot;SELECT count() FROM table WHERE id IN ($1, $2, $3)&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT count() FROM table WHERE id IN (%s)&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_various_parameterized_questionmarks,
-        <span class="string">&quot;SELECT count() FROM table WHERE id IN (?, ?, ?)&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT count() FROM table WHERE id IN (%s)&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_unparameterized_ins_uppercase,
-        <span class="string">&quot;SELECT count() FROM table WHERE id IN (100, 101, 102)&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT count() FROM table WHERE id IN (%s)&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_various_parameterized_ins_lowercase,
-        <span class="string">&quot;select count() from table where id in (100, 101, 102)&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;select count() from table where id in (%s)&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_savepoint_uppercase,
-        <span class="string">&quot;SAVEPOINT unquoted_identifier&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SAVEPOINT %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_savepoint_uppercase_semicolon,
-        <span class="string">&quot;SAVEPOINT unquoted_identifier;&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SAVEPOINT %s;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_savepoint_lowercase,
-        <span class="string">&quot;savepoint unquoted_identifier&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;savepoint %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_savepoint_quoted,
-        <span class="string">&quot;SAVEPOINT &#39;single_quoted_identifier&#39;&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SAVEPOINT %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_savepoint_quoted_backtick,
-        <span class="string">&quot;SAVEPOINT `backtick_quoted_identifier`&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SAVEPOINT %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_single_quoted_string,
-        <span class="string">&quot;SELECT * FROM table WHERE sku = &#39;foo&#39;&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT * FROM table WHERE sku = %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_single_quoted_string_unfinished,
-        <span class="string">r#&quot;SELECT * FROM table WHERE quote = &#39;it\\&#39;s a string&quot;#</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT * FROM table WHERE quote = %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_dont_scrub_double_quoted_strings_format_postgres,
-        <span class="string">r#&quot;SELECT * from \&quot;table\&quot; WHERE sku = %s&quot;#</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_dont_scrub_double_quoted_strings_format_mysql,
-        <span class="string">r#&quot;SELECT * from table WHERE sku = \&quot;foo\&quot;&quot;#</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_num_where,
-        <span class="string">&quot;SELECT * FROM table WHERE id = 1&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT * FROM table WHERE id = %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_num_limit,
-        <span class="string">&quot;SELECT * FROM table LIMIT 1&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT * FROM table LIMIT %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_num_negative_where,
-        <span class="string">&quot;SELECT * FROM table WHERE temperature &gt; -100&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT * FROM table WHERE temperature &gt; %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_num_e_where,
-        <span class="string">&quot;SELECT * FROM table WHERE salary &gt; 1e7&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT * FROM table WHERE salary &gt; %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_already_scrubbed,
-        <span class="string">&quot;SELECT * FROM table123 WHERE id = %s&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_boolean_where_true,
-        <span class="string">&quot;SELECT * FROM table WHERE deleted = true&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT * FROM table WHERE deleted = %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_boolean_where_false,
-        <span class="string">&quot;SELECT * FROM table WHERE deleted = false&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT * FROM table WHERE deleted = %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_boolean_where_bool_insensitive,
-        <span class="string">&quot;SELECT * FROM table WHERE deleted = FaLsE&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;SELECT * FROM table WHERE deleted = %s&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_boolean_not_in_tablename_true,
-        <span class="string">&quot;SELECT * FROM table_true WHERE deleted = %s&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_boolean_not_in_tablename_false,
-        <span class="string">&quot;SELECT * FROM table_false WHERE deleted = %s&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_boolean_not_in_mid_tablename_true,
-        <span class="string">&quot;SELECT * FROM tatrueble WHERE deleted = %s&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_boolean_not_in_mid_tablename_false,
-        <span class="string">&quot;SELECT * FROM tafalseble WHERE deleted = %s&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_dont_scrub_nulls,
-        <span class="string">&quot;SELECT * FROM table WHERE deleted_at IS NULL&quot;</span>,
-        <span class="string">&quot;db.sql.query&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_cache,
-        <span class="string">&quot;abc:12:{def}:{34}:{fg56}:EAB38:zookeeper&quot;</span>,
-        <span class="string">&quot;cache.get_item&quot;</span>,
-        <span class="string">&quot;abc:*:*:*:*:*:zookeeper&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_nothing_cache,
-        <span class="string">&quot;abc-dontscrubme-meneither:stillno:ohplsstop&quot;</span>,
-        <span class="string">&quot;cache.get_item&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_resource_script,
-        <span class="string">&quot;https://example.com/static/chunks/vendors-node_modules_somemodule_v1.2.3_mini-dist_index_js-client_dist-6c733292-f3cd-11ed-a05b-0242ac120003-0dc369dcf3d311eda05b0242ac120003.[hash].abcd1234.chunk.js-0242ac120003.map&quot;</span>,
-        <span class="string">&quot;resource.script&quot;</span>,
-        <span class="string">&quot;https://example.com/static/chunks/vendors-node_modules_somemodule_*_mini-dist_index_js-client_dist-*-*.[hash].*.js-*.map&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_resource_script_numeric_filename,
-        <span class="string">&quot;https://example.com/static/chunks/09876543211234567890&quot;</span>,
-        <span class="string">&quot;resource.script&quot;</span>,
-        <span class="string">&quot;https://example.com/static/chunks/*&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_resource_css,
-        <span class="string">&quot;https://example.com/assets/dark_high_contrast-764fa7c8-f3cd-11ed-a05b-0242ac120003.css&quot;</span>,
-        <span class="string">&quot;resource.css&quot;</span>,
-        <span class="string">&quot;https://example.com/assets/dark_high_contrast-*.css&quot;
-    </span>);
-
-    <span class="macro">span_description_test!</span>(
-        span_description_scrub_nothing_in_resource,
-        <span class="string">&quot;https://example.com/assets/this_is-a_good_resource-123-dont_scrub_me.js&quot;</span>,
-        <span class="string">&quot;resource.css&quot;</span>,
-        <span class="string">&quot;&quot;
-    </span>);
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="relay_general" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

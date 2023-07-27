@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-server/src/actors/processor.rs`."><title>processor.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../relay_server/index.html">
-                        <img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-server/src/actors/processor.rs`."><title>processor.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="relay_server" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../relay_server/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -3862,23 +3861,39 @@
 <a href="#3861" id="3861">3861</a>
 <a href="#3862" id="3862">3862</a>
 <a href="#3863" id="3863">3863</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::collections::BTreeMap;
+<a href="#3864" id="3864">3864</a>
+<a href="#3865" id="3865">3865</a>
+<a href="#3866" id="3866">3866</a>
+<a href="#3867" id="3867">3867</a>
+<a href="#3868" id="3868">3868</a>
+<a href="#3869" id="3869">3869</a>
+<a href="#3870" id="3870">3870</a>
+<a href="#3871" id="3871">3871</a>
+<a href="#3872" id="3872">3872</a>
+<a href="#3873" id="3873">3873</a>
+<a href="#3874" id="3874">3874</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::BTreeMap;
 <span class="kw">use </span>std::convert::TryFrom;
+<span class="kw">use </span>std::error::Error;
 <span class="kw">use </span>std::io::Write;
 <span class="kw">use </span>std::net;
 <span class="kw">use </span>std::net::IpAddr <span class="kw">as </span>NetIPAddr;
 <span class="kw">use </span>std::sync::Arc;
 <span class="kw">use </span>std::time::{Duration, Instant};
 
+<span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>brotli::CompressorWriter <span class="kw">as </span>BrotliEncoder;
 <span class="kw">use </span>bytes::Bytes;
 <span class="kw">use </span>chrono::{DateTime, Duration <span class="kw">as </span>SignedDuration, Utc};
 <span class="kw">use </span>flate2::write::{GzEncoder, ZlibEncoder};
 <span class="kw">use </span>flate2::Compression;
 <span class="kw">use </span>once_cell::sync::OnceCell;
+<span class="kw">use </span>relay_profiling::ProfileError;
 <span class="kw">use </span>serde_json::Value <span class="kw">as </span>SerdeValue;
 <span class="kw">use </span>tokio::sync::Semaphore;
 
+<span class="kw">use </span><span class="kw">crate</span>::metrics_extraction::transactions::{ExtractedMetrics, TransactionExtractor};
+<span class="kw">use </span><span class="kw">crate</span>::service::ServiceError;
 <span class="kw">use </span>relay_auth::RelayVersion;
 <span class="kw">use </span>relay_common::{ProjectId, ProjectKey, UnixTimestamp};
 <span class="kw">use </span>relay_config::{Config, HttpEncoding};
@@ -3886,19 +3901,18 @@
 <span class="kw">use </span>relay_filter::FilterStatKey;
 <span class="kw">use </span>relay_general::pii::{PiiAttachmentsProcessor, PiiConfigError, PiiProcessor};
 <span class="kw">use </span>relay_general::processor::{process_value, ProcessingState};
-<span class="kw">use </span>relay_general::protocol::Context::Trace;
-<span class="kw">use </span>relay_general::protocol::Contexts;
 <span class="kw">use </span>relay_general::protocol::{
     <span class="self">self</span>, Breadcrumb, ClientReport, Csp, Event, EventType, ExpectCt, ExpectStaple, Hpkp, IpAddr,
     LenientString, Metrics, RelayInfo, Replay, ReplayError, SecurityReportType, SessionAggregates,
     SessionAttributes, SessionStatus, SessionUpdate, Timestamp, TraceContext, UserReport, Values,
 };
+<span class="kw">use </span>relay_general::protocol::{Contexts, OtelContext};
+<span class="kw">use </span>relay_general::store::GeoIpLookup;
 <span class="kw">use </span>relay_general::store::{
     ClockDriftProcessor, LightNormalizationConfig, MeasurementsConfig, TransactionNameConfig,
 };
 <span class="kw">use </span>relay_general::types::{Annotated, Array, Empty, FromValue, Object, ProcessingAction, Value};
 <span class="kw">use </span>relay_general::user_agent::RawUserAgentInfo;
-<span class="kw">use </span>relay_log::LogError;
 <span class="kw">use </span>relay_metrics::{Bucket, InsertMetrics, MergeBuckets, Metric};
 <span class="kw">use </span>relay_quotas::{DataCategory, ReasonCode};
 <span class="kw">use </span>relay_redis::RedisPool;
@@ -3910,11 +3924,9 @@
 </span><span class="kw">use </span>{
     <span class="kw">crate</span>::actors::envelopes::SendMetrics,
     <span class="kw">crate</span>::actors::project_cache::UpdateRateLimits,
-    <span class="kw">crate</span>::service::ServiceError,
     <span class="kw">crate</span>::utils::{EnvelopeLimiter, MetricsLimiter},
-    anyhow::Context,
-    relay_general::protocol::{Context <span class="kw">as </span>SentryContext, ProfileContext},
-    relay_general::store::{GeoIpLookup, StoreConfig, StoreProcessor},
+    relay_general::protocol::ProfileContext,
+    relay_general::store::{StoreConfig, StoreProcessor},
     relay_quotas::{RateLimitingError, RedisRateLimiter},
     symbolic_unreal::{Unreal4Error, Unreal4ErrorKind},
 };
@@ -3926,13 +3938,11 @@
 <span class="kw">use </span><span class="kw">crate</span>::actors::upstream::{SendRequest, UpstreamRelay};
 <span class="kw">use </span><span class="kw">crate</span>::envelope::{AttachmentType, ContentType, Envelope, Item, ItemType};
 <span class="kw">use </span><span class="kw">crate</span>::extractors::RequestMeta;
-<span class="kw">use </span><span class="kw">crate</span>::metrics_extraction::sessions::extract_session_metrics;
-<span class="kw">use </span><span class="kw">crate</span>::metrics_extraction::transactions::extract_transaction_metrics;
 <span class="kw">use </span><span class="kw">crate</span>::metrics_extraction::transactions::types::ExtractMetricsError;
-<span class="kw">use </span><span class="kw">crate</span>::statsd::{RelayCounters, RelayHistograms, RelayTimers};
+<span class="kw">use </span><span class="kw">crate</span>::statsd::{PlatformTag, RelayCounters, RelayHistograms, RelayTimers};
 <span class="kw">use </span><span class="kw">crate</span>::utils::{
-    <span class="self">self</span>, get_sampling_key, log_transaction_name_metrics, ChunkedFormDataAggregator, FormDataIter,
-    ItemAction, ManagedEnvelope, SamplingResult,
+    <span class="self">self</span>, get_sampling_key, log_transaction_name_metrics, transaction_source_tag,
+    ChunkedFormDataAggregator, FormDataIter, ItemAction, ManagedEnvelope, SamplingResult,
 };
 
 <span class="doccomment">/// The minimum clock drift for correction to apply.
@@ -4084,17 +4094,9 @@
     </span>}
 }
 
-<span class="attr">#[derive(Debug, Default)]
-</span><span class="kw">struct </span>ExtractedMetrics {
-    <span class="doccomment">/// Metrics associated with the project that the transaction belongs to.
-    </span>project_metrics: Vec&lt;Metric&gt;,
-    <span class="doccomment">/// Metrics associated with the sampling project (a.k.a. root or head project)
-    /// which started the trace. See [`ProcessEnvelopeState::sampling_project_state`].
-    </span>sampling_metrics: Vec&lt;Metric&gt;,
-}
-
 <span class="kw">impl </span>ExtractedMetrics {
-    <span class="kw">fn </span>send_metrics(<span class="self">self</span>, envelope: <span class="kw-2">&amp;</span>Envelope, project_cache: Addr&lt;ProjectCache&gt;) {
+    <span class="comment">// TODO(ja): Move
+    </span><span class="kw">fn </span>send_metrics(<span class="self">self</span>, envelope: <span class="kw-2">&amp;</span>Envelope, project_cache: Addr&lt;ProjectCache&gt;) {
         <span class="kw">let </span>project_key = envelope.meta().public_key();
 
         <span class="kw">if </span>!<span class="self">self</span>.project_metrics.is_empty() {
@@ -4128,7 +4130,7 @@
     </span>event: Annotated&lt;Event&gt;,
 
     <span class="doccomment">/// Track whether transaction metrics were already extracted.
-    </span>transaction_metrics_extracted: bool,
+    </span>event_metrics_extracted: bool,
 
     <span class="doccomment">/// Partial metrics of the Event during construction.
     ///
@@ -4171,6 +4173,9 @@
 
     <span class="doccomment">/// The managed envelope before processing.
     </span>managed_envelope: ManagedEnvelope,
+
+    <span class="doccomment">/// Whether there is a profiling item in the envelope.
+    </span>has_profile: bool,
 }
 
 <span class="kw">impl </span>ProcessEnvelopeState {
@@ -4397,8 +4402,7 @@
     upstream_relay: Addr&lt;UpstreamRelay&gt;,
     <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
     </span>rate_limiter: <span class="prelude-ty">Option</span>&lt;RedisRateLimiter&gt;,
-    <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
-    </span>geoip_lookup: <span class="prelude-ty">Option</span>&lt;GeoIpLookup&gt;,
+    geoip_lookup: <span class="prelude-ty">Option</span>&lt;GeoIpLookup&gt;,
 }
 
 <span class="kw">impl </span>EnvelopeProcessorService {
@@ -4410,18 +4414,23 @@
         outcome_aggregator: Addr&lt;TrackOutcome&gt;,
         project_cache: Addr&lt;ProjectCache&gt;,
         upstream_relay: Addr&lt;UpstreamRelay&gt;,
-    ) -&gt; anyhow::Result&lt;<span class="self">Self</span>&gt; {
+    ) -&gt; <span class="self">Self </span>{
+        <span class="kw">let </span>geoip_lookup = config.geoip_path().and_then(|p| {
+            <span class="kw">match </span>GeoIpLookup::open(p).context(ServiceError::GeoIp) {
+                <span class="prelude-val">Ok</span>(geoip) =&gt; <span class="prelude-val">Some</span>(geoip),
+                <span class="prelude-val">Err</span>(err) =&gt; {
+                    <span class="macro">relay_log::error!</span>(<span class="string">&quot;failed to open GeoIP db {p:?}: {err:?}&quot;</span>);
+                    <span class="prelude-val">None
+                </span>}
+            }
+        });
+
         <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
         </span>{
-            <span class="kw">let </span>geoip_lookup = <span class="kw">match </span>config.geoip_path() {
-                <span class="prelude-val">Some</span>(p) =&gt; <span class="prelude-val">Some</span>(GeoIpLookup::open(p).context(ServiceError::GeoIp)<span class="question-mark">?</span>),
-                <span class="prelude-val">None </span>=&gt; <span class="prelude-val">None</span>,
-            };
-
             <span class="kw">let </span>rate_limiter =
                 _redis.map(|pool| RedisRateLimiter::new(pool).max_limit(config.max_rate_limit()));
 
-            <span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+            <span class="self">Self </span>{
                 config,
                 rate_limiter,
                 geoip_lookup,
@@ -4429,17 +4438,18 @@
                 outcome_aggregator,
                 project_cache,
                 upstream_relay,
-            })
+            }
         }
 
         <span class="attr">#[cfg(not(feature = <span class="string">&quot;processing&quot;</span>))]
-        </span><span class="prelude-val">Ok</span>(<span class="self">Self </span>{
+        </span><span class="self">Self </span>{
             config,
+            geoip_lookup,
             envelope_manager,
             outcome_aggregator,
             project_cache,
             upstream_relay,
-        })
+        }
     }
 
     <span class="doccomment">/// Returns Ok(true) if attributes were modified.
@@ -4453,13 +4463,21 @@
 
         <span class="kw">let </span>release = <span class="kw-2">&amp;</span>attributes.release;
         <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = protocol::validate_release(release) {
-            <span class="macro">relay_log::trace!</span>(<span class="string">&quot;skipping session with invalid release &#39;{}&#39;: {}&quot;</span>, release, e);
+            <span class="macro">relay_log::trace!</span>(
+                error = <span class="kw-2">&amp;</span>e <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                release,
+                <span class="string">&quot;skipping session with invalid release&quot;
+            </span>);
             <span class="kw">return </span><span class="prelude-val">Err</span>(());
         }
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref </span>env) = attributes.environment {
             <span class="kw">if let </span><span class="prelude-val">Err</span>(e) = protocol::validate_environment(env) {
-                <span class="macro">relay_log::trace!</span>(<span class="string">&quot;removing invalid environment &#39;{}&#39;: {}&quot;</span>, env, e);
+                <span class="macro">relay_log::trace!</span>(
+                    error = <span class="kw-2">&amp;</span>e <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                    env,
+                    <span class="string">&quot;removing invalid environment&quot;
+                </span>);
                 attributes.environment = <span class="prelude-val">None</span>;
                 changed = <span class="bool-val">true</span>;
             }
@@ -4517,7 +4535,10 @@
         </span><span class="kw">let </span><span class="kw-2">mut </span>session = <span class="kw">match </span>SessionUpdate::parse(<span class="kw-2">&amp;</span>payload) {
             <span class="prelude-val">Ok</span>(session) =&gt; session,
             <span class="prelude-val">Err</span>(error) =&gt; {
-                <span class="macro">relay_log::trace!</span>(<span class="string">&quot;skipping invalid session payload: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>error));
+                <span class="macro">relay_log::trace!</span>(
+                    error = <span class="kw-2">&amp;</span>error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                    <span class="string">&quot;skipping invalid session payload&quot;
+                </span>);
                 <span class="kw">return </span><span class="bool-val">false</span>;
             }
         };
@@ -4573,7 +4594,7 @@
             &amp;&amp; !item.metrics_extracted()
             &amp;&amp; !<span class="macro">matches!</span>(session.status, SessionStatus::Unknown(<span class="kw">_</span>))
         {
-            extract_session_metrics(
+            <span class="kw">crate</span>::metrics_extraction::sessions::extract_session_metrics(
                 <span class="kw-2">&amp;</span>session.attributes,
                 <span class="kw-2">&amp;</span>session,
                 client,
@@ -4592,7 +4613,7 @@
             <span class="kw">let </span>json_string = <span class="kw">match </span>serde_json::to_string(<span class="kw-2">&amp;</span>session) {
                 <span class="prelude-val">Ok</span>(json) =&gt; json,
                 <span class="prelude-val">Err</span>(err) =&gt; {
-                    <span class="macro">relay_log::error!</span>(<span class="string">&quot;failed to serialize session: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>err));
+                    <span class="macro">relay_log::error!</span>(error = <span class="kw-2">&amp;</span>err <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error, <span class="string">&quot;failed to serialize session&quot;</span>);
                     <span class="kw">return </span><span class="bool-val">false</span>;
                 }
             };
@@ -4620,7 +4641,10 @@
         <span class="kw">let </span><span class="kw-2">mut </span>session = <span class="kw">match </span>SessionAggregates::parse(<span class="kw-2">&amp;</span>payload) {
             <span class="prelude-val">Ok</span>(session) =&gt; session,
             <span class="prelude-val">Err</span>(error) =&gt; {
-                <span class="macro">relay_log::trace!</span>(<span class="string">&quot;skipping invalid sessions payload: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>error));
+                <span class="macro">relay_log::trace!</span>(
+                    error = <span class="kw-2">&amp;</span>error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                    <span class="string">&quot;skipping invalid sessions payload&quot;
+                </span>);
                 <span class="kw">return </span><span class="bool-val">false</span>;
             }
         };
@@ -4654,7 +4678,7 @@
         <span class="comment">// Extract metrics if they haven&#39;t been extracted by a prior Relay
         </span><span class="kw">if </span>metrics_config.is_enabled() &amp;&amp; !item.metrics_extracted() {
             <span class="kw">for </span>aggregate <span class="kw">in </span><span class="kw-2">&amp;</span>session.aggregates {
-                extract_session_metrics(
+                <span class="kw">crate</span>::metrics_extraction::sessions::extract_session_metrics(
                     <span class="kw-2">&amp;</span>session.attributes,
                     aggregate,
                     client,
@@ -4674,7 +4698,7 @@
             <span class="kw">let </span>json_string = <span class="kw">match </span>serde_json::to_string(<span class="kw-2">&amp;</span>session) {
                 <span class="prelude-val">Ok</span>(json) =&gt; json,
                 <span class="prelude-val">Err</span>(err) =&gt; {
-                    <span class="macro">relay_log::error!</span>(<span class="string">&quot;failed to serialize session: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>err));
+                    <span class="macro">relay_log::error!</span>(error = <span class="kw-2">&amp;</span>err <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error, <span class="string">&quot;failed to serialize session&quot;</span>);
                     <span class="kw">return </span><span class="bool-val">false</span>;
                 }
             };
@@ -4744,7 +4768,7 @@
             <span class="kw">let </span>report = <span class="kw">match </span>serde_json::from_slice::&lt;UserReport&gt;(<span class="kw-2">&amp;</span>item.payload()) {
                 <span class="prelude-val">Ok</span>(session) =&gt; session,
                 <span class="prelude-val">Err</span>(error) =&gt; {
-                    <span class="macro">relay_log::error!</span>(<span class="string">&quot;failed to store user report: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>error));
+                    <span class="macro">relay_log::error!</span>(error = <span class="kw-2">&amp;</span>error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error, <span class="string">&quot;failed to store user report&quot;</span>);
                     <span class="kw">return </span>ItemAction::DropSilently;
                 }
             };
@@ -4752,7 +4776,10 @@
             <span class="kw">let </span>json_string = <span class="kw">match </span>serde_json::to_string(<span class="kw-2">&amp;</span>report) {
                 <span class="prelude-val">Ok</span>(json) =&gt; json,
                 <span class="prelude-val">Err</span>(err) =&gt; {
-                    <span class="macro">relay_log::error!</span>(<span class="string">&quot;failed to serialize user report: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>err));
+                    <span class="macro">relay_log::error!</span>(
+                        error = <span class="kw-2">&amp;</span>err <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                        <span class="string">&quot;failed to serialize user report&quot;
+                    </span>);
                     <span class="kw">return </span>ItemAction::DropSilently;
                 }
             };
@@ -4835,7 +4862,9 @@
                         timestamp.get_or_insert(ts);
                     }
                 }
-                <span class="prelude-val">Err</span>(err) =&gt; <span class="macro">relay_log::trace!</span>(<span class="string">&quot;invalid client report received: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>err)),
+                <span class="prelude-val">Err</span>(err) =&gt; {
+                    <span class="macro">relay_log::trace!</span>(error = <span class="kw-2">&amp;</span>err <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error, <span class="string">&quot;invalid client report received&quot;</span>)
+                }
             }
             ItemAction::DropSilently
         });
@@ -4884,11 +4913,7 @@
             <span class="kw">let </span>outcome = <span class="kw">match </span>outcome_from_parts(outcome_type, <span class="kw-2">&amp;</span>reason) {
                 <span class="prelude-val">Ok</span>(outcome) =&gt; outcome,
                 <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
-                    <span class="macro">relay_log::trace!</span>(
-                        <span class="string">&quot;Invalid outcome_type / reason: ({:?}, {})&quot;</span>,
-                        outcome_type,
-                        reason
-                    );
+                    <span class="macro">relay_log::trace!</span>(<span class="question-mark">?</span>outcome_type, reason, <span class="string">&quot;invalid outcome combination&quot;</span>);
                     <span class="kw">continue</span>;
                 }
             };
@@ -4910,15 +4935,37 @@
 
     <span class="doccomment">/// Remove profiles from the envelope if they can not be parsed
     </span><span class="kw">fn </span>filter_profiles(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState) {
+        <span class="kw">let </span>transaction_count: usize = state
+            .managed_envelope
+            .envelope()
+            .items()
+            .filter(|item| item.ty() == <span class="kw-2">&amp;</span>ItemType::Transaction)
+            .count();
+        <span class="kw">let </span><span class="kw-2">mut </span>found_profile = <span class="bool-val">false</span>;
         state.managed_envelope.retain_items(|item| <span class="kw">match </span>item.ty() {
-            ItemType::Profile =&gt; <span class="kw">match </span>relay_profiling::parse_metadata(<span class="kw-2">&amp;</span>item.payload()) {
-                <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; ItemAction::Keep,
-                <span class="prelude-val">Err</span>(err) =&gt; ItemAction::Drop(Outcome::Invalid(DiscardReason::Profiling(
-                    relay_profiling::discard_reason(err),
-                ))),
-            },
+            <span class="comment">// Drop profile without a transaction in the same envelope.
+            </span>ItemType::Profile <span class="kw">if </span>transaction_count == <span class="number">0 </span>=&gt; ItemAction::DropSilently,
+            ItemType::Profile =&gt; {
+                <span class="kw">if </span>!found_profile {
+                    <span class="kw">match </span>relay_profiling::parse_metadata(<span class="kw-2">&amp;</span>item.payload()) {
+                        <span class="prelude-val">Ok</span>(<span class="kw">_</span>) =&gt; {
+                            found_profile = <span class="bool-val">true</span>;
+                            ItemAction::Keep
+                        }
+                        <span class="prelude-val">Err</span>(err) =&gt; ItemAction::Drop(Outcome::Invalid(DiscardReason::Profiling(
+                            relay_profiling::discard_reason(err),
+                        ))),
+                    }
+                } <span class="kw">else </span>{
+                    <span class="comment">// We found a second profile, drop it.
+                    </span><span class="kw">return </span>ItemAction::Drop(Outcome::Invalid(DiscardReason::Profiling(
+                        relay_profiling::discard_reason(ProfileError::TooManyProfiles),
+                    )));
+                }
+            }
             <span class="kw">_ </span>=&gt; ItemAction::Keep,
         });
+        state.has_profile = found_profile;
     }
 
     <span class="doccomment">/// Normalize monitor check-ins and remove invalid ones.
@@ -4936,67 +4983,15 @@
                 }
                 <span class="prelude-val">Err</span>(error) =&gt; {
                     <span class="comment">// TODO: Track an outcome.
-                    </span><span class="macro">relay_log::debug!</span>(<span class="string">&quot;dropped invalid monitor check-in: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>error));
+                    </span><span class="macro">relay_log::debug!</span>(
+                        error = <span class="kw-2">&amp;</span>error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                        <span class="string">&quot;dropped invalid monitor check-in&quot;
+                    </span>);
                     ItemAction::DropSilently
                 }
             }
         })
     }
-
-    <span class="doccomment">/// Count the number of profiles that are in the envelope and emit accepted outcome.
-    ///
-    /// &quot;processed&quot; profiles are an abstract data category that does not represent actual data
-    /// going through our pipeline. Instead, the number of accepted &quot;processed&quot; profiles is counted as
-    ///
-    /// ```text
-    /// processed_profiles = indexed_profiles + sampled_profiles
-    /// ```
-    ///
-    /// The &quot;processed&quot; outcome for sampled profiles is generated by the Kafka producer
-    /// (see `transform_outcome` in [`crate::actors::store`]), but for &quot;indexed&quot; profiles, we count
-    /// the corresponding number of processed profiles here.
-    ///
-    /// NOTE: Instead of emitting a [processed](`DataCategory::Profile`) outcome here,
-    /// we could also do it in sentry, in the same place where the [indexed](`DataCategory::ProfileIndexed`)
-    /// outcome is logged. We do it here to be consistent with profiles that are dropped by dynamic sampling,
-    /// which also count as &quot;processed&quot; even though they did not pass through the `process_profiles` step yet.
-    ///
-    ///
-    /// In the future, we might actually extract metrics from profiles before dynamic sampling,
-    /// like we do for transactions. At that point, this code should be removed, and we should
-    /// enforce rate limits and emit outcomes based on the collect profile metric, as we do for
-    /// transactions.
-    </span><span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
-    </span><span class="kw">fn </span>count_processed_profiles(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState) {
-        <span class="kw">let </span>profile_count: usize = state
-            .managed_envelope
-            .envelope_mut()
-            .items_mut()
-            .filter(|item| item.ty() == <span class="kw-2">&amp;</span>ItemType::Profile)
-            .map(|item| {
-                item.set_profile_counted_as_processed();
-                item.quantity()
-            })
-            .sum();
-
-        <span class="kw">if </span>profile_count == <span class="number">0 </span>{
-            <span class="kw">return</span>;
-        }
-
-        <span class="self">self</span>.outcome_aggregator.send(TrackOutcome {
-            timestamp: state.managed_envelope.received_at(),
-            scoping: state.managed_envelope.scoping(),
-            outcome: Outcome::Accepted,
-            event_id: <span class="prelude-val">None</span>,
-            remote_addr: <span class="prelude-val">None</span>,
-            category: DataCategory::Profile,
-            quantity: profile_count <span class="kw">as </span>u32, <span class="comment">// truncates to `u32::MAX`
-        </span>});
-
-        <span class="comment">// TODO: At this point, we should also ensure that the envelope summary gets recomputed.
-        // But recomputing the summary after extracting the event is currently problematic, because it
-        // sets the envelope type to `None`. This needs to be solved in a follow-up.
-    </span>}
 
     <span class="doccomment">/// Process profiles and set the profile ID in the profile context on the transaction if successful
     </span><span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
@@ -5009,11 +5004,9 @@
                             <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = state.event.value_mut() {
                                 <span class="kw">if </span>event.ty.value() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>EventType::Transaction) {
                                     <span class="kw">let </span>contexts = event.contexts.get_or_insert_with(Contexts::new);
-                                    contexts.add(SentryContext::Profile(Box::new(
-                                        ProfileContext {
-                                            profile_id: Annotated::new(profile_id),
-                                        },
-                                    )));
+                                    contexts.add(ProfileContext {
+                                        profile_id: Annotated::new(profile_id),
+                                    });
                                 }
                             }
                             item.set_payload(ContentType::Json, payload);
@@ -5021,8 +5014,9 @@
                         } <span class="kw">else </span>{
                             <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = state.event.value_mut() {
                                 <span class="kw">if </span>event.ty.value() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>EventType::Transaction) {
-                                    <span class="kw">let </span>contexts = event.contexts.get_or_insert_with(Contexts::new);
-                                    contexts.remove(ProfileContext::default_key());
+                                    <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref mut </span>contexts) = event.contexts.value_mut() {
+                                        contexts.remove::&lt;ProfileContext&gt;();
+                                    }
                                 }
                             }
                             ItemAction::Drop(Outcome::Invalid(DiscardReason::Profiling(
@@ -5036,15 +5030,15 @@
                         <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = state.event.value_mut() {
                             <span class="kw">if </span>event.ty.value() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>EventType::Transaction) {
                                 <span class="kw">let </span>contexts = event.contexts.get_or_insert_with(Contexts::new);
-                                contexts.remove(ProfileContext::default_key());
+                                contexts.remove::&lt;ProfileContext&gt;();
                             }
                         }
 
                         <span class="kw">match </span>err {
                             relay_profiling::ProfileError::InvalidJson(<span class="kw">_</span>) =&gt; {
-                                <span class="macro">relay_log::warn!</span>(<span class="string">&quot;invalid profile: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>err));
+                                <span class="macro">relay_log::warn!</span>(error = <span class="kw-2">&amp;</span>err <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error, <span class="string">&quot;invalid profile&quot;</span>);
                             }
-                            <span class="kw">_ </span>=&gt; <span class="macro">relay_log::debug!</span>(<span class="string">&quot;invalid profile: {}&quot;</span>, err),
+                            <span class="kw">_ </span>=&gt; <span class="macro">relay_log::debug!</span>(error = <span class="kw-2">&amp;</span>err <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error, <span class="string">&quot;invalid profile&quot;</span>),
                         };
                         ItemAction::Drop(Outcome::Invalid(DiscardReason::Profiling(
                             relay_profiling::discard_reason(err),
@@ -5093,34 +5087,22 @@
                             item.set_payload(ContentType::Json, json);
                             ItemAction::Keep
                         }
-                        <span class="prelude-val">Err</span>(e) =&gt; {
+                        <span class="prelude-val">Err</span>(error) =&gt; {
                             <span class="macro">relay_log::error!</span>(
-                                <span class="string">&quot;replay-event: failed to serialize replay with message {}&quot;</span>,
-                                LogError(<span class="kw-2">&amp;</span>e)
-                            );
+                                error = <span class="kw-2">&amp;</span>error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                                <span class="string">&quot;failed to serialize replay&quot;
+                            </span>);
                             ItemAction::Keep
                         }
                     },
-                    <span class="prelude-val">Err</span>(e) =&gt; {
-                        <span class="kw">let </span>discard_reason = <span class="kw">match </span>e {
-                            ReplayError::NoContent =&gt; {
-                                <span class="macro">relay_log::warn!</span>(<span class="string">&quot;replay-event: no data found&quot;</span>);
-                                DiscardReason::InvalidReplayEventNoPayload
-                            }
-                            ReplayError::CouldNotScrub(e) =&gt; {
-                                <span class="macro">relay_log::warn!</span>(<span class="string">&quot;replay-event: PII scrub failure {}&quot;</span>, e);
-                                DiscardReason::InvalidReplayEventPii
-                            }
-                            ReplayError::CouldNotParse(e) =&gt; {
-                                <span class="macro">relay_log::warn!</span>(<span class="string">&quot;replay-event: {}&quot;</span>, e.to_string());
-                                DiscardReason::InvalidReplayEvent
-                            }
-                            ReplayError::InvalidPayload(e) =&gt; {
-                                <span class="macro">relay_log::warn!</span>(<span class="string">&quot;replay-event: {}&quot;</span>, e);
-                                DiscardReason::InvalidReplayEvent
-                            }
-                        };
-                        ItemAction::Drop(Outcome::Invalid(discard_reason))
+                    <span class="prelude-val">Err</span>(error) =&gt; {
+                        <span class="macro">relay_log::warn!</span>(error = <span class="kw-2">&amp;</span>error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error, <span class="string">&quot;invalid replay event&quot;</span>);
+                        ItemAction::Drop(Outcome::Invalid(<span class="kw">match </span>error {
+                            ReplayError::NoContent =&gt; DiscardReason::InvalidReplayEventNoPayload,
+                            ReplayError::CouldNotScrub(<span class="kw">_</span>) =&gt; DiscardReason::InvalidReplayEventPii,
+                            ReplayError::CouldNotParse(<span class="kw">_</span>) =&gt; DiscardReason::InvalidReplayEvent,
+                            ReplayError::InvalidPayload(<span class="kw">_</span>) =&gt; DiscardReason::InvalidReplayEvent,
+                        }))
                     }
                 }
             }
@@ -5245,7 +5227,7 @@
 
         <span class="prelude-val">Ok</span>(ProcessEnvelopeState {
             event: Annotated::empty(),
-            transaction_metrics_extracted: <span class="bool-val">false</span>,
+            event_metrics_extracted: <span class="bool-val">false</span>,
             metrics: Metrics::default(),
             sample_rates: <span class="prelude-val">None</span>,
             sampling_result: SamplingResult::Keep,
@@ -5254,6 +5236,7 @@
             sampling_project_state,
             project_id,
             managed_envelope,
+            has_profile: <span class="bool-val">false</span>,
         })
     }
 
@@ -5573,7 +5556,7 @@
         } <span class="kw">else if let </span><span class="prelude-val">Some</span>(<span class="kw-2">mut </span>item) = transaction_item {
             <span class="macro">relay_log::trace!</span>(<span class="string">&quot;processing json transaction&quot;</span>);
             sample_rates = item.take_sample_rates();
-            state.transaction_metrics_extracted = item.metrics_extracted();
+            state.event_metrics_extracted = item.metrics_extracted();
             <span class="macro">metric!</span>(timer(RelayTimers::EventProcessingDeserialize), {
                 <span class="comment">// Transaction items can only contain transaction events. Force the event type to
                 // hint to normalization that we&#39;re dealing with a transaction now.
@@ -5584,7 +5567,10 @@
             sample_rates = item.take_sample_rates();
             <span class="self">self</span>.event_from_security_report(item, envelope.meta())
                 .map_err(|error| {
-                    <span class="macro">relay_log::error!</span>(<span class="string">&quot;failed to extract security report: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>error));
+                    <span class="macro">relay_log::error!</span>(
+                        error = <span class="kw-2">&amp;</span>error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                        <span class="string">&quot;failed to extract security report&quot;
+                    </span>);
                     error
                 })<span class="question-mark">?
         </span>} <span class="kw">else if </span>attachment_item.is_some() || breadcrumbs1.is_some() || breadcrumbs2.is_some() {
@@ -5712,13 +5698,17 @@
             event._metrics = Annotated::new(metrics);
 
             <span class="kw">if </span>event.ty.value() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>EventType::Transaction) {
-                <span class="kw">let </span>source = event.get_transaction_source();
-
                 <span class="macro">metric!</span>(
-                    counter(RelayCounters::EventTransactionSource) += <span class="number">1</span>,
-                    source = <span class="kw-2">&amp;</span>source.to_string(),
-                    sdk = envelope.meta().client_name().unwrap_or(<span class="string">&quot;proprietary&quot;</span>),
-                    platform = event.platform.as_str().unwrap_or(<span class="string">&quot;other&quot;</span>),
+                    counter(RelayCounters::EventTransaction) += <span class="number">1</span>,
+                    source = transaction_source_tag(event),
+                    platform =
+                        PlatformTag::from(event.platform.as_str().unwrap_or(<span class="string">&quot;other&quot;</span>)).as_str(),
+                    contains_slashes =
+                        <span class="kw">if </span>event.transaction.as_str().unwrap_or_default().contains(<span class="string">&#39;/&#39;</span>) {
+                            <span class="string">&quot;true&quot;
+                        </span>} <span class="kw">else </span>{
+                            <span class="string">&quot;false&quot;
+                        </span>}
                 );
 
                 <span class="kw">let </span>span_count = event.spans.value().map(Vec::len).unwrap_or(<span class="number">0</span>) <span class="kw">as </span>u64;
@@ -5728,13 +5718,12 @@
                     platform = event.platform.as_str().unwrap_or(<span class="string">&quot;other&quot;</span>),
                 );
 
-                <span class="kw">let </span>otel_context = event
+                <span class="kw">let </span>has_otel = event
                     .contexts
                     .value()
-                    .and_then(|contexts| contexts.get(<span class="string">&quot;otel&quot;</span>))
-                    .and_then(Annotated::value);
+                    .map_or(<span class="bool-val">false</span>, |contexts| contexts.contains::&lt;OtelContext&gt;());
 
-                <span class="kw">if </span>otel_context.is_some() {
+                <span class="kw">if </span>has_otel {
                     <span class="macro">metric!</span>(
                         counter(RelayCounters::OpenTelemetryEvent) += <span class="number">1</span>,
                         sdk = envelope.meta().client_name().unwrap_or(<span class="string">&quot;proprietary&quot;</span>),
@@ -5912,7 +5901,7 @@
         <span class="comment">// Tell the envelope limiter about the event, since it has been removed from the Envelope at
         // this stage in processing.
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(category) = event_category {
-            envelope_limiter.assume_event(category, state.transaction_metrics_extracted);
+            envelope_limiter.assume_event(category, state.event_metrics_extracted);
         }
 
         <span class="kw">let </span>scoping = state.managed_envelope.scoping();
@@ -5939,64 +5928,78 @@
         <span class="prelude-val">Ok</span>(())
     }
 
-    <span class="doccomment">/// Extract metrics for transaction events with breakdowns and measurements.
-    </span><span class="kw">fn </span>extract_transaction_metrics(
-        <span class="kw-2">&amp;</span><span class="self">self</span>,
-        state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState,
-    ) -&gt; <span class="prelude-ty">Result</span>&lt;(), ProcessingError&gt; {
-        <span class="kw">if </span>state.transaction_metrics_extracted {
-            <span class="comment">// Nothing to do here.
-            </span><span class="kw">return </span><span class="prelude-val">Ok</span>(());
-        }
+    <span class="doccomment">/// Extract metrics from all envelope items.
+    ///
+    /// Caveats:
+    ///  - This functionality is incomplete. At this point, extraction is implemented only for
+    ///    transaction events.
+    </span><span class="kw">fn </span>extract_metrics(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState) -&gt; <span class="prelude-ty">Result</span>&lt;(), ProcessingError&gt; {
+        <span class="comment">// TODO: Make span metrics extraction immutable
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(event) = state.event.value() {
+            <span class="kw">if </span>state.event_metrics_extracted {
+                <span class="kw">return </span><span class="prelude-val">Ok</span>(());
+            }
 
-        <span class="kw">let </span>project_config = state.project_state.config();
-        <span class="kw">let </span>extraction_config = <span class="kw">match </span>project_config.transaction_metrics {
-            <span class="prelude-val">Some</span>(ErrorBoundary::Ok(<span class="kw-2">ref </span>config)) =&gt; config,
-            <span class="kw">_ </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(()),
-        };
-
-        <span class="kw">if </span>!extraction_config.is_enabled() {
-            <span class="kw">return </span><span class="prelude-val">Ok</span>(());
-        }
-
-        <span class="kw">let </span>extract_spans_metrics = project_config
-            .features
-            .contains(<span class="kw-2">&amp;</span>Feature::SpanMetricsExtraction);
-
-        <span class="kw">let </span>transaction_from_dsc = state
-            .managed_envelope
-            .envelope()
-            .dsc()
-            .and_then(|dsc| dsc.transaction.as_deref());
-
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = state.event.value_mut() {
-            <span class="kw">let </span>result;
-            <span class="macro">metric!</span>(
-                timer(RelayTimers::TransactionMetricsExtraction),
-                extracted_anything = <span class="kw-2">&amp;</span>result.unwrap_or(<span class="bool-val">false</span>).to_string(),
-                {
-                    <span class="comment">// Actual logic outsourced for unit tests
-                    </span>result = extract_transaction_metrics(
-                        <span class="self">self</span>.config.aggregator_config(),
-                        extraction_config,
-                        <span class="kw-2">&amp;</span>project_config.metric_conditional_tagging,
-                        extract_spans_metrics,
-                        event,
-                        transaction_from_dsc,
-                        <span class="kw-2">&amp;</span>state.sampling_result,
-                        <span class="kw-2">&amp;mut </span>state.extracted_metrics.project_metrics,
-                        <span class="kw-2">&amp;mut </span>state.extracted_metrics.sampling_metrics,
-                    );
+            <span class="kw">match </span>state.project_state.config.metric_extraction {
+                ErrorBoundary::Ok(<span class="kw-2">ref </span>config) <span class="kw">if </span>config.is_enabled() =&gt; {
+                    <span class="kw">let </span>metrics =
+                        <span class="kw">crate</span>::metrics_extraction::event::extract_event_metrics(event, config);
+                    state.event_metrics_extracted |= !metrics.is_empty();
+                    state.extracted_metrics.project_metrics.extend(metrics);
                 }
-            );
+                <span class="kw">_ </span>=&gt; (),
+            }
 
-            result<span class="question-mark">?</span>;
+            <span class="kw">match </span>state.project_state.config.transaction_metrics {
+                <span class="prelude-val">Some</span>(ErrorBoundary::Ok(<span class="kw-2">ref </span>config)) <span class="kw">if </span>config.is_enabled() =&gt; {
+                    <span class="kw">let </span>transaction_from_dsc = state
+                        .managed_envelope
+                        .envelope()
+                        .dsc()
+                        .and_then(|dsc| dsc.transaction.as_deref());
 
-            state.transaction_metrics_extracted = <span class="bool-val">true</span>;
-            state.managed_envelope.set_event_metrics_extracted();
+                    <span class="kw">let </span>extractor = TransactionExtractor {
+                        aggregator_config: <span class="self">self</span>.config.aggregator_config(),
+                        config,
+                        transaction_from_dsc,
+                        sampling_result: <span class="kw-2">&amp;</span>state.sampling_result,
+                        has_profile: state.has_profile,
+                    };
+
+                    <span class="kw">let </span><span class="kw-2">mut </span>extracted = extractor.extract(event)<span class="question-mark">?</span>;
+
+                    <span class="comment">// TODO: Move conditional tagging to generic metrics extraction
+                    </span><span class="kw">let </span>tagging_config = <span class="kw-2">&amp;</span>state.project_state.config.metric_conditional_tagging;
+                    <span class="kw">crate</span>::metrics_extraction::conditional_tagging::run_conditional_tagging(
+                        event,
+                        tagging_config,
+                        <span class="kw-2">&amp;mut </span>extracted.project_metrics,
+                    );
+
+                    state.extracted_metrics.extend(extracted);
+                    state.event_metrics_extracted |= <span class="bool-val">true</span>;
+                }
+                <span class="kw">_ </span>=&gt; (),
+            }
+
+            <span class="kw">if </span>state
+                .project_state
+                .has_feature(Feature::SpanMetricsExtraction)
+            {
+                <span class="kw">let </span>metrics = <span class="kw">crate</span>::metrics_extraction::spans::extract_span_metrics(
+                    <span class="self">self</span>.config.aggregator_config(),
+                    event,
+                )<span class="question-mark">?</span>;
+                state.extracted_metrics.project_metrics.extend(metrics);
+            }
+
+            <span class="kw">if </span>state.event_metrics_extracted {
+                state.managed_envelope.set_event_metrics_extracted();
+            }
         }
 
-        <span class="prelude-val">Ok</span>(())
+        <span class="comment">// NB: Other items can be added here.
+        </span><span class="prelude-val">Ok</span>(())
     }
 
     <span class="doccomment">/// Apply data privacy rules to the event payload.
@@ -6057,7 +6060,10 @@
                             timer(RelayTimers::MinidumpScrubbing) = start.elapsed(),
                             status = <span class="string">&quot;error&quot;
                         </span>);
-                        <span class="macro">relay_log::warn!</span>(<span class="string">&quot;failed to scrub minidump: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>scrub_error));
+                        <span class="macro">relay_log::warn!</span>(
+                            error = <span class="kw-2">&amp;</span>scrub_error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                            <span class="string">&quot;failed to scrub minidump&quot;</span>,
+                        );
                         <span class="macro">metric!</span>(timer(RelayTimers::AttachmentScrubbing), {
                             processor.scrub_attachment(filename, <span class="kw-2">&amp;mut </span>payload);
                         })
@@ -6087,7 +6093,7 @@
         event_item.set_payload(ContentType::Json, data);
 
         <span class="comment">// If transaction metrics were extracted, set the corresponding item header
-        </span>event_item.set_metrics_extracted(state.transaction_metrics_extracted);
+        </span>event_item.set_metrics_extracted(state.event_metrics_extracted);
 
         <span class="comment">// If there are sample rates, write them back to the envelope. In processing mode, sample
         // rates have been removed from the state and burnt into the event via `finalize_event`.
@@ -6124,7 +6130,6 @@
             state.sampling_project_state.as_deref(),
             state.envelope().dsc(),
             state.event.value(),
-            state.envelope().meta().client_addr(),
         );
     }
 
@@ -6134,64 +6139,32 @@
     /// This execution of dynamic sampling is technically a &quot;simulation&quot; since we will use the result
     /// only for tagging errors and not for actually sampling incoming events.
     </span><span class="kw">fn </span>tag_error_with_sampling_decision(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState) {
-        <span class="comment">// In case there is no incoming event we can&#39;t tag anything, thus we early return.
-        </span><span class="kw">if </span>state.event.is_empty() {
+        <span class="kw">if </span>state.event.is_empty() {
             <span class="kw">return</span>;
         }
 
-        <span class="comment">// We want to run dynamic sampling only if we have a root project state and a dynamic
-        // sampling context.
-        //
-        // In reality the dynamic sampling logic supports optional root state and dsc but it will
-        // return keep. In our case having a keep in case of none root state and dsc will be
-        // a problem, since in reality we can&#39;t infer anything without trace metadata.
-        </span><span class="kw">let </span>sampling_result = <span class="kw">if let </span>(<span class="prelude-val">Some</span>(root_project_state), <span class="prelude-val">Some</span>(dsc)) = (
+        <span class="kw">let </span>sampled = utils::is_trace_fully_sampled(
+            <span class="self">self</span>.config.processing_enabled(),
             state.sampling_project_state.as_deref(),
             state.envelope().dsc(),
-        ) {
-            utils::get_sampling_result(
-                <span class="self">self</span>.config.processing_enabled(),
-                <span class="prelude-val">None</span>,
-                <span class="prelude-val">Some</span>(root_project_state),
-                <span class="prelude-val">Some</span>(dsc),
-                <span class="prelude-val">None</span>,
-                state.envelope().meta().client_addr(),
-            )
-        } <span class="kw">else </span>{
+        );
+
+        <span class="kw">let </span>(<span class="prelude-val">Some</span>(event), <span class="prelude-val">Some</span>(sampled)) = (state.event.value_mut(), sampled) <span class="kw">else </span>{
             <span class="kw">return</span>;
         };
 
-        <span class="kw">let </span><span class="prelude-val">Some</span>(event) = state.event.value_mut() <span class="kw">else </span>{
-            <span class="kw">return</span>;
-        };
+        <span class="comment">// We want to get the trace context, in which we will inject the `sampled` field.
+        </span><span class="kw">let </span>context = event
+            .contexts
+            .get_or_insert_with(Contexts::new)
+            .get_or_default::&lt;TraceContext&gt;();
 
-        <span class="comment">// In case the sampling result is positive, we assume that all the transactions
-        // that have this DSC will be sampled and thus we mark the error as &quot;having
-        // a full trace&quot;.
-        // In case we have no contexts object, we have to create it.
-        </span><span class="kw">let </span>contexts = event.contexts.get_or_insert_with(Contexts::new);
-
-        <span class="comment">// We want to get the specific trace context, or we want to create it in case
-        // it is not there.
-        </span><span class="kw">let </span>context =
-            contexts.get_or_insert_with(TraceContext::default_key(), || Trace(Box::default()));
-
-        <span class="comment">// We want to mutate the sampled after the &quot;fake&quot; sampling has been performed.
-        //
-        // It is important to note that tagging only occurs if there is a dsc and root
-        // project state.
-        </span><span class="kw">if let </span>Trace(boxed_context) = context {
-            <span class="comment">// We want to update `sampled` only if it was not set, since if we don&#39;t check this
-            // we will end up overriding the value set by downstream Relays and this will lead
-            // to more complex debugging in case of problems.
-            </span><span class="kw">if </span>boxed_context.sampled.is_empty() {
-                <span class="kw">let </span>sampled = <span class="kw">match </span>sampling_result {
-                    SamplingResult::Keep =&gt; <span class="bool-val">true</span>,
-                    SamplingResult::Drop(<span class="kw">_</span>) =&gt; <span class="bool-val">false</span>,
-                };
-                <span class="macro">relay_log::trace!</span>(<span class="string">&quot;tagging error with `sampled = {}` flag&quot;</span>, sampled);
-                boxed_context.sampled = Annotated::new(sampled);
-            }
+        <span class="comment">// We want to update `sampled` only if it was not set, since if we don&#39;t check this
+        // we will end up overriding the value set by downstream Relays and this will lead
+        // to more complex debugging in case of problems.
+        </span><span class="kw">if </span>context.sampled.is_empty() {
+            <span class="macro">relay_log::trace!</span>(<span class="string">&quot;tagged error with `sampled = {}` flag&quot;</span>, sampled);
+            context.sampled = Annotated::new(sampled);
         }
     }
 
@@ -6219,6 +6192,10 @@
         <span class="kw">let </span>request_meta = state.managed_envelope.envelope().meta();
         <span class="kw">let </span>client_ipaddr = request_meta.client_addr().map(IpAddr::from);
 
+        <span class="kw">let </span>light_normalize_spans = state
+            .project_state
+            .has_feature(Feature::SpanMetricsExtraction);
+
         log_transaction_name_metrics(<span class="kw-2">&amp;mut </span>state.event, |event| {
             <span class="kw">let </span>config = LightNormalizationConfig {
                 client_ip: client_ipaddr.as_ref(),
@@ -6240,15 +6217,19 @@
                 normalize_user_agent: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
                 transaction_name_config: TransactionNameConfig {
                     rules: <span class="kw-2">&amp;</span>state.project_state.config.tx_name_rules,
-                    ready: state.project_state.config.tx_name_ready,
                 },
                 device_class_synthesis_config: state
                     .project_state
                     .has_feature(Feature::DeviceClassSynthesis),
-                scrub_span_descriptions: state
+                enrich_spans: state
                     .project_state
                     .has_feature(Feature::SpanMetricsExtraction),
+                max_tag_value_length: <span class="self">self</span>.config.aggregator_config().max_tag_value_length,
                 is_renormalize: <span class="bool-val">false</span>,
+                light_normalize_spans,
+                span_description_rules: state.project_state.config.span_description_rules.as_ref(),
+                geoip_lookup: <span class="self">self</span>.geoip_lookup.as_ref(),
+                enable_trimming: <span class="bool-val">true</span>,
             };
 
             <span class="macro">metric!</span>(timer(RelayTimers::EventProcessingLightNormalization), {
@@ -6275,9 +6256,6 @@
         <span class="self">self</span>.process_replays(state)<span class="question-mark">?</span>;
         <span class="self">self</span>.filter_profiles(state);
 
-        <span class="comment">// After filtering, we need to update the envelope summary:
-        </span>state.managed_envelope.update();
-
         <span class="kw">if </span>state.creates_event() {
             <span class="comment">// Some envelopes only create events in processing relays; for example, unreal events.
             // This makes it possible to get in this code block while not really having an event in
@@ -6299,7 +6277,7 @@
             <span class="self">self</span>.normalize_dsc(state);
             <span class="self">self</span>.filter_event(state)<span class="question-mark">?</span>;
             <span class="self">self</span>.run_dynamic_sampling(state);
-            <span class="self">self</span>.extract_transaction_metrics(state)<span class="question-mark">?</span>;
+            <span class="self">self</span>.extract_metrics(state)<span class="question-mark">?</span>;
             <span class="self">self</span>.sample_envelope(state)<span class="question-mark">?</span>;
 
             <span class="macro">if_processing!</span>({
@@ -6309,11 +6287,6 @@
 
         <span class="macro">if_processing!</span>({
             <span class="self">self</span>.enforce_quotas(state)<span class="question-mark">?</span>;
-            <span class="comment">// Any profile that reaches this point counts as &quot;processed&quot;, regardless of whether
-            // they survive the actual `process_profiles` step. This is to be consistent with
-            // profiles that are dropped by dynamic sampling, which also count as &quot;processed&quot;
-            // even though they did not pass through the `process_profiles` step yet.
-            </span><span class="self">self</span>.count_processed_profiles(state);
             <span class="comment">// We need the event parsed in order to set the profile context on it
             </span><span class="self">self</span>.process_profiles(state);
             <span class="self">self</span>.process_check_ins(state);
@@ -6418,10 +6391,11 @@
                 <span class="comment">// Errors are only logged for what we consider infrastructure or implementation
                 // bugs. In other cases, we &quot;expect&quot; errors and log them as debug level.
                 </span><span class="kw">if </span>error.is_unexpected() {
-                    relay_log::with_scope(
-                        |scope| scope.set_tag(<span class="string">&quot;project_key&quot;</span>, project_key),
-                        || <span class="macro">relay_log::error!</span>(<span class="string">&quot;error processing envelope: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>error)),
-                    );
+                    <span class="macro">relay_log::error!</span>(
+                        tags.project_key = %project_key,
+                        error = <span class="kw-2">&amp;</span>error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                        <span class="string">&quot;error processing envelope&quot;
+                    </span>);
                 }
             }
         }
@@ -6465,7 +6439,10 @@
                             .send(MergeBuckets::new(public_key, buckets));
                     }
                     <span class="prelude-val">Err</span>(error) =&gt; {
-                        <span class="macro">relay_log::debug!</span>(<span class="string">&quot;failed to parse metric bucket: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>error));
+                        <span class="macro">relay_log::debug!</span>(
+                            error = <span class="kw-2">&amp;</span>error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error,
+                            <span class="string">&quot;failed to parse metric bucket&quot;</span>,
+                        );
                         <span class="macro">metric!</span>(counter(RelayCounters::MetricBucketsParsingFailed) += <span class="number">1</span>);
                     }
                 }
@@ -6591,7 +6568,7 @@
 
     <span class="kw">fn </span>spawn_handler(<span class="self">self</span>, <span class="kw-2">mut </span>rx: relay_system::Receiver&lt;<span class="self">Self</span>::Interface&gt;) {
         <span class="kw">let </span>thread_count = <span class="self">self</span>.config.cpu_concurrency();
-        <span class="macro">relay_log::info!</span>(<span class="string">&quot;starting {} envelope processing workers&quot;</span>, thread_count);
+        <span class="macro">relay_log::info!</span>(<span class="string">&quot;starting {thread_count} envelope processing workers&quot;</span>);
 
         tokio::spawn(<span class="kw">async move </span>{
             <span class="kw">let </span>service = Arc::new(<span class="self">self</span>);
@@ -6612,6 +6589,7 @@
 
 <span class="attr">#[cfg(test)]
 </span><span class="kw">mod </span>tests {
+    <span class="kw">use </span>std::env;
     <span class="kw">use </span>std::str::FromStr;
 
     <span class="kw">use </span>chrono::{DateTime, TimeZone, Utc};
@@ -6620,9 +6598,7 @@
     <span class="kw">use </span>relay_common::{DurationUnit, MetricUnit, Uuid};
     <span class="kw">use </span>relay_general::pii::{DataScrubbingConfig, PiiConfig};
     <span class="kw">use </span>relay_general::protocol::{EventId, TransactionSource};
-    <span class="kw">use </span>relay_general::store::{
-        LazyGlob, MeasurementsConfig, RedactionRule, RuleScope, TransactionNameRule,
-    };
+    <span class="kw">use </span>relay_general::store::{LazyGlob, MeasurementsConfig, RedactionRule, TransactionNameRule};
     <span class="kw">use </span>relay_sampling::{
         RuleCondition, RuleId, RuleType, SamplingConfig, SamplingMode, SamplingRule, SamplingValue,
     };
@@ -6820,7 +6796,7 @@
 
             <span class="kw">let </span><span class="kw-2">mut </span>state = ProcessEnvelopeState {
                 event: Annotated::from(event.clone()),
-                transaction_metrics_extracted: <span class="bool-val">false</span>,
+                event_metrics_extracted: <span class="bool-val">false</span>,
                 metrics: Default::default(),
                 sample_rates: <span class="prelude-val">None</span>,
                 sampling_result: SamplingResult::Keep,
@@ -6834,6 +6810,7 @@
                     outcome_aggregator.clone(),
                     test_store.clone(),
                 ),
+                has_profile: <span class="bool-val">false</span>,
             };
 
             <span class="comment">// TODO: This does not test if the sampling decision is actually applied. This should be
@@ -6977,8 +6954,7 @@
             upstream_relay,
             <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
             </span>rate_limiter: <span class="prelude-val">None</span>,
-            <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
-            </span>geoip_lookup: <span class="prelude-val">None</span>,
+            geoip_lookup: <span class="prelude-val">None</span>,
         }
     }
 
@@ -7087,14 +7063,13 @@
     }
 
     <span class="attr">#[tokio::test]
-    </span><span class="kw">async fn </span>test_error_is_tagged_correctly() {
+    </span><span class="kw">async fn </span>test_error_is_tagged_correctly_if_trace_sampling_result_is_some() {
         <span class="kw">let </span>event_id = EventId::new();
         <span class="kw">let </span>dsn = <span class="string">&quot;https://e12d836b15bb49d7bbf99e64295d995b:@sentry.io/42&quot;
             </span>.parse()
             .unwrap();
         <span class="kw">let </span>request_meta = RequestMeta::new(dsn);
-
-        <span class="kw">let </span><span class="kw-2">mut </span>envelope = Envelope::from_request(<span class="prelude-val">Some</span>(event_id), request_meta.clone());
+        <span class="kw">let </span><span class="kw-2">mut </span>envelope = Envelope::from_request(<span class="prelude-val">Some</span>(event_id), request_meta);
         <span class="kw">let </span>dsc = DynamicSamplingContext {
             trace_id: Uuid::new_v4(),
             public_key: ProjectKey::parse(<span class="string">&quot;abd0f232775f45feab79864e580d160b&quot;</span>).unwrap(),
@@ -7104,51 +7079,43 @@
             environment: <span class="prelude-val">None</span>,
             transaction: <span class="prelude-val">Some</span>(<span class="string">&quot;transaction1&quot;</span>.into()),
             sample_rate: <span class="prelude-val">None</span>,
+            sampled: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
             other: BTreeMap::new(),
         };
         envelope.set_dsc(dsc);
         envelope.add_item(mocked_error_item());
 
-        <span class="comment">// We test the tagging when the incoming dsc matches a 100% rule.
+        <span class="comment">// We test with sample rate equal to 100%.
         </span><span class="kw">let </span>sampling_project_state = project_state_with_single_rule(<span class="number">1.0</span>);
         <span class="kw">let </span>new_envelope = process_envelope_with_root_project_state(
             envelope.clone(),
             <span class="prelude-val">Some</span>(Arc::new(sampling_project_state)),
         );
         <span class="kw">let </span>event = extract_first_event_from_envelope(new_envelope);
-        <span class="kw">let </span>trace_context = event
-            .contexts
-            .value()
-            .unwrap()
-            .get_context(TraceContext::default_key())
-            .unwrap();
+        <span class="kw">let </span>trace_context = event.context::&lt;TraceContext&gt;().unwrap();
+        <span class="macro">assert!</span>(trace_context.sampled.value().unwrap());
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(trace_context, Trace(..)));
-        <span class="kw">if let </span>Trace(context) = trace_context {
-            <span class="macro">assert!</span>(context.sampled.value().unwrap())
-        }
-
-        <span class="comment">// We test the tagging when the incoming dsc matches a 0% rule.
+        <span class="comment">// We test with sample rate equal to 0%.
         </span><span class="kw">let </span>sampling_project_state = project_state_with_single_rule(<span class="number">0.0</span>);
         <span class="kw">let </span>new_envelope = process_envelope_with_root_project_state(
             envelope,
             <span class="prelude-val">Some</span>(Arc::new(sampling_project_state)),
         );
         <span class="kw">let </span>event = extract_first_event_from_envelope(new_envelope);
-        <span class="kw">let </span>trace_context = event
-            .contexts
-            .value()
-            .unwrap()
-            .get_context(TraceContext::default_key())
+        <span class="kw">let </span>trace_context = event.context::&lt;TraceContext&gt;().unwrap();
+        <span class="macro">assert!</span>(!trace_context.sampled.value().unwrap());
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_error_is_not_tagged_if_already_tagged() {
+        <span class="kw">let </span>event_id = EventId::new();
+        <span class="kw">let </span>dsn = <span class="string">&quot;https://e12d836b15bb49d7bbf99e64295d995b:@sentry.io/42&quot;
+            </span>.parse()
             .unwrap();
+        <span class="kw">let </span>request_meta = RequestMeta::new(dsn);
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(trace_context, Trace(..)));
-        <span class="kw">if let </span>Trace(context) = trace_context {
-            <span class="macro">assert!</span>(!context.sampled.value().unwrap())
-        }
-
-        <span class="comment">// We test the tagging is not performed when an event is already tagged.
-        </span><span class="kw">let </span><span class="kw-2">mut </span>envelope = Envelope::from_request(<span class="prelude-val">Some</span>(event_id), request_meta.clone());
+        <span class="comment">// We test tagging with an incoming event that has already been tagged by downstream Relay.
+        </span><span class="kw">let </span><span class="kw-2">mut </span>envelope = Envelope::from_request(<span class="prelude-val">Some</span>(event_id), request_meta);
         <span class="kw">let </span><span class="kw-2">mut </span>item = Item::new(ItemType::Event);
         item.set_payload(
             ContentType::Json,
@@ -7173,27 +7140,25 @@
             }&quot;#</span>,
         );
         envelope.add_item(item);
-        <span class="comment">// We want the sampling result to be Drop, so that we can show how sampled is still kept to
-        // to true.
-        </span><span class="kw">let </span>sampling_project_state = project_state_with_single_rule(<span class="number">0.0</span>);
+        <span class="kw">let </span>sampling_project_state = project_state_with_single_rule(<span class="number">0.0</span>);
         <span class="kw">let </span>new_envelope = process_envelope_with_root_project_state(
             envelope,
             <span class="prelude-val">Some</span>(Arc::new(sampling_project_state)),
         );
         <span class="kw">let </span>event = extract_first_event_from_envelope(new_envelope);
-        <span class="kw">let </span>trace_context = event
-            .contexts
-            .value()
-            .unwrap()
-            .get_context(TraceContext::default_key())
+        <span class="kw">let </span>trace_context = event.context::&lt;TraceContext&gt;().unwrap();
+        <span class="macro">assert!</span>(trace_context.sampled.value().unwrap());
+    }
+
+    <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_error_is_tagged_correctly_if_trace_sampling_result_is_none() {
+        <span class="kw">let </span>event_id = EventId::new();
+        <span class="kw">let </span>dsn = <span class="string">&quot;https://e12d836b15bb49d7bbf99e64295d995b:@sentry.io/42&quot;
+            </span>.parse()
             .unwrap();
+        <span class="kw">let </span>request_meta = RequestMeta::new(dsn);
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(trace_context, Trace(..)));
-        <span class="kw">if let </span>Trace(context) = trace_context {
-            <span class="macro">assert!</span>(context.sampled.value().unwrap())
-        }
-
-        <span class="comment">// We test the tagging when root project state and dsc are none.
+        <span class="comment">// We test tagging when root project state and dsc are none.
         </span><span class="kw">let </span><span class="kw-2">mut </span>envelope = Envelope::from_request(<span class="prelude-val">Some</span>(event_id), request_meta);
         envelope.add_item(mocked_error_item());
         <span class="kw">let </span>new_envelope = process_envelope_with_root_project_state(envelope, <span class="prelude-val">None</span>);
@@ -7216,10 +7181,10 @@
         <span class="kw">let </span><span class="kw-2">mut </span>envelope = Envelope::from_request(<span class="prelude-val">Some</span>(event_id), request_meta);
 
         envelope.add_item({
-            <span class="kw">let </span><span class="kw-2">mut </span>item = Item::new(ItemType::Event);
-            item.set_payload(
-                ContentType::Json,
-                <span class="string">r###&quot;
+                <span class="kw">let </span><span class="kw-2">mut </span>item = Item::new(ItemType::Event);
+                item.set_payload(
+                    ContentType::Json,
+                    <span class="string">r###&quot;
                     {
                         &quot;request&quot;: {
                             &quot;headers&quot;: [
@@ -7228,9 +7193,9 @@
                         }
                     }
                 &quot;###</span>,
-            );
-            item
-        });
+                );
+                item
+            });
 
         <span class="kw">let </span><span class="kw-2">mut </span>datascrubbing_settings = DataScrubbingConfig::default();
         <span class="comment">// enable all the default scrubbing
@@ -7284,7 +7249,7 @@
         </span><span class="macro">assert_eq!</span>(<span class="prelude-val">Some</span>(<span class="string">&quot;Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/********* Safari/537.36&quot;</span>), headers.get_header(<span class="string">&quot;User-Agent&quot;</span>));
         <span class="comment">// But we still get correct browser and version number
         </span><span class="kw">let </span>contexts = event.contexts.into_value().unwrap();
-        <span class="kw">let </span>browser = contexts.get(<span class="string">&quot;browser&quot;</span>).unwrap();
+        <span class="kw">let </span>browser = contexts.<span class="number">0</span>.get(<span class="string">&quot;browser&quot;</span>).unwrap();
         <span class="macro">assert_eq!</span>(
             <span class="string">r#&quot;{&quot;name&quot;:&quot;Chrome&quot;,&quot;version&quot;:&quot;103.0.0&quot;,&quot;type&quot;:&quot;browser&quot;}&quot;#</span>,
             browser.to_json().unwrap()
@@ -7594,12 +7559,10 @@
                         rules: <span class="kw-2">&amp;</span>[TransactionNameRule {
                             pattern: LazyGlob::new(<span class="string">&quot;/foo/*/**&quot;</span>.to_owned()),
                             expiry: DateTime::&lt;Utc&gt;::MAX_UTC,
-                            scope: RuleScope::default(),
                             redaction: RedactionRule::Replace {
                                 substitution: <span class="string">&quot;*&quot;</span>.to_owned(),
                             },
                         }],
-                        ready: <span class="bool-val">false</span>,
                     },
                     ..Default::default()
                 };
@@ -7614,7 +7577,7 @@
         <span class="kw">let </span>captures = capture_test_event(<span class="string">&quot;/nothing&quot;</span>, TransactionSource::Url);
         <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r###&quot;
         [
-            &quot;event.transaction_name_changes:1|c|#source_in:url,changes:none,source_out:sanitized&quot;,
+            &quot;event.transaction_name_changes:1|c|#source_in:url,changes:none,source_out:sanitized,is_404:false&quot;,
         ]
         &quot;###</span>);
     }
@@ -7624,7 +7587,7 @@
         <span class="kw">let </span>captures = capture_test_event(<span class="string">&quot;/foo/john/denver&quot;</span>, TransactionSource::Url);
         <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r###&quot;
         [
-            &quot;event.transaction_name_changes:1|c|#source_in:url,changes:rule,source_out:sanitized&quot;,
+            &quot;event.transaction_name_changes:1|c|#source_in:url,changes:rule,source_out:sanitized,is_404:false&quot;,
         ]
         &quot;###</span>);
     }
@@ -7634,7 +7597,7 @@
         <span class="kw">let </span>captures = capture_test_event(<span class="string">&quot;/something/12345&quot;</span>, TransactionSource::Url);
         <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r###&quot;
         [
-            &quot;event.transaction_name_changes:1|c|#source_in:url,changes:pattern,source_out:sanitized&quot;,
+            &quot;event.transaction_name_changes:1|c|#source_in:url,changes:pattern,source_out:sanitized,is_404:false&quot;,
         ]
         &quot;###</span>);
     }
@@ -7644,7 +7607,7 @@
         <span class="kw">let </span>captures = capture_test_event(<span class="string">&quot;/foo/john/12345&quot;</span>, TransactionSource::Url);
         <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r###&quot;
         [
-            &quot;event.transaction_name_changes:1|c|#source_in:url,changes:both,source_out:sanitized&quot;,
+            &quot;event.transaction_name_changes:1|c|#source_in:url,changes:both,source_out:sanitized,is_404:false&quot;,
         ]
         &quot;###</span>);
     }
@@ -7654,7 +7617,7 @@
         <span class="kw">let </span>captures = capture_test_event(<span class="string">&quot;/foo/john/12345&quot;</span>, TransactionSource::Route);
         <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r###&quot;
         [
-            &quot;event.transaction_name_changes:1|c|#source_in:route,changes:none,source_out:route&quot;,
+            &quot;event.transaction_name_changes:1|c|#source_in:route,changes:none,source_out:route,is_404:false&quot;,
         ]
         &quot;###</span>);
     }
@@ -7724,6 +7687,63 @@
             <span class="string">&quot;Update `MEASUREMENT_MRI_OVERHEAD` if the naming scheme changed.&quot;
         </span>);
     }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_geo_in_light_normalize() {
+        <span class="kw">let </span><span class="kw-2">mut </span>event = Annotated::&lt;Event&gt;::from_json(
+            <span class="string">r###&quot;
+            {
+                &quot;type&quot;: &quot;transaction&quot;,
+                &quot;transaction&quot;: &quot;/foo/&quot;,
+                &quot;timestamp&quot;: 946684810.0,
+                &quot;start_timestamp&quot;: 946684800.0,
+                &quot;contexts&quot;: {
+                    &quot;trace&quot;: {
+                        &quot;trace_id&quot;: &quot;4c79f60c11214eb38604f4ae0781bfb2&quot;,
+                        &quot;span_id&quot;: &quot;fa90fdead5f74053&quot;,
+                        &quot;op&quot;: &quot;http.server&quot;,
+                        &quot;type&quot;: &quot;trace&quot;
+                    }
+                },
+                &quot;transaction_info&quot;: {
+                    &quot;source&quot;: &quot;url&quot;
+                },
+                &quot;user&quot;: {
+                    &quot;ip_address&quot;: &quot;2.125.160.216&quot;
+                }
+            }
+            &quot;###</span>,
+        )
+        .unwrap();
+
+        <span class="kw">let </span>lookup =
+            GeoIpLookup::open(<span class="string">&quot;../relay-general/tests/fixtures/GeoIP2-Enterprise-Test.mmdb&quot;</span>)
+                .unwrap();
+        <span class="kw">let </span>config = LightNormalizationConfig {
+            geoip_lookup: <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>lookup),
+            ..Default::default()
+        };
+
+        <span class="comment">// Extract user&#39;s geo information before normalization.
+        </span><span class="kw">let </span>user_geo = event.value().unwrap().user.value().unwrap().geo.value();
+
+        <span class="macro">assert!</span>(user_geo.is_none());
+
+        relay_general::store::light_normalize_event(<span class="kw-2">&amp;mut </span>event, config).unwrap();
+
+        <span class="comment">// Extract user&#39;s geo information after normalization.
+        </span><span class="kw">let </span>user_geo = event
+            .value()
+            .unwrap()
+            .user
+            .value()
+            .unwrap()
+            .geo
+            .value()
+            .unwrap();
+
+        <span class="macro">assert_eq!</span>(user_geo.country_code.value().unwrap(), <span class="string">&quot;GB&quot;</span>);
+        <span class="macro">assert_eq!</span>(user_geo.city.value().unwrap(), <span class="string">&quot;Boxford&quot;</span>);
+    }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="relay_server" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

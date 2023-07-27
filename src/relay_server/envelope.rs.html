@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-server/src/envelope.rs`."><title>envelope.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relay_server/index.html">
-                        <img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-server/src/envelope.rs`."><title>envelope.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relay_server" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relay_server/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -1704,32 +1703,7 @@
 <a href="#1703" id="1703">1703</a>
 <a href="#1704" id="1704">1704</a>
 <a href="#1705" id="1705">1705</a>
-<a href="#1706" id="1706">1706</a>
-<a href="#1707" id="1707">1707</a>
-<a href="#1708" id="1708">1708</a>
-<a href="#1709" id="1709">1709</a>
-<a href="#1710" id="1710">1710</a>
-<a href="#1711" id="1711">1711</a>
-<a href="#1712" id="1712">1712</a>
-<a href="#1713" id="1713">1713</a>
-<a href="#1714" id="1714">1714</a>
-<a href="#1715" id="1715">1715</a>
-<a href="#1716" id="1716">1716</a>
-<a href="#1717" id="1717">1717</a>
-<a href="#1718" id="1718">1718</a>
-<a href="#1719" id="1719">1719</a>
-<a href="#1720" id="1720">1720</a>
-<a href="#1721" id="1721">1721</a>
-<a href="#1722" id="1722">1722</a>
-<a href="#1723" id="1723">1723</a>
-<a href="#1724" id="1724">1724</a>
-<a href="#1725" id="1725">1725</a>
-<a href="#1726" id="1726">1726</a>
-<a href="#1727" id="1727">1727</a>
-<a href="#1728" id="1728">1728</a>
-<a href="#1729" id="1729">1729</a>
-<a href="#1730" id="1730">1730</a>
-</pre><pre class="rust"><code><span class="doccomment">//! Implementation of event envelopes.
+</pre></div><pre class="rust"><code><span class="doccomment">//! Implementation of event envelopes.
 //!
 //! Envelopes are containers for payloads related to Sentry events. Similar to multipart form data
 //! requests, each envelope has global headers and a set of items, such as the event payload, an
@@ -2212,13 +2186,6 @@
     </span><span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;is_false&quot;</span>)]
     </span>metrics_extracted: bool,
 
-    <span class="doccomment">/// Internal flag to signal that the profile has been counted toward `DataCategory::Profile`.
-    ///
-    /// If `true`, outcomes for this item should be reported as `DataCategory::ProfileIndexed`
-    /// instead.
-    </span><span class="attr">#[serde(skip)]
-    </span>profile_counted_as_processed: bool,
-
     <span class="doccomment">/// Other attributes for forward compatibility.
     </span><span class="attr">#[serde(flatten)]
     </span>other: BTreeMap&lt;String, Value&gt;,
@@ -2245,7 +2212,6 @@
                 timestamp: <span class="prelude-val">None</span>,
                 other: BTreeMap::new(),
                 metrics_extracted: <span class="bool-val">false</span>,
-                profile_counted_as_processed: <span class="bool-val">false</span>,
             },
             payload: Bytes::new(),
         }
@@ -2289,9 +2255,7 @@
             ItemType::Metrics | ItemType::MetricBuckets =&gt; <span class="prelude-val">None</span>,
             ItemType::FormData =&gt; <span class="prelude-val">None</span>,
             ItemType::UserReport =&gt; <span class="prelude-val">None</span>,
-            <span class="comment">// For profiles, do not used the `indexed` flag, because it depends
-            // on whether metrics were extracted from the _event_.
-            </span>ItemType::Profile =&gt; <span class="prelude-val">Some</span>(<span class="kw">if </span><span class="self">self</span>.headers.profile_counted_as_processed {
+            ItemType::Profile =&gt; <span class="prelude-val">Some</span>(<span class="kw">if </span>indexed {
                 DataCategory::ProfileIndexed
             } <span class="kw">else </span>{
                 DataCategory::Profile
@@ -2392,21 +2356,6 @@
     <span class="doccomment">/// Returns the metrics extracted flag.
     </span><span class="kw">pub fn </span>metrics_extracted(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.headers.metrics_extracted
-    }
-
-    <span class="doccomment">/// Returns `true` if the profiles in the envelope have been counted towards `DataCategory::Profile`.
-    ///
-    /// If so, count them towards `DataCategory::ProfileIndexed` instead.
-    </span><span class="kw">pub fn </span>profile_counted_as_processed(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
-        <span class="self">self</span>.headers.profile_counted_as_processed
-    }
-
-    <span class="doccomment">/// Mark the item as &quot;counted towards `DataCategory::Profile`&quot;.
-    </span><span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
-    </span><span class="kw">pub fn </span>set_profile_counted_as_processed(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
-        <span class="kw">if </span><span class="self">self</span>.ty() == <span class="kw-2">&amp;</span>ItemType::Profile {
-            <span class="self">self</span>.headers.profile_counted_as_processed = <span class="bool-val">true</span>;
-        }
     }
 
     <span class="doccomment">/// Sets the metrics extracted flag.
@@ -2732,7 +2681,7 @@
         <span class="kw">match </span><span class="kw-2">&amp;</span><span class="self">self</span>.headers.trace {
             <span class="prelude-val">None </span>=&gt; <span class="prelude-val">None</span>,
             <span class="prelude-val">Some</span>(ErrorBoundary::Err(e)) =&gt; {
-                <span class="macro">relay_log::debug!</span>(<span class="string">&quot;failed to parse sampling context: {:?}&quot;</span>, e);
+                <span class="macro">relay_log::debug!</span>(error = e.as_ref(), <span class="string">&quot;failed to parse sampling context&quot;</span>);
                 <span class="prelude-val">None
             </span>}
             <span class="prelude-val">Some</span>(ErrorBoundary::Ok(t)) =&gt; <span class="prelude-val">Some</span>(t),
@@ -3459,5 +3408,4 @@
         }
     }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relay_server" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-general/src/store/normalize.rs`."><title>normalize.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../../static.files/ayu-be46fdc453a55015.css"><script src="../../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../relay_general/index.html">
-                        <img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-general/src/store/normalize.rs`."><title>normalize.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="relay_general" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../relay_general/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -3113,7 +3112,40 @@
 <a href="#3112" id="3112">3112</a>
 <a href="#3113" id="3113">3113</a>
 <a href="#3114" id="3114">3114</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::collections::hash_map::DefaultHasher;
+<a href="#3115" id="3115">3115</a>
+<a href="#3116" id="3116">3116</a>
+<a href="#3117" id="3117">3117</a>
+<a href="#3118" id="3118">3118</a>
+<a href="#3119" id="3119">3119</a>
+<a href="#3120" id="3120">3120</a>
+<a href="#3121" id="3121">3121</a>
+<a href="#3122" id="3122">3122</a>
+<a href="#3123" id="3123">3123</a>
+<a href="#3124" id="3124">3124</a>
+<a href="#3125" id="3125">3125</a>
+<a href="#3126" id="3126">3126</a>
+<a href="#3127" id="3127">3127</a>
+<a href="#3128" id="3128">3128</a>
+<a href="#3129" id="3129">3129</a>
+<a href="#3130" id="3130">3130</a>
+<a href="#3131" id="3131">3131</a>
+<a href="#3132" id="3132">3132</a>
+<a href="#3133" id="3133">3133</a>
+<a href="#3134" id="3134">3134</a>
+<a href="#3135" id="3135">3135</a>
+<a href="#3136" id="3136">3136</a>
+<a href="#3137" id="3137">3137</a>
+<a href="#3138" id="3138">3138</a>
+<a href="#3139" id="3139">3139</a>
+<a href="#3140" id="3140">3140</a>
+<a href="#3141" id="3141">3141</a>
+<a href="#3142" id="3142">3142</a>
+<a href="#3143" id="3143">3143</a>
+<a href="#3144" id="3144">3144</a>
+<a href="#3145" id="3145">3145</a>
+<a href="#3146" id="3146">3146</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::hash_map::DefaultHasher;
+<span class="kw">use </span>std::collections::BTreeSet;
 <span class="kw">use </span>std::hash::{Hash, Hasher};
 <span class="kw">use </span>std::mem;
 <span class="kw">use </span>std::sync::Arc;
@@ -3134,22 +3166,26 @@
     Measurements, ReplayContext, Request, SpanStatus, Stacktrace, Tags, TraceContext, User,
     VALID_PLATFORMS,
 };
-<span class="kw">use </span><span class="kw">crate</span>::store::{ClockDriftProcessor, GeoIpLookup, StoreConfig, TransactionNameConfig};
+<span class="kw">use </span><span class="kw">crate</span>::store::{
+    trimming, ClockDriftProcessor, GeoIpLookup, SpanDescriptionRule, StoreConfig,
+    TransactionNameConfig,
+};
 <span class="kw">use </span><span class="kw">crate</span>::types::{
     Annotated, Empty, Error, ErrorKind, FromValue, Meta, Object, ProcessingAction,
-    ProcessingResult, Remark, RemarkType, Value,
+    ProcessingResult, Remark, RemarkType, SpanAttribute, Value,
 };
 <span class="kw">use </span><span class="kw">crate</span>::user_agent::RawUserAgentInfo;
 
 <span class="kw">pub mod </span>breakdowns;
+<span class="kw">pub mod </span>span;
+<span class="kw">pub mod </span>user_agent;
+<span class="kw">pub mod </span>utils;
+
 <span class="kw">mod </span>contexts;
 <span class="kw">mod </span>logentry;
 <span class="kw">mod </span>mechanism;
 <span class="kw">mod </span>request;
-<span class="kw">mod </span>spans;
 <span class="kw">mod </span>stacktrace;
-
-<span class="kw">pub mod </span>user_agent;
 
 <span class="doccomment">/// Defines a builtin measurement.
 </span><span class="attr">#[derive(Debug, Default, Clone, Serialize, Deserialize)]
@@ -3310,24 +3346,23 @@
 
     <span class="kw">fn </span>normalize_spans(<span class="kw-2">&amp;</span><span class="self">self</span>, event: <span class="kw-2">&amp;mut </span>Event) {
         <span class="kw">if </span>event.ty.value() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>EventType::Transaction) {
-            spans::normalize_spans(event, <span class="kw-2">&amp;</span><span class="self">self</span>.config.span_attributes);
+            span::attributes::normalize_spans(event, <span class="kw-2">&amp;</span><span class="self">self</span>.config.span_attributes);
         }
     }
 
     <span class="kw">fn </span>normalize_trace_context(<span class="kw-2">&amp;</span><span class="self">self</span>, event: <span class="kw-2">&amp;mut </span>Event) {
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref mut </span>contexts) = event.contexts.value_mut() {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(Context::Trace(<span class="kw-2">ref mut </span>trace_context)) = contexts.get_context_mut(<span class="string">&quot;trace&quot;</span>) {
-                trace_context.client_sample_rate = Annotated::from(<span class="self">self</span>.config.client_sample_rate);
-            }
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(context) = event.context_mut::&lt;TraceContext&gt;() {
+            context.client_sample_rate = Annotated::from(<span class="self">self</span>.config.client_sample_rate);
         }
     }
+
     <span class="kw">fn </span>normalize_replay_context(<span class="kw-2">&amp;</span><span class="self">self</span>, event: <span class="kw-2">&amp;mut </span>Event) {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(<span class="kw-2">ref mut </span>contexts) = event.contexts.value_mut() {
             <span class="kw">if let </span><span class="prelude-val">Some</span>(replay_id) = <span class="self">self</span>.config.replay_id {
-                contexts.add(Context::Replay(Box::new(ReplayContext {
+                contexts.add(ReplayContext {
                     replay_id: Annotated::new(EventId(replay_id)),
                     other: Object::default(),
-                })));
+                });
             }
         }
     }
@@ -3398,9 +3433,8 @@
 
         <span class="kw">if </span>!is_valid_metric_name(name) {
             meta.add_error(Error::invalid(<span class="macro">format!</span>(
-                <span class="string">&quot;Metric name contains invalid characters: \&quot;{}\&quot;&quot;</span>,
-                name
-            )));
+                <span class="string">&quot;Metric name contains invalid characters: \&quot;{name}\&quot;&quot;
+            </span>)));
             removed_measurements.insert(name.clone(), Annotated::new(std::mem::take(measurement)));
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
@@ -3413,10 +3447,8 @@
 
             <span class="kw">if </span>name.len() &gt; max_name_len {
                 meta.add_error(Error::invalid(<span class="macro">format!</span>(
-                    <span class="string">&quot;Metric name too long {}/{}: \&quot;{}\&quot;&quot;</span>,
+                    <span class="string">&quot;Metric name too long {}/{max_name_len}: \&quot;{name}\&quot;&quot;</span>,
                     name.len(),
-                    max_name_len,
-                    name
                 )));
                 removed_measurements
                     .insert(name.clone(), Annotated::new(std::mem::take(measurement)));
@@ -3440,7 +3472,7 @@
             <span class="kw">return </span><span class="bool-val">true</span>;
         }
 
-        meta.add_error(Error::invalid(<span class="macro">format!</span>(<span class="string">&quot;Too many measurements: {}&quot;</span>, name)));
+        meta.add_error(Error::invalid(<span class="macro">format!</span>(<span class="string">&quot;Too many measurements: {name}&quot;</span>)));
         removed_measurements.insert(name.clone(), Annotated::new(std::mem::take(measurement)));
 
         <span class="bool-val">false
@@ -3835,7 +3867,19 @@
     }
 }
 
-<span class="attr">#[derive(Clone, Default, Debug)]
+<span class="comment">// Sets the user&#39;s GeoIp info based on user&#39;s IP address.
+</span><span class="kw">fn </span>normalize_user_geoinfo(geoip_lookup: <span class="kw-2">&amp;</span>GeoIpLookup, user: <span class="kw-2">&amp;mut </span>User) {
+    <span class="comment">// Infer user.geo from user.ip_address
+    </span><span class="kw">if </span>user.geo.value().is_none() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(ip_address) = user.ip_address.value() {
+            <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(geo)) = geoip_lookup.lookup(ip_address.as_str()) {
+                user.geo.set_value(<span class="prelude-val">Some</span>(geo));
+            }
+        }
+    }
+}
+
+<span class="attr">#[derive(Clone, Debug)]
 </span><span class="kw">pub struct </span>LightNormalizationConfig&lt;<span class="lifetime">&#39;a</span>&gt; {
     <span class="kw">pub </span>client_ip: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>IpAddr&gt;,
     <span class="kw">pub </span>user_agent: RawUserAgentInfo&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str&gt;,
@@ -3849,7 +3893,37 @@
     <span class="kw">pub </span>transaction_name_config: TransactionNameConfig&lt;<span class="lifetime">&#39;a</span>&gt;,
     <span class="kw">pub </span>is_renormalize: bool,
     <span class="kw">pub </span>device_class_synthesis_config: bool,
-    <span class="kw">pub </span>scrub_span_descriptions: bool,
+    <span class="kw">pub </span>enrich_spans: bool,
+    <span class="kw">pub </span>light_normalize_spans: bool,
+    <span class="kw">pub </span>max_tag_value_length: usize, <span class="comment">// TODO: move span related fields into separate config.
+    </span><span class="kw">pub </span>span_description_rules: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>Vec&lt;SpanDescriptionRule&gt;&gt;,
+    <span class="kw">pub </span>geoip_lookup: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>GeoIpLookup&gt;,
+    <span class="kw">pub </span>enable_trimming: bool,
+}
+
+<span class="kw">impl </span>Default <span class="kw">for </span>LightNormalizationConfig&lt;<span class="lifetime">&#39;_</span>&gt; {
+    <span class="kw">fn </span>default() -&gt; <span class="self">Self </span>{
+        <span class="self">Self </span>{
+            client_ip: Default::default(),
+            user_agent: Default::default(),
+            received_at: Default::default(),
+            max_secs_in_past: Default::default(),
+            max_secs_in_future: Default::default(),
+            max_name_and_unit_len: Default::default(),
+            measurements_config: Default::default(),
+            breakdowns_config: Default::default(),
+            normalize_user_agent: Default::default(),
+            transaction_name_config: Default::default(),
+            is_renormalize: Default::default(),
+            device_class_synthesis_config: Default::default(),
+            enrich_spans: Default::default(),
+            light_normalize_spans: Default::default(),
+            max_tag_value_length: usize::MAX,
+            span_description_rules: Default::default(),
+            geoip_lookup: Default::default(),
+            enable_trimming: <span class="bool-val">false</span>,
+        }
+    }
 }
 
 <span class="kw">pub fn </span>light_normalize_event(
@@ -3867,7 +3941,9 @@
         // can revert some changes to ProcessingAction)
         </span><span class="kw">let </span><span class="kw-2">mut </span>transactions_processor = transactions::TransactionsProcessor::new(
             config.transaction_name_config,
-            config.scrub_span_descriptions,
+            config.enrich_spans,
+            config.span_description_rules,
+            config.max_tag_value_length,
         );
         transactions_processor.process_event(event, meta, ProcessingState::root())<span class="question-mark">?</span>;
 
@@ -3884,6 +3960,12 @@
             event.platform.as_str(),
             config.client_ip,
         );
+
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(geoip_lookup) = config.geoip_lookup {
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(user) = event.user.value_mut() {
+                normalize_user_geoinfo(geoip_lookup, user)
+            }
+        }
 
         <span class="comment">// Validate the basic attributes we extract metrics from
         </span>event.release.apply(|release, meta| {
@@ -3929,7 +4011,28 @@
         ); <span class="comment">// Measurements are part of the metric extraction
         </span>normalize_breakdowns(event, config.breakdowns_config); <span class="comment">// Breakdowns are part of the metric extraction too
 
-        </span><span class="prelude-val">Ok</span>(())
+        </span><span class="kw">if </span>config.light_normalize_spans &amp;&amp; event.ty.value() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>EventType::Transaction) {
+            <span class="comment">// XXX(iker): span normalization runs in the store processor, but
+            // the exclusive time is required for span metrics. Most of
+            // transactions don&#39;t have many spans, but if this is no longer the
+            // case and we roll this flag out for most projects, we may want to
+            // reconsider this approach.
+            </span>span::attributes::normalize_spans(
+                event,
+                <span class="kw-2">&amp;</span>BTreeSet::from([SpanAttribute::ExclusiveTime]),
+            );
+        }
+
+        <span class="kw">if </span>config.enable_trimming {
+            <span class="comment">// Trim large strings and databags down
+            </span>trimming::TrimmingProcessor::new().process_event(
+                event,
+                meta,
+                ProcessingState::root(),
+            )<span class="question-mark">?</span>;
+        }
+
+        <span class="prelude-val">Ok</span>(())
     })
 }
 
@@ -4040,14 +4143,8 @@
         user.process_child_values(<span class="self">self</span>, state)<span class="question-mark">?</span>;
 
         <span class="comment">// Infer user.geo from user.ip_address
-        </span><span class="kw">if </span>user.geo.value().is_none() {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(geoip_lookup) = <span class="self">self</span>.geoip_lookup {
-                <span class="kw">if let </span><span class="prelude-val">Some</span>(ip_address) = user.ip_address.value() {
-                    <span class="kw">if let </span><span class="prelude-val">Ok</span>(<span class="prelude-val">Some</span>(geo)) = geoip_lookup.lookup(ip_address.as_str()) {
-                        user.geo.set_value(<span class="prelude-val">Some</span>(geo));
-                    }
-                }
-            }
+        </span><span class="kw">if let </span><span class="prelude-val">Some</span>(geoip_lookup) = <span class="self">self</span>.geoip_lookup {
+            normalize_user_geoinfo(geoip_lookup, user)
         }
 
         <span class="prelude-val">Ok</span>(())
@@ -4300,7 +4397,7 @@
     <span class="kw">use super</span>::<span class="kw-2">*</span>;
     <span class="kw">use </span><span class="kw">crate</span>::processor::process_value;
     <span class="kw">use </span><span class="kw">crate</span>::protocol::{
-        ContextInner, Csp, DebugMeta, DeviceContext, Frame, Geo, LenientString, LogEntry, PairList,
+        Csp, DebugMeta, DeviceContext, Frame, Geo, LenientString, LogEntry, PairList,
         RawStacktrace, Span, SpanId, TagEntry, TraceId, Values,
     };
     <span class="kw">use </span><span class="kw">crate</span>::testutils::{assert_annotated_snapshot, get_path, get_value};
@@ -4564,21 +4661,16 @@
             start_timestamp: Annotated::new(
                 Utc.with_ymd_and_hms(<span class="number">1987</span>, <span class="number">6</span>, <span class="number">5</span>, <span class="number">4</span>, <span class="number">3</span>, <span class="number">2</span>).unwrap().into(),
             ),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             ..Event::default()
         });
         <span class="kw">let </span>config = LightNormalizationConfig::default();
@@ -4661,20 +4753,14 @@
 
         <span class="kw">let </span>event = event.value().unwrap();
 
-        <span class="macro">assert_eq!</span>(
-            event.contexts,
-            Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;replay&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Replay(Box::new(ReplayContext {
-                        replay_id: Annotated::new(EventId(replay_id)),
-                        other: Object::default(),
-                    })))),
-                );
-                contexts
-            }))
-        )
+        <span class="macro">assert_eq!</span>(event.contexts, {
+            <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+            contexts.add(ReplayContext {
+                replay_id: Annotated::new(EventId(replay_id)),
+                other: Object::default(),
+            });
+            Annotated::new(contexts)
+        })
     }
 
     <span class="attr">#[test]
@@ -5694,21 +5780,16 @@
             transaction: Annotated::new(<span class="string">&quot;/&quot;</span>.to_owned()),
             timestamp: Annotated::new(end.into()),
             start_timestamp: Annotated::new(start.into()),
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;trace&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Trace(Box::new(TraceContext {
-                        trace_id: Annotated::new(TraceId(
-                            <span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into(),
-                        )),
-                        span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
-                        op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(TraceContext {
+                    trace_id: Annotated::new(TraceId(<span class="string">&quot;4c79f60c11214eb38604f4ae0781bfb2&quot;</span>.into())),
+                    span_id: Annotated::new(SpanId(<span class="string">&quot;fa90fdead5f74053&quot;</span>.into())),
+                    op: Annotated::new(<span class="string">&quot;http.server&quot;</span>.to_owned()),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             spans: Annotated::new(<span class="macro">vec!</span>[Annotated::new(Span {
                 timestamp: Annotated::new(
                     Utc.with_ymd_and_hms(<span class="number">2000</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">10</span>).unwrap().into(),
@@ -5971,18 +6052,15 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_apple_low_device_class() {
         <span class="kw">let </span><span class="kw-2">mut </span>event = Event {
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;device&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Device(Box::new(DeviceContext {
-                        family: <span class="string">&quot;iPhone&quot;</span>.to_string().into(),
-                        model: <span class="string">&quot;iPhone8,4&quot;</span>.to_string().into(),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(DeviceContext {
+                    family: <span class="string">&quot;iPhone&quot;</span>.to_string().into(),
+                    model: <span class="string">&quot;iPhone8,4&quot;</span>.to_string().into(),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             ..Default::default()
         };
         normalize_device_class(<span class="kw-2">&amp;mut </span>event);
@@ -6003,18 +6081,15 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_apple_medium_device_class() {
         <span class="kw">let </span><span class="kw-2">mut </span>event = Event {
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;device&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Device(Box::new(DeviceContext {
-                        family: <span class="string">&quot;iPhone&quot;</span>.to_string().into(),
-                        model: <span class="string">&quot;iPhone12,8&quot;</span>.to_string().into(),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(DeviceContext {
+                    family: <span class="string">&quot;iPhone&quot;</span>.to_string().into(),
+                    model: <span class="string">&quot;iPhone12,8&quot;</span>.to_string().into(),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             ..Default::default()
         };
         normalize_device_class(<span class="kw-2">&amp;mut </span>event);
@@ -6035,18 +6110,15 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_apple_high_device_class() {
         <span class="kw">let </span><span class="kw-2">mut </span>event = Event {
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;device&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Device(Box::new(DeviceContext {
-                        family: <span class="string">&quot;iPhone&quot;</span>.to_string().into(),
-                        model: <span class="string">&quot;iPhone15,3&quot;</span>.to_string().into(),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(DeviceContext {
+                    family: <span class="string">&quot;iPhone&quot;</span>.to_string().into(),
+                    model: <span class="string">&quot;iPhone15,3&quot;</span>.to_string().into(),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             ..Default::default()
         };
         normalize_device_class(<span class="kw-2">&amp;mut </span>event);
@@ -6067,20 +6139,17 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_android_low_device_class() {
         <span class="kw">let </span><span class="kw-2">mut </span>event = Event {
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;device&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Device(Box::new(DeviceContext {
-                        family: <span class="string">&quot;android&quot;</span>.to_string().into(),
-                        processor_frequency: <span class="number">1000</span>.into(),
-                        processor_count: <span class="number">6</span>.into(),
-                        memory_size: (<span class="number">2 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>).into(),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(DeviceContext {
+                    family: <span class="string">&quot;android&quot;</span>.to_string().into(),
+                    processor_frequency: <span class="number">1000</span>.into(),
+                    processor_count: <span class="number">6</span>.into(),
+                    memory_size: (<span class="number">2 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>).into(),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             ..Default::default()
         };
         normalize_device_class(<span class="kw-2">&amp;mut </span>event);
@@ -6101,20 +6170,17 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_android_medium_device_class() {
         <span class="kw">let </span><span class="kw-2">mut </span>event = Event {
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;device&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Device(Box::new(DeviceContext {
-                        family: <span class="string">&quot;android&quot;</span>.to_string().into(),
-                        processor_frequency: <span class="number">2000</span>.into(),
-                        processor_count: <span class="number">8</span>.into(),
-                        memory_size: (<span class="number">6 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>).into(),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(DeviceContext {
+                    family: <span class="string">&quot;android&quot;</span>.to_string().into(),
+                    processor_frequency: <span class="number">2000</span>.into(),
+                    processor_count: <span class="number">8</span>.into(),
+                    memory_size: (<span class="number">6 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>).into(),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             ..Default::default()
         };
         normalize_device_class(<span class="kw-2">&amp;mut </span>event);
@@ -6135,20 +6201,17 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_android_high_device_class() {
         <span class="kw">let </span><span class="kw-2">mut </span>event = Event {
-            contexts: Annotated::new(Contexts({
-                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Object::new();
-                contexts.insert(
-                    <span class="string">&quot;device&quot;</span>.to_owned(),
-                    Annotated::new(ContextInner(Context::Device(Box::new(DeviceContext {
-                        family: <span class="string">&quot;android&quot;</span>.to_string().into(),
-                        processor_frequency: <span class="number">2500</span>.into(),
-                        processor_count: <span class="number">8</span>.into(),
-                        memory_size: (<span class="number">6 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>).into(),
-                        ..Default::default()
-                    })))),
-                );
-                contexts
-            })),
+            contexts: {
+                <span class="kw">let </span><span class="kw-2">mut </span>contexts = Contexts::new();
+                contexts.add(DeviceContext {
+                    family: <span class="string">&quot;android&quot;</span>.to_string().into(),
+                    processor_frequency: <span class="number">2500</span>.into(),
+                    processor_count: <span class="number">8</span>.into(),
+                    memory_size: (<span class="number">6 </span>* <span class="number">1024 </span>* <span class="number">1024 </span>* <span class="number">1024</span>).into(),
+                    ..Default::default()
+                });
+                Annotated::new(contexts)
+            },
             ..Default::default()
         };
         normalize_device_class(<span class="kw-2">&amp;mut </span>event);
@@ -6227,5 +6290,4 @@
         </span>measurements.len() == <span class="number">0
     </span>}
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="relay_general" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>

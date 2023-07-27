@@ -1,5 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-metrics/src/aggregation.rs`."><title>aggregation.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-c4dbdcde0fbd8430.css" id="mainThemeStyle"><link rel="stylesheet" id="themeStyle" href="../../static.files/light-db279b6232be9c13.css"><link rel="stylesheet" disabled href="../../static.files/dark-cf923f49f397b216.css"><link rel="stylesheet" disabled href="../../static.files/ayu-be46fdc453a55015.css"><script src="../../static.files/storage-3891ce972e3a2bf8.js"></script><script defer src="../../static.files/source-script-1b95b7cca98b26e5.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-98a684e84ae5b08b.js"></script><noscript><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relay_metrics/index.html">
-                        <img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-metrics/src/aggregation.rs`."><title>aggregation.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relay_metrics" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relay_metrics/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -3171,8 +3170,122 @@
 <a href="#3170" id="3170">3170</a>
 <a href="#3171" id="3171">3171</a>
 <a href="#3172" id="3172">3172</a>
-</pre><pre class="rust"><code><span class="kw">use </span>std::collections::hash_map::Entry;
+<a href="#3173" id="3173">3173</a>
+<a href="#3174" id="3174">3174</a>
+<a href="#3175" id="3175">3175</a>
+<a href="#3176" id="3176">3176</a>
+<a href="#3177" id="3177">3177</a>
+<a href="#3178" id="3178">3178</a>
+<a href="#3179" id="3179">3179</a>
+<a href="#3180" id="3180">3180</a>
+<a href="#3181" id="3181">3181</a>
+<a href="#3182" id="3182">3182</a>
+<a href="#3183" id="3183">3183</a>
+<a href="#3184" id="3184">3184</a>
+<a href="#3185" id="3185">3185</a>
+<a href="#3186" id="3186">3186</a>
+<a href="#3187" id="3187">3187</a>
+<a href="#3188" id="3188">3188</a>
+<a href="#3189" id="3189">3189</a>
+<a href="#3190" id="3190">3190</a>
+<a href="#3191" id="3191">3191</a>
+<a href="#3192" id="3192">3192</a>
+<a href="#3193" id="3193">3193</a>
+<a href="#3194" id="3194">3194</a>
+<a href="#3195" id="3195">3195</a>
+<a href="#3196" id="3196">3196</a>
+<a href="#3197" id="3197">3197</a>
+<a href="#3198" id="3198">3198</a>
+<a href="#3199" id="3199">3199</a>
+<a href="#3200" id="3200">3200</a>
+<a href="#3201" id="3201">3201</a>
+<a href="#3202" id="3202">3202</a>
+<a href="#3203" id="3203">3203</a>
+<a href="#3204" id="3204">3204</a>
+<a href="#3205" id="3205">3205</a>
+<a href="#3206" id="3206">3206</a>
+<a href="#3207" id="3207">3207</a>
+<a href="#3208" id="3208">3208</a>
+<a href="#3209" id="3209">3209</a>
+<a href="#3210" id="3210">3210</a>
+<a href="#3211" id="3211">3211</a>
+<a href="#3212" id="3212">3212</a>
+<a href="#3213" id="3213">3213</a>
+<a href="#3214" id="3214">3214</a>
+<a href="#3215" id="3215">3215</a>
+<a href="#3216" id="3216">3216</a>
+<a href="#3217" id="3217">3217</a>
+<a href="#3218" id="3218">3218</a>
+<a href="#3219" id="3219">3219</a>
+<a href="#3220" id="3220">3220</a>
+<a href="#3221" id="3221">3221</a>
+<a href="#3222" id="3222">3222</a>
+<a href="#3223" id="3223">3223</a>
+<a href="#3224" id="3224">3224</a>
+<a href="#3225" id="3225">3225</a>
+<a href="#3226" id="3226">3226</a>
+<a href="#3227" id="3227">3227</a>
+<a href="#3228" id="3228">3228</a>
+<a href="#3229" id="3229">3229</a>
+<a href="#3230" id="3230">3230</a>
+<a href="#3231" id="3231">3231</a>
+<a href="#3232" id="3232">3232</a>
+<a href="#3233" id="3233">3233</a>
+<a href="#3234" id="3234">3234</a>
+<a href="#3235" id="3235">3235</a>
+<a href="#3236" id="3236">3236</a>
+<a href="#3237" id="3237">3237</a>
+<a href="#3238" id="3238">3238</a>
+<a href="#3239" id="3239">3239</a>
+<a href="#3240" id="3240">3240</a>
+<a href="#3241" id="3241">3241</a>
+<a href="#3242" id="3242">3242</a>
+<a href="#3243" id="3243">3243</a>
+<a href="#3244" id="3244">3244</a>
+<a href="#3245" id="3245">3245</a>
+<a href="#3246" id="3246">3246</a>
+<a href="#3247" id="3247">3247</a>
+<a href="#3248" id="3248">3248</a>
+<a href="#3249" id="3249">3249</a>
+<a href="#3250" id="3250">3250</a>
+<a href="#3251" id="3251">3251</a>
+<a href="#3252" id="3252">3252</a>
+<a href="#3253" id="3253">3253</a>
+<a href="#3254" id="3254">3254</a>
+<a href="#3255" id="3255">3255</a>
+<a href="#3256" id="3256">3256</a>
+<a href="#3257" id="3257">3257</a>
+<a href="#3258" id="3258">3258</a>
+<a href="#3259" id="3259">3259</a>
+<a href="#3260" id="3260">3260</a>
+<a href="#3261" id="3261">3261</a>
+<a href="#3262" id="3262">3262</a>
+<a href="#3263" id="3263">3263</a>
+<a href="#3264" id="3264">3264</a>
+<a href="#3265" id="3265">3265</a>
+<a href="#3266" id="3266">3266</a>
+<a href="#3267" id="3267">3267</a>
+<a href="#3268" id="3268">3268</a>
+<a href="#3269" id="3269">3269</a>
+<a href="#3270" id="3270">3270</a>
+<a href="#3271" id="3271">3271</a>
+<a href="#3272" id="3272">3272</a>
+<a href="#3273" id="3273">3273</a>
+<a href="#3274" id="3274">3274</a>
+<a href="#3275" id="3275">3275</a>
+<a href="#3276" id="3276">3276</a>
+<a href="#3277" id="3277">3277</a>
+<a href="#3278" id="3278">3278</a>
+<a href="#3279" id="3279">3279</a>
+<a href="#3280" id="3280">3280</a>
+<a href="#3281" id="3281">3281</a>
+<a href="#3282" id="3282">3282</a>
+<a href="#3283" id="3283">3283</a>
+<a href="#3284" id="3284">3284</a>
+<a href="#3285" id="3285">3285</a>
+</pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::hash_map::Entry;
 <span class="kw">use </span>std::collections::{btree_map, BTreeMap, BTreeSet, HashMap};
+<span class="kw">use </span>std::error::Error;
 <span class="kw">use </span>std::hash::Hasher;
 <span class="kw">use </span>std::iter::{FromIterator, FusedIterator};
 <span class="kw">use </span>std::time::Duration;
@@ -3181,7 +3294,6 @@
 <span class="kw">use </span>float_ord::FloatOrd;
 <span class="kw">use </span>fnv::FnvHasher;
 <span class="kw">use </span>relay_common::{MonotonicResult, ProjectKey, UnixTimestamp};
-<span class="kw">use </span>relay_log::LogError;
 <span class="kw">use </span>relay_system::{
     AsyncResponse, Controller, FromMessage, Interface, NoResponse, Recipient, Sender, Service,
     Shutdown,
@@ -3191,7 +3303,8 @@
 <span class="kw">use </span>tokio::time::Instant;
 
 <span class="kw">use </span><span class="kw">crate</span>::statsd::{
-    metric_name_tag, MetricCounters, MetricGauges, MetricHistograms, MetricSets, MetricTimers,
+    metric_name_tag, metric_type_tag, MetricCounters, MetricGauges, MetricHistograms, MetricSets,
+    MetricTimers,
 };
 <span class="kw">use crate</span>::{
     protocol, CounterType, DistributionType, GaugeType, Metric, MetricNamespace,
@@ -4023,11 +4136,19 @@
     <span class="kw">fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         <span class="self">self</span>.value.len()
     }
+
+    <span class="kw">fn </span>tag(<span class="kw-2">&amp;</span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
+        <span class="self">self</span>.tags.get(name).map(|s| s.as_str())
+    }
+
+    <span class="kw">fn </span>remove_tag(<span class="kw-2">&amp;mut </span><span class="self">self</span>, name: <span class="kw-2">&amp;</span>str) {
+        <span class="self">self</span>.tags.remove(name);
+    }
 }
 
 <span class="doccomment">/// Any error that may occur during aggregation.
 </span><span class="attr">#[derive(Debug, Error, PartialEq)]
-#[error(<span class="string">&quot;failed to aggregate metrics: {}&quot;</span>, .kind)]
+#[error(<span class="string">&quot;failed to aggregate metrics: {kind}&quot;</span>)]
 </span><span class="kw">pub struct </span>AggregateMetricsError {
     kind: AggregateMetricsErrorKind,
 }
@@ -4042,20 +4163,20 @@
 #[allow(clippy::enum_variant_names)]
 </span><span class="kw">enum </span>AggregateMetricsErrorKind {
     <span class="doccomment">/// A metric bucket had invalid characters in the metric name.
-    </span><span class="attr">#[error(<span class="string">&quot;found invalid characters&quot;</span>)]
-    </span>InvalidCharacters,
+    </span><span class="attr">#[error(<span class="string">&quot;found invalid characters: {0}&quot;</span>)]
+    </span>InvalidCharacters(String),
     <span class="doccomment">/// A metric bucket had an unknown namespace in the metric name.
-    </span><span class="attr">#[error(<span class="string">&quot;found unsupported namespace&quot;</span>)]
-    </span>UnsupportedNamespace,
+    </span><span class="attr">#[error(<span class="string">&quot;found unsupported namespace: {0}&quot;</span>)]
+    </span>UnsupportedNamespace(MetricNamespace),
     <span class="doccomment">/// A metric bucket&#39;s timestamp was out of the configured acceptable range.
-    </span><span class="attr">#[error(<span class="string">&quot;found invalid timestamp&quot;</span>)]
-    </span>InvalidTimestamp,
+    </span><span class="attr">#[error(<span class="string">&quot;found invalid timestamp: {0}&quot;</span>)]
+    </span>InvalidTimestamp(UnixTimestamp),
     <span class="doccomment">/// Internal error: Attempted to merge two metric buckets of different types.
     </span><span class="attr">#[error(<span class="string">&quot;found incompatible metric types&quot;</span>)]
     </span>InvalidTypes,
     <span class="doccomment">/// A metric bucket had a too long string (metric name or a tag key/value).
-    </span><span class="attr">#[error(<span class="string">&quot;found invalid string&quot;</span>)]
-    </span>InvalidStringLength,
+    </span><span class="attr">#[error(<span class="string">&quot;found invalid string: {0}&quot;</span>)]
+    </span>InvalidStringLength(String),
     <span class="doccomment">/// A metric bucket is too large for the global bytes limit.
     </span><span class="attr">#[error(<span class="string">&quot;total metrics limit exceeded&quot;</span>)]
     </span>TotalLimitExceeded,
@@ -4088,6 +4209,24 @@
     </span><span class="kw">fn </span>cost(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
         mem::size_of::&lt;<span class="self">Self</span>&gt;() + <span class="self">self</span>.metric_name.capacity() + tags_cost(<span class="kw-2">&amp;</span><span class="self">self</span>.tags)
     }
+}
+
+<span class="doccomment">/// Configuration value for [`AggregatorConfig::shift_key`].
+</span><span class="attr">#[derive(Clone, Debug, Default, Deserialize, Serialize)]
+#[serde(rename_all = <span class="string">&quot;lowercase&quot;</span>)]
+</span><span class="kw">pub enum </span>ShiftKey {
+    <span class="doccomment">/// Shifts the flush time by an offset based on the [`ProjectKey`].
+    ///
+    /// This allows buckets from the same project to be flushed together.
+    </span><span class="attr">#[default]
+    </span>Project,
+
+    <span class="doccomment">/// Shifts the flush time by an offset based on the bucket key itself.
+    ///
+    /// This allows for a completely random distribution of bucket flush times.
+    ///
+    /// Only for use in processing Relays.
+    </span>Bucket,
 }
 
 <span class="doccomment">/// Parameters used by the [`AggregatorService`].
@@ -4155,7 +4294,7 @@
 
     <span class="doccomment">/// The length the tag value is allowed to be.
     ///
-    /// Defaults to `200` bytes.
+    /// Defaults to `200` chars.
     </span><span class="kw">pub </span>max_tag_value_length: usize,
 
     <span class="doccomment">/// Maximum amount of bytes used for metrics aggregation.
@@ -4174,6 +4313,12 @@
     ///
     /// Defaults to `None`, i.e. no limit.
     </span><span class="kw">pub </span>max_project_key_bucket_bytes: <span class="prelude-ty">Option</span>&lt;usize&gt;,
+
+    <span class="doccomment">/// Key used to shift the flush time of a bucket.
+    ///
+    /// This prevents flushing all buckets from a bucket interval at the same
+    /// time by computing an offset from the hash of the given key.
+    </span><span class="kw">pub </span>shift_key: ShiftKey,
 }
 
 <span class="kw">impl </span>AggregatorConfig {
@@ -4220,9 +4365,9 @@
         <span class="kw">if </span>!<span class="self">self</span>.timestamp_range().contains(<span class="kw-2">&amp;</span>output_timestamp) {
             <span class="kw">let </span>delta = (ts <span class="kw">as </span>i64) - (UnixTimestamp::now().as_secs() <span class="kw">as </span>i64);
             <span class="macro">relay_statsd::metric!</span>(
-                histogram(MetricHistograms::InvalidBucketTimestamp) = delta <span class="kw">as </span>f64
+                histogram(MetricHistograms::InvalidBucketTimestamp) = delta <span class="kw">as </span>f64,
             );
-            <span class="kw">return </span><span class="prelude-val">Err</span>(AggregateMetricsErrorKind::InvalidTimestamp.into());
+            <span class="kw">return </span><span class="prelude-val">Err</span>(AggregateMetricsErrorKind::InvalidTimestamp(timestamp).into());
         }
 
         <span class="prelude-val">Ok</span>(output_timestamp)
@@ -4232,31 +4377,24 @@
     ///
     /// Recent buckets are flushed after a grace period of `initial_delay`. Backdated buckets, that
     /// is, buckets that lie in the past, are flushed after the shorter `debounce_delay`.
-    </span><span class="kw">fn </span>get_flush_time(<span class="kw-2">&amp;</span><span class="self">self</span>, bucket_timestamp: UnixTimestamp, project_key: ProjectKey) -&gt; Instant {
+    </span><span class="kw">fn </span>get_flush_time(<span class="kw-2">&amp;</span><span class="self">self</span>, bucket_key: <span class="kw-2">&amp;</span>BucketKey) -&gt; Instant {
         <span class="kw">let </span>now = Instant::now();
         <span class="kw">let </span><span class="kw-2">mut </span>flush = <span class="prelude-val">None</span>;
 
-        <span class="kw">if let </span>MonotonicResult::Instant(instant) = bucket_timestamp.to_instant() {
+        <span class="kw">if let </span>MonotonicResult::Instant(instant) = bucket_key.timestamp.to_instant() {
             <span class="kw">let </span>instant = Instant::from_std(instant);
             <span class="kw">let </span>bucket_end = instant + <span class="self">self</span>.bucket_interval();
             <span class="kw">let </span>initial_flush = bucket_end + <span class="self">self</span>.initial_delay();
             <span class="comment">// If the initial flush is still pending, use that.
             </span><span class="kw">if </span>initial_flush &gt; now {
-                <span class="comment">// Shift deterministically within one bucket interval based on the project key. This
-                // distributes buckets over time while also flushing all buckets of the same project
-                // key together.
-                </span><span class="kw">let </span><span class="kw-2">mut </span>hasher = FnvHasher::default();
-                hasher.write(project_key.as_str().as_bytes());
-                <span class="kw">let </span>shift_millis = hasher.finish() % (<span class="self">self</span>.bucket_interval * <span class="number">1000</span>);
-
-                flush = <span class="prelude-val">Some</span>(initial_flush + Duration::from_millis(shift_millis));
+                flush = <span class="prelude-val">Some</span>(initial_flush + <span class="self">self</span>.flush_time_shift(bucket_key));
             }
         }
 
-        <span class="kw">let </span>delay = UnixTimestamp::now().as_secs() <span class="kw">as </span>i64 - bucket_timestamp.as_secs() <span class="kw">as </span>i64;
+        <span class="kw">let </span>delay = UnixTimestamp::now().as_secs() <span class="kw">as </span>i64 - bucket_key.timestamp.as_secs() <span class="kw">as </span>i64;
         <span class="macro">relay_statsd::metric!</span>(
             histogram(MetricHistograms::BucketsDelay) = delay <span class="kw">as </span>f64,
-            backedated = <span class="kw">if </span>flush.is_none() { <span class="string">&quot;true&quot; </span>} <span class="kw">else </span>{ <span class="string">&quot;false&quot; </span>},
+            backdated = <span class="kw">if </span>flush.is_none() { <span class="string">&quot;true&quot; </span>} <span class="kw">else </span>{ <span class="string">&quot;false&quot; </span>},
         );
 
         <span class="comment">// If the initial flush time has passed or cannot be represented, debounce future flushes
@@ -4265,6 +4403,23 @@
             <span class="prelude-val">Some</span>(initial_flush) =&gt; initial_flush,
             <span class="prelude-val">None </span>=&gt; now + <span class="self">self</span>.debounce_delay(),
         }
+    }
+
+    <span class="comment">// Shift deterministically within one bucket interval based on the project or bucket key.
+    //
+    // This distributes buckets over time to prevent peaks.
+    </span><span class="kw">fn </span>flush_time_shift(<span class="kw-2">&amp;</span><span class="self">self</span>, bucket: <span class="kw-2">&amp;</span>BucketKey) -&gt; Duration {
+        <span class="kw">let </span>hash_value = <span class="kw">match </span><span class="self">self</span>.shift_key {
+            ShiftKey::Project =&gt; {
+                <span class="kw">let </span><span class="kw-2">mut </span>hasher = FnvHasher::default();
+                hasher.write(bucket.project_key.as_str().as_bytes());
+                hasher.finish()
+            }
+            ShiftKey::Bucket =&gt; bucket.hash64(),
+        };
+        <span class="kw">let </span>shift_millis = hash_value % (<span class="self">self</span>.bucket_interval * <span class="number">1000</span>);
+
+        Duration::from_millis(shift_millis)
     }
 }
 
@@ -4283,6 +4438,7 @@
             max_tag_value_length: <span class="number">200</span>,
             max_total_bucket_bytes: <span class="prelude-val">None</span>,
             max_project_key_bucket_bytes: <span class="prelude-val">None</span>,
+            shift_key: ShiftKey::default(),
         }
     }
 }
@@ -4337,7 +4493,6 @@
 /// This is cheaper to pass around than a (BucketKey, Bucket) pair.
 </span><span class="kw">pub struct </span>HashedBucket {
     <span class="comment">// This is only public because pop_flush_buckets is used in benchmark.
-    // TODO: Find better name for this struct
     </span>hashed_key: u64,
     bucket: Bucket,
 }
@@ -4403,15 +4558,13 @@
     <span class="kw">fn </span>subtract_cost(<span class="kw-2">&amp;mut </span><span class="self">self</span>, project_key: ProjectKey, cost: usize) {
         <span class="kw">match </span><span class="self">self</span>.cost_per_project_key.entry(project_key) {
             Entry::Vacant(<span class="kw">_</span>) =&gt; {
-                <span class="macro">relay_log::error!</span>(
-                    <span class="string">&quot;Trying to subtract cost for a project key that has not been tracked&quot;
-                </span>);
+                <span class="macro">relay_log::error!</span>(<span class="string">&quot;cost subtracted for an untracked project key&quot;</span>);
             }
             Entry::Occupied(<span class="kw-2">mut </span>entry) =&gt; {
                 <span class="comment">// Handle per-project cost:
                 </span><span class="kw">let </span>project_cost = entry.get_mut();
                 <span class="kw">if </span>cost &gt; <span class="kw-2">*</span>project_cost {
-                    <span class="macro">relay_log::error!</span>(<span class="string">&quot;Subtracting a project cost higher than what we tracked&quot;</span>);
+                    <span class="macro">relay_log::error!</span>(<span class="string">&quot;underflow while subtracing project cost&quot;</span>);
                     <span class="self">self</span>.total_cost = <span class="self">self</span>.total_cost.saturating_sub(<span class="kw-2">*</span>project_cost);
                     <span class="kw-2">*</span>project_cost = <span class="number">0</span>;
                 } <span class="kw">else </span>{
@@ -4538,8 +4691,8 @@
 <span class="doccomment">/// A message containing a list of [`Metric`]s to be inserted into the aggregator.
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>InsertMetrics {
-    project_key: ProjectKey,
-    metrics: Vec&lt;Metric&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) project_key: ProjectKey,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) metrics: Vec&lt;Metric&gt;,
 }
 
 <span class="kw">impl </span>InsertMetrics {
@@ -4569,8 +4722,8 @@
 <span class="doccomment">/// A message containing a list of [`Bucket`]s to be inserted into the aggregator.
 </span><span class="attr">#[derive(Debug)]
 </span><span class="kw">pub struct </span>MergeBuckets {
-    project_key: ProjectKey,
-    buckets: Vec&lt;Bucket&gt;,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) project_key: ProjectKey,
+    <span class="kw">pub</span>(<span class="kw">crate</span>) buckets: Vec&lt;Bucket&gt;,
 }
 
 <span class="kw">impl </span>MergeBuckets {
@@ -4672,6 +4825,7 @@
 ///
 /// Receivers must implement a handler for the [`FlushBuckets`] message.
 </span><span class="kw">pub struct </span>AggregatorService {
+    name: String,
     config: AggregatorConfig,
     buckets: HashMap&lt;BucketKey, QueuedBucket&gt;,
     receiver: <span class="prelude-ty">Option</span>&lt;Recipient&lt;FlushBuckets, NoResponse&gt;&gt;,
@@ -4688,7 +4842,17 @@
         config: AggregatorConfig,
         receiver: <span class="prelude-ty">Option</span>&lt;Recipient&lt;FlushBuckets, NoResponse&gt;&gt;,
     ) -&gt; <span class="self">Self </span>{
+        <span class="self">Self</span>::named(<span class="string">&quot;default&quot;</span>.to_owned(), config, receiver)
+    }
+
+    <span class="doccomment">/// Like [`Self::new`], but with a provided name.
+    </span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>named(
+        name: String,
+        config: AggregatorConfig,
+        receiver: <span class="prelude-ty">Option</span>&lt;Recipient&lt;FlushBuckets, NoResponse&gt;&gt;,
+    ) -&gt; <span class="self">Self </span>{
         <span class="self">Self </span>{
+            name,
             config,
             buckets: HashMap::new(),
             receiver,
@@ -4723,7 +4887,6 @@
                     <span class="string">&quot;bucket.project_key&quot;</span>,
                     key.project_key.as_str().to_owned().into(),
                 );
-                scope.set_extra(<span class="string">&quot;bucket.metric_name&quot;</span>, key.metric_name.into());
                 scope.set_extra(
                     <span class="string">&quot;bucket.metric_name.length&quot;</span>,
                     metric_name_length.to_string().into(),
@@ -4733,7 +4896,7 @@
                     aggregator_config.max_name_length.to_string().into(),
                 );
             });
-            <span class="kw">return </span><span class="prelude-val">Err</span>(AggregateMetricsErrorKind::InvalidStringLength.into());
+            <span class="kw">return </span><span class="prelude-val">Err</span>(AggregateMetricsErrorKind::InvalidStringLength(key.metric_name).into());
         }
 
         <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = <span class="self">Self</span>::normalize_metric_name(<span class="kw-2">&amp;mut </span>key) {
@@ -4754,8 +4917,10 @@
         key.metric_name = <span class="kw">match </span>MetricResourceIdentifier::parse(<span class="kw-2">&amp;</span>key.metric_name) {
             <span class="prelude-val">Ok</span>(mri) =&gt; {
                 <span class="kw">if </span><span class="macro">matches!</span>(mri.namespace, MetricNamespace::Unsupported) {
-                    <span class="macro">relay_log::debug!</span>(<span class="string">&quot;invalid metric namespace {:?}&quot;</span>, key.metric_name);
-                    <span class="kw">return </span><span class="prelude-val">Err</span>(AggregateMetricsErrorKind::UnsupportedNamespace.into());
+                    <span class="macro">relay_log::debug!</span>(<span class="string">&quot;invalid metric namespace {:?}&quot;</span>, <span class="kw-2">&amp;</span>key.metric_name);
+                    <span class="kw">return </span><span class="prelude-val">Err</span>(
+                        AggregateMetricsErrorKind::UnsupportedNamespace(mri.namespace).into(),
+                    );
                 }
 
                 <span class="kw">let </span><span class="kw-2">mut </span>metric_name = mri.to_string();
@@ -4764,8 +4929,10 @@
                 metric_name
             }
             <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; {
-                <span class="macro">relay_log::debug!</span>(<span class="string">&quot;invalid metric name {:?}&quot;</span>, key.metric_name);
-                <span class="kw">return </span><span class="prelude-val">Err</span>(AggregateMetricsErrorKind::InvalidCharacters.into());
+                <span class="macro">relay_log::debug!</span>(<span class="string">&quot;invalid metric name {:?}&quot;</span>, <span class="kw-2">&amp;</span>key.metric_name);
+                <span class="kw">return </span><span class="prelude-val">Err</span>(
+                    AggregateMetricsErrorKind::InvalidCharacters(key.metric_name.clone()).into(),
+                );
             }
         };
 
@@ -4790,7 +4957,7 @@
                 <span class="macro">relay_log::debug!</span>(<span class="string">&quot;Invalid metric tag key&quot;</span>);
                 <span class="kw">return </span><span class="bool-val">false</span>;
             }
-            <span class="kw">if </span>tag_value.len() &gt; aggregator_config.max_tag_value_length {
+            <span class="kw">if </span>bytecount::num_chars(tag_value.as_bytes()) &gt; aggregator_config.max_tag_value_length {
                 relay_log::configure_scope(|scope| {
                     scope.set_extra(<span class="string">&quot;bucket.project_key&quot;</span>, proj_key.to_owned().into());
                     scope.set_extra(<span class="string">&quot;bucket.metric.tag_value&quot;</span>, tag_value.to_owned().into());
@@ -4806,7 +4973,7 @@
             <span class="kw">if </span>protocol::is_valid_tag_key(tag_key) {
                 <span class="bool-val">true
             </span>} <span class="kw">else </span>{
-                <span class="macro">relay_log::debug!</span>(<span class="string">&quot;invalid metric tag key {:?}&quot;</span>, tag_key);
+                <span class="macro">relay_log::debug!</span>(<span class="string">&quot;invalid metric tag key {tag_key:?}&quot;</span>);
                 <span class="bool-val">false
             </span>}
         });
@@ -4824,7 +4991,6 @@
         key: BucketKey,
         value: T,
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), AggregateMetricsError&gt; {
-        <span class="kw">let </span>timestamp = key.timestamp;
         <span class="kw">let </span>project_key = key.project_key;
 
         <span class="kw">let </span>key = <span class="self">Self</span>::validate_bucket_key(key, <span class="kw-2">&amp;</span><span class="self">self</span>.config)<span class="question-mark">?</span>;
@@ -4866,6 +5032,7 @@
             Entry::Occupied(<span class="kw-2">mut </span>entry) =&gt; {
                 <span class="macro">relay_statsd::metric!</span>(
                     counter(MetricCounters::MergeHit) += <span class="number">1</span>,
+                    aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
                     metric_name = metric_name_tag(<span class="kw-2">&amp;</span>entry.key().metric_name),
                 );
                 <span class="kw">let </span>bucket_value = <span class="kw-2">&amp;mut </span>entry.get_mut().value;
@@ -4877,14 +5044,16 @@
             Entry::Vacant(entry) =&gt; {
                 <span class="macro">relay_statsd::metric!</span>(
                     counter(MetricCounters::MergeMiss) += <span class="number">1</span>,
+                    aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
                     metric_name = metric_name_tag(<span class="kw-2">&amp;</span>entry.key().metric_name),
                 );
                 <span class="macro">relay_statsd::metric!</span>(
                     set(MetricSets::UniqueBucketsCreated) = entry.key().hash64() <span class="kw">as </span>i64, <span class="comment">// 2-complement
-                    </span>metric_name = metric_name_tag(<span class="kw-2">&amp;</span>entry.key().metric_name),
+                    </span>aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
+                    metric_name = metric_name_tag(<span class="kw-2">&amp;</span>entry.key().metric_name),
                 );
 
-                <span class="kw">let </span>flush_at = <span class="self">self</span>.config.get_flush_time(timestamp, project_key);
+                <span class="kw">let </span>flush_at = <span class="self">self</span>.config.get_flush_time(entry.key());
                 <span class="kw">let </span>bucket = value.into();
                 added_cost = entry.key().cost() + bucket.cost();
                 entry.insert(QueuedBucket::new(flush_at, bucket));
@@ -4906,6 +5075,7 @@
     ) -&gt; <span class="prelude-ty">Result</span>&lt;(), AggregateMetricsError&gt; {
         <span class="macro">relay_statsd::metric!</span>(
             counter(MetricCounters::InsertMetric) += <span class="number">1</span>,
+            aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
             metric_type = metric.value.ty().as_str(),
         );
         <span class="kw">let </span>key = BucketKey {
@@ -4949,7 +5119,7 @@
     {
         <span class="kw">for </span>bucket <span class="kw">in </span>buckets.into_iter() {
             <span class="kw">if let </span><span class="prelude-val">Err</span>(error) = <span class="self">self</span>.merge(project_key, bucket) {
-                <span class="macro">relay_log::error!</span>(<span class="string">&quot;{}&quot;</span>, error);
+                <span class="macro">relay_log::error!</span>(error = <span class="kw-2">&amp;</span>error <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error);
             }
         }
 
@@ -4960,7 +5130,10 @@
     ///
     /// Note that this function is primarily intended for tests.
     </span><span class="kw">pub fn </span>pop_flush_buckets(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; HashMap&lt;ProjectKey, Vec&lt;HashedBucket&gt;&gt; {
-        <span class="macro">relay_statsd::metric!</span>(gauge(MetricGauges::Buckets) = <span class="self">self</span>.buckets.len() <span class="kw">as </span>u64);
+        <span class="macro">relay_statsd::metric!</span>(
+            gauge(MetricGauges::Buckets) = <span class="self">self</span>.buckets.len() <span class="kw">as </span>u64,
+            aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
+        );
 
         <span class="comment">// We only emit statsd metrics for the cost on flush (and not when merging the buckets),
         // assuming that this gives us more than enough data points.
@@ -4972,30 +5145,51 @@
 
         <span class="kw">let </span>force = <span class="macro">matches!</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.state, AggregatorState::ShuttingDown);
 
-        <span class="macro">relay_statsd::metric!</span>(timer(MetricTimers::BucketsScanDuration), {
-            <span class="kw">let </span>bucket_interval = <span class="self">self</span>.config.bucket_interval;
-            <span class="kw">let </span>cost_tracker = <span class="kw-2">&amp;mut </span><span class="self">self</span>.cost_tracker;
-            <span class="self">self</span>.buckets.retain(|key, entry| {
-                <span class="kw">if </span>force || entry.elapsed() {
-                    <span class="comment">// Take the value and leave a placeholder behind. It&#39;ll be removed right after.
-                    </span><span class="kw">let </span>value = mem::replace(<span class="kw-2">&amp;mut </span>entry.value, BucketValue::Counter(<span class="number">0.0</span>));
-                    cost_tracker.subtract_cost(key.project_key, key.cost());
-                    cost_tracker.subtract_cost(key.project_key, value.cost());
-                    <span class="kw">let </span>bucket = Bucket::from_parts(key.clone(), bucket_interval, value);
-                    buckets
-                        .entry(key.project_key)
-                        .or_default()
-                        .push(HashedBucket {
-                            hashed_key: key.hash64(),
-                            bucket,
-                        });
+        <span class="kw">let </span><span class="kw-2">mut </span>stats = BTreeMap::new();
 
-                    <span class="bool-val">false
-                </span>} <span class="kw">else </span>{
-                    <span class="bool-val">true
-                </span>}
-            });
-        });
+        <span class="macro">relay_statsd::metric!</span>(
+            timer(MetricTimers::BucketsScanDuration),
+            aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
+            {
+                <span class="kw">let </span>bucket_interval = <span class="self">self</span>.config.bucket_interval;
+                <span class="kw">let </span>cost_tracker = <span class="kw-2">&amp;mut </span><span class="self">self</span>.cost_tracker;
+                <span class="self">self</span>.buckets.retain(|key, entry| {
+                    <span class="kw">if </span>force || entry.elapsed() {
+                        <span class="comment">// Take the value and leave a placeholder behind. It&#39;ll be removed right after.
+                        </span><span class="kw">let </span>value = mem::replace(<span class="kw-2">&amp;mut </span>entry.value, BucketValue::Counter(<span class="number">0.0</span>));
+                        cost_tracker.subtract_cost(key.project_key, key.cost());
+                        cost_tracker.subtract_cost(key.project_key, value.cost());
+
+                        <span class="kw">let </span>(bucket_count, item_count) = stats
+                            .entry((metric_type_tag(<span class="kw-2">&amp;</span>value), metric_name_tag(<span class="kw-2">&amp;</span>key.metric_name)))
+                            .or_insert((<span class="number">0usize</span>, <span class="number">0usize</span>));
+                        <span class="kw-2">*</span>bucket_count += <span class="number">1</span>;
+                        <span class="kw-2">*</span>item_count += value.len();
+
+                        <span class="kw">let </span>bucket = Bucket::from_parts(key.clone(), bucket_interval, value);
+                        buckets
+                            .entry(key.project_key)
+                            .or_default()
+                            .push(HashedBucket {
+                                hashed_key: key.hash64(),
+                                bucket,
+                            });
+
+                        <span class="bool-val">false
+                    </span>} <span class="kw">else </span>{
+                        <span class="bool-val">true
+                    </span>}
+                });
+            }
+        );
+
+        <span class="kw">for </span>((ty, name), (bucket_count, item_count)) <span class="kw">in </span>stats.into_iter() {
+            <span class="macro">relay_statsd::metric!</span>(
+                gauge(MetricGauges::AvgBucketSize) = item_count <span class="kw">as </span>f64 / bucket_count <span class="kw">as </span>f64,
+                metric_type = ty,
+                metric_name = name
+            );
+        }
 
         buckets
     }
@@ -5022,7 +5216,8 @@
 
             <span class="comment">// Log the distribution of buckets over partition key
             </span><span class="macro">relay_statsd::metric!</span>(
-                histogram(MetricHistograms::PartitionKeys) = partition_key <span class="kw">as </span>f64
+                histogram(MetricHistograms::PartitionKeys) = partition_key <span class="kw">as </span>f64,
+                aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
             );
         }
         partitions
@@ -5041,6 +5236,7 @@
             .map(|batch| {
                 <span class="macro">relay_statsd::metric!</span>(
                     histogram(MetricHistograms::BucketsPerBatch) = batch.len() <span class="kw">as </span>f64,
+                    aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
                 );
                 process(batch);
             })
@@ -5048,6 +5244,7 @@
 
         <span class="macro">relay_statsd::metric!</span>(
             histogram(MetricHistograms::BatchesPerPartition) = num_batches <span class="kw">as </span>f64,
+            aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
         );
     }
 
@@ -5069,7 +5266,8 @@
         <span class="kw">for </span>(project_key, project_buckets) <span class="kw">in </span>flush_buckets.into_iter() {
             <span class="kw">let </span>bucket_count = project_buckets.len() <span class="kw">as </span>u64;
             <span class="macro">relay_statsd::metric!</span>(
-                histogram(MetricHistograms::BucketsFlushedPerProject) = bucket_count
+                histogram(MetricHistograms::BucketsFlushedPerProject) = bucket_count,
+                aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
             );
             total_bucket_count += bucket_count;
 
@@ -5087,7 +5285,10 @@
                 });
             }
         }
-        <span class="macro">relay_statsd::metric!</span>(histogram(MetricHistograms::BucketsFlushed) = total_bucket_count);
+        <span class="macro">relay_statsd::metric!</span>(
+            histogram(MetricHistograms::BucketsFlushed) = total_bucket_count,
+            aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
+        );
     }
 
     <span class="kw">fn </span>handle_accepts_metrics(<span class="kw-2">&amp;</span><span class="self">self</span>, sender: Sender&lt;bool&gt;) {
@@ -5104,7 +5305,7 @@
         } = msg;
         <span class="kw">for </span>metric <span class="kw">in </span>metrics {
             <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = <span class="self">self</span>.insert(project_key, metric) {
-                <span class="macro">relay_log::error!</span>(<span class="string">&quot;failed to insert metrics: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>err));
+                <span class="macro">relay_log::error!</span>(error = <span class="kw-2">&amp;</span>err <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error, <span class="string">&quot;failed to insert metrics&quot;</span>,);
             }
         }
     }
@@ -5115,7 +5316,7 @@
             buckets,
         } = msg;
         <span class="kw">if let </span><span class="prelude-val">Err</span>(err) = <span class="self">self</span>.merge_all(project_key, buckets) {
-            <span class="macro">relay_log::error!</span>(<span class="string">&quot;failed to merge buckets: {}&quot;</span>, LogError(<span class="kw-2">&amp;</span>err));
+            <span class="macro">relay_log::error!</span>(error = <span class="kw-2">&amp;</span>err <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error, <span class="string">&quot;failed to merge buckets&quot;</span>);
         }
     }
 
@@ -5153,9 +5354,8 @@
         tokio::spawn(<span class="kw">async move </span>{
             <span class="kw">let </span><span class="kw-2">mut </span>ticker = tokio::time::interval(FLUSH_INTERVAL);
             <span class="kw">let </span><span class="kw-2">mut </span>shutdown = Controller::shutdown_handle();
-            <span class="macro">relay_log::info!</span>(<span class="string">&quot;aggregator started&quot;</span>);
 
-            <span class="comment">// Note that currently this loop never exists and will run till the tokio runtime shuts
+            <span class="comment">// Note that currently this loop never exits and will run till the tokio runtime shuts
             // down. This is about to change with the refactoring for the shutdown process.
             </span><span class="kw">loop </span>{
                 <span class="macro">tokio::select! </span>{
@@ -5168,7 +5368,6 @@
                     <span class="kw">else </span>=&gt; <span class="kw">break</span>,
                 }
             }
-            <span class="macro">relay_log::info!</span>(<span class="string">&quot;aggregator stopped&quot;</span>);
         });
     }
 }
@@ -5177,9 +5376,10 @@
     <span class="kw">fn </span>drop(<span class="kw-2">&amp;mut </span><span class="self">self</span>) {
         <span class="kw">let </span>remaining_buckets = <span class="self">self</span>.buckets.len();
         <span class="kw">if </span>remaining_buckets &gt; <span class="number">0 </span>{
-            <span class="macro">relay_log::error!</span>(<span class="string">&quot;Metrics aggregator dropping {} buckets&quot;</span>, remaining_buckets);
+            <span class="macro">relay_log::error!</span>(<span class="string">&quot;metrics aggregator dropping {remaining_buckets} buckets&quot;</span>);
             <span class="macro">relay_statsd::metric!</span>(
-                counter(MetricCounters::BucketsDropped) += remaining_buckets <span class="kw">as </span>i64
+                counter(MetricCounters::BucketsDropped) += remaining_buckets <span class="kw">as </span>i64,
+                aggregator = <span class="kw-2">&amp;</span><span class="self">self</span>.name,
             );
         }
     }
@@ -5210,9 +5410,7 @@
 
     <span class="attr">#[derive(Clone, Default)]
     </span><span class="kw">struct </span>TestReceiver {
-        <span class="comment">// TODO: Better way to communicate with service after it&#39;s started?
-        // Messages, maybe?
-        </span>data: Arc&lt;RwLock&lt;ReceivedData&gt;&gt;,
+        data: Arc&lt;RwLock&lt;ReceivedData&gt;&gt;,
         reject_all: bool,
     }
 
@@ -5233,7 +5431,7 @@
             tokio::spawn(<span class="kw">async move </span>{
                 <span class="kw">while let </span><span class="prelude-val">Some</span>(message) = rx.recv().<span class="kw">await </span>{
                     <span class="kw">let </span>buckets = message.<span class="number">0</span>.buckets;
-                    <span class="macro">relay_log::debug!</span>(<span class="string">&quot;received buckets: {:#?}&quot;</span>, buckets);
+                    <span class="macro">relay_log::debug!</span>(<span class="question-mark">?</span>buckets, <span class="string">&quot;received buckets&quot;</span>);
                     <span class="kw">if </span>!<span class="self">self</span>.reject_all {
                         <span class="self">self</span>.add_buckets(buckets);
                     }
@@ -5526,8 +5724,7 @@
         MetricValue::Distribution(<span class="number">2.0</span>)
             .merge_into(<span class="kw-2">&amp;mut </span>value)
             .unwrap();
-        <span class="comment">// TODO: This should be ordered
-        </span><span class="macro">assert_eq!</span>(value, BucketValue::Distribution(<span class="macro">dist!</span>[<span class="number">1.</span>, <span class="number">2.</span>, <span class="number">3.</span>, <span class="number">2.</span>]));
+        <span class="macro">assert_eq!</span>(value, BucketValue::Distribution(<span class="macro">dist!</span>[<span class="number">1.</span>, <span class="number">2.</span>, <span class="number">3.</span>, <span class="number">2.</span>]));
     }
 
     <span class="attr">#[test]
@@ -6013,7 +6210,7 @@
                 .get_bucket_timestamp(UnixTimestamp::from_secs(u64::MAX), <span class="number">2</span>)
                 .unwrap_err()
                 .kind,
-            AggregateMetricsErrorKind::InvalidTimestamp
+            AggregateMetricsErrorKind::InvalidTimestamp(<span class="kw">_</span>)
         ));
     }
 
@@ -6144,10 +6341,12 @@
         };
         <span class="kw">let </span>validation = AggregatorService::validate_bucket_key(long_metric, <span class="kw-2">&amp;</span>aggregator_config);
 
-        <span class="macro">assert_eq!</span>(
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
             validation.unwrap_err(),
-            AggregateMetricsError::from(AggregateMetricsErrorKind::InvalidStringLength)
-        );
+            AggregateMetricsError {
+                kind: AggregateMetricsErrorKind::InvalidStringLength(<span class="kw">_</span>)
+            }
+        ));
 
         <span class="kw">let </span>short_metric_long_tag_key = BucketKey {
             project_key,
@@ -6170,6 +6369,25 @@
             AggregatorService::validate_bucket_key(short_metric_long_tag_value, <span class="kw-2">&amp;</span>aggregator_config)
                 .unwrap();
         <span class="macro">assert_eq!</span>(validation.tags.len(), <span class="number">0</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_validate_tag_values_special_chars() {
+        relay_test::setup();
+        <span class="kw">let </span>project_key = ProjectKey::parse(<span class="string">&quot;a94ae32be2584e0bbd7a4cbb95971fee&quot;</span>).unwrap();
+        <span class="kw">let </span>aggregator_config = test_config();
+
+        <span class="kw">let </span>tag_value = <span class="string">&quot;x&quot;</span>.repeat(<span class="number">199</span>) + <span class="string">&quot;ø&quot;</span>;
+        <span class="macro">assert_eq!</span>(tag_value.chars().count(), <span class="number">200</span>); <span class="comment">// Should be allowed
+        </span><span class="kw">let </span>short_metric = BucketKey {
+            project_key,
+            timestamp: UnixTimestamp::now(),
+            metric_name: <span class="string">&quot;c:transactions/a_short_metric&quot;</span>.to_owned(),
+            tags: BTreeMap::from([(<span class="string">&quot;foo&quot;</span>.into(), tag_value.clone())]),
+        };
+        <span class="kw">let </span>validated_bucket =
+            AggregatorService::validate_metric_tags(short_metric, <span class="kw-2">&amp;</span>aggregator_config);
+        <span class="macro">assert_eq!</span>(validated_bucket.tags[<span class="string">&quot;foo&quot;</span>], tag_value);
     }
 
     <span class="attr">#[test]
@@ -6268,8 +6486,8 @@
         <span class="kw">let </span>output = run_test_bucket_partitioning(<span class="prelude-val">None</span>);
         <span class="macro">insta::assert_debug_snapshot!</span>(output, @<span class="string">r###&quot;
         [
-            &quot;metrics.buckets.per_batch:2|h&quot;,
-            &quot;metrics.buckets.batches_per_partition:1|h&quot;,
+            &quot;metrics.buckets.per_batch:2|h|#aggregator:default&quot;,
+            &quot;metrics.buckets.batches_per_partition:1|h|#aggregator:default&quot;,
         ]
         &quot;###</span>);
     }
@@ -6282,17 +6500,17 @@
         </span><span class="kw">let </span>(partition_keys, tail) = output.split_at(<span class="number">2</span>);
         <span class="macro">insta::assert_debug_snapshot!</span>(BTreeSet::from_iter(partition_keys), @<span class="string">r###&quot;
         {
-            &quot;metrics.buckets.partition_keys:59|h&quot;,
-            &quot;metrics.buckets.partition_keys:62|h&quot;,
+            &quot;metrics.buckets.partition_keys:59|h|#aggregator:default&quot;,
+            &quot;metrics.buckets.partition_keys:62|h|#aggregator:default&quot;,
         }
         &quot;###</span>);
 
         <span class="macro">insta::assert_debug_snapshot!</span>(tail, @<span class="string">r###&quot;
         [
-            &quot;metrics.buckets.per_batch:1|h&quot;,
-            &quot;metrics.buckets.batches_per_partition:1|h&quot;,
-            &quot;metrics.buckets.per_batch:1|h&quot;,
-            &quot;metrics.buckets.batches_per_partition:1|h&quot;,
+            &quot;metrics.buckets.per_batch:1|h|#aggregator:default&quot;,
+            &quot;metrics.buckets.batches_per_partition:1|h|#aggregator:default&quot;,
+            &quot;metrics.buckets.per_batch:1|h|#aggregator:default&quot;,
+            &quot;metrics.buckets.batches_per_partition:1|h|#aggregator:default&quot;,
         ]
         &quot;###</span>);
     }
@@ -6342,6 +6560,12 @@
     </span><span class="kw">fn </span>test_capped_iter_completeness_100() {
         test_capped_iter_completeness(<span class="number">100</span>, <span class="number">4</span>);
     }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>test_parse_shift_key() {
+        <span class="kw">let </span>json = <span class="string">r#&quot;{&quot;shift_key&quot;: &quot;bucket&quot;}&quot;#</span>;
+        <span class="kw">let </span>parsed: AggregatorConfig = serde_json::from_str(json).unwrap();
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(parsed.shift_key, ShiftKey::Bucket));
+    }
 }
-</code></pre></div>
-</section></main><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relay_metrics" data-themes="" data-resource-suffix="" data-rustdoc-version="1.69.0 (84c898d65 2023-04-16)" data-search-js="search-8a59a8356673ec1f.js" data-settings-js="settings-f0c5c39777a9a2f6.js" data-settings-css="settings-0bcba95ff279c1db.css" ></div></body></html>
+</code></pre></div></section></main></body></html>
