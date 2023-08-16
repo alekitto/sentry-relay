@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-general/src/store/normalize/span/description.rs`."><title>description.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../../" data-static-root-path="../../../../../static.files/" data-current-crate="relay_general" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../../../source-files.js"></script><script defer src="../../../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../../relay_general/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-general/src/store/normalize/span/description.rs`."><title>description.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../../" data-static-root-path="../../../../../static.files/" data-current-crate="relay_general" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.1 (eb26296b5 2023-08-03)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../../../source-files.js"></script><script defer src="../../../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../../relay_general/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -809,6 +809,47 @@
 <a href="#809" id="809">809</a>
 <a href="#810" id="810">810</a>
 <a href="#811" id="811">811</a>
+<a href="#812" id="812">812</a>
+<a href="#813" id="813">813</a>
+<a href="#814" id="814">814</a>
+<a href="#815" id="815">815</a>
+<a href="#816" id="816">816</a>
+<a href="#817" id="817">817</a>
+<a href="#818" id="818">818</a>
+<a href="#819" id="819">819</a>
+<a href="#820" id="820">820</a>
+<a href="#821" id="821">821</a>
+<a href="#822" id="822">822</a>
+<a href="#823" id="823">823</a>
+<a href="#824" id="824">824</a>
+<a href="#825" id="825">825</a>
+<a href="#826" id="826">826</a>
+<a href="#827" id="827">827</a>
+<a href="#828" id="828">828</a>
+<a href="#829" id="829">829</a>
+<a href="#830" id="830">830</a>
+<a href="#831" id="831">831</a>
+<a href="#832" id="832">832</a>
+<a href="#833" id="833">833</a>
+<a href="#834" id="834">834</a>
+<a href="#835" id="835">835</a>
+<a href="#836" id="836">836</a>
+<a href="#837" id="837">837</a>
+<a href="#838" id="838">838</a>
+<a href="#839" id="839">839</a>
+<a href="#840" id="840">840</a>
+<a href="#841" id="841">841</a>
+<a href="#842" id="842">842</a>
+<a href="#843" id="843">843</a>
+<a href="#844" id="844">844</a>
+<a href="#845" id="845">845</a>
+<a href="#846" id="846">846</a>
+<a href="#847" id="847">847</a>
+<a href="#848" id="848">848</a>
+<a href="#849" id="849">849</a>
+<a href="#850" id="850">850</a>
+<a href="#851" id="851">851</a>
+<a href="#852" id="852">852</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Span description scrubbing logic.
 </span><span class="kw">use </span>std::borrow::Cow;
 <span class="kw">use </span>std::collections::BTreeMap;
@@ -824,6 +865,9 @@
 <span class="kw">use </span><span class="kw">crate</span>::store::SpanDescriptionRule;
 <span class="kw">use </span><span class="kw">crate</span>::types::{Annotated, ProcessingResult, Remark, RemarkType, Value};
 
+<span class="doccomment">/// Removes SQL comments starting with &quot;--&quot;.
+</span><span class="kw">static </span>SQL_COMMENTS: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(<span class="string">r&quot;--.*(?P&lt;newline&gt;\n)&quot;</span>).unwrap());
+
 <span class="doccomment">/// Regex with multiple capture groups for SQL tokens we should scrub.
 ///
 /// Slightly modified from
@@ -837,7 +881,7 @@
         # Capture single-quoted strings, including the remaining substring if `\&#39;` is found.
         ((?-x)(?P&lt;single_quoted_strs&gt;&#39;(?:\\&#39;|[^&#39;])*(?:&#39;|$)(::\w+(\[\]?)?)?)) |
         # Capture placeholders.
-        (   (?P&lt;placeholder&gt; (?:\?+|\$\d+|%s) (::\w+(\[\]?)?)? )   ) |
+        (   (?P&lt;placeholder&gt; (?:\?+|\$\d+|%s|:\w+) (::\w+(\[\]?)?)? )   ) |
         # Capture numbers.
         ((?-x)(?P&lt;number&gt;(-?\b(?:[0-9]+\.)?[0-9]+(?:[eE][+-]?[0-9]+)?\b)(::\w+(\[\]?)?)?)) |
         # Capture booleans (as full tokens, not as substrings of other tokens).
@@ -847,6 +891,13 @@
     .unwrap()
 });
 
+<span class="doccomment">/// Removes extra whitespace and newlines.
+</span><span class="kw">static </span>SQL_WHITESPACE: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(<span class="string">r&quot;(\s*\n\s*)|(\s\s+)&quot;</span>).unwrap());
+
+<span class="doccomment">/// Removes whitespace around parentheses.
+</span><span class="kw">static </span>SQL_PARENS: Lazy&lt;Regex&gt; =
+    Lazy::new(|| Regex::new(<span class="string">r&quot;((?P&lt;pre&gt;\()\s+)|(\s+(?P&lt;post&gt;\)))&quot;</span>).unwrap());
+
 <span class="doccomment">/// Regex to shorten table or column references, e.g. `&quot;table1&quot;.&quot;col1&quot;` -&gt; `col1`.
 </span><span class="kw">static </span>SQL_COLLAPSE_ENTITIES: Lazy&lt;Regex&gt; =
     Lazy::new(|| Regex::new(<span class="string">r#&quot;(?x) ( (&quot;\w+&quot;\.)*(&quot;(?P&lt;entity_name&gt;\w+)(&quot;|$)) )&quot;#</span>).unwrap());
@@ -855,16 +906,20 @@
 /// This can be used as a second pass after [`SQL_NORMALIZER_REGEX`].
 </span><span class="kw">static </span>SQL_COLLAPSE_PLACEHOLDERS: Lazy&lt;Regex&gt; = Lazy::new(|| {
     Regex::new(
-        <span class="string">r#&quot;(?xi)
+        <span class="string">r&quot;(?xi)
         (?P&lt;pre&gt;(?:VALUES|IN) \s+\() (?P&lt;values&gt; ( %s ( \)\s*,\s*\(\s*%s | \s*,\s*%s )* )) (?P&lt;post&gt;\s*\)?)
-        &quot;#</span>,
+        &quot;</span>,
     )
     .unwrap()
 });
 
 <span class="doccomment">/// Collapse simple lists of columns in select.
+/// For example:
+///   SELECT a, b FROM x -&gt; SELECT .. FROM x
+///   SELECT &quot;a.b&quot; AS a__b, &quot;a.c&quot; AS a__c FROM x -&gt; SELECT .. FROM x
 </span><span class="kw">static </span>SQL_COLLAPSE_SELECT: Lazy&lt;Regex&gt; = Lazy::new(|| {
-    Regex::new(<span class="string">r#&quot;(?i)(?P&lt;select&gt;SELECT(\s+(DISTINCT|ALL))?)\s+(?P&lt;columns&gt;(\w+(?:\s*,\s*\w+)+))\s+(?&lt;from&gt;FROM|$)&quot;#</span>)
+    <span class="kw">let </span>col = <span class="string">r&quot;\w+( AS \w+)?&quot;</span>;
+    Regex::new(<span class="macro">format!</span>(<span class="string">r&quot;(?i)(?P&lt;select&gt;SELECT(\s+(DISTINCT|ALL))?)\s+(?P&lt;columns&gt;({col}(?:\s*,\s*{col})+))\s+(?&lt;from&gt;FROM|$)&quot;</span>).as_str())
         .unwrap()
 });
 
@@ -872,8 +927,7 @@
 ///
 /// Looks for `?`, `$1` or `%s` identifiers, commonly used identifiers in
 /// Python, Ruby on Rails and PHP platforms.
-</span><span class="kw">static </span>SQL_ALREADY_NORMALIZED_REGEX: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">r#&quot;/\?|\$1|%s&quot;#</span>).unwrap());
+</span><span class="kw">static </span>SQL_ALREADY_NORMALIZED_REGEX: Lazy&lt;Regex&gt; = Lazy::new(|| Regex::new(<span class="string">r&quot;/\?|\$1|%s&quot;</span>).unwrap());
 
 <span class="doccomment">/// Attempts to replace identifiers in the span description with placeholders.
 ///
@@ -912,9 +966,13 @@
 </span><span class="kw">fn </span>scrub_sql_queries(string: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;String&gt; {
     <span class="kw">let </span>mark_as_scrubbed = SQL_ALREADY_NORMALIZED_REGEX.is_match(string);
 
-    <span class="kw">let </span><span class="kw-2">mut </span>string = Cow::from(string);
+    <span class="kw">let </span><span class="kw-2">mut </span>string = Cow::from(string.trim());
+
     <span class="kw">for </span>(regex, replacement) <span class="kw">in </span>[
+        (<span class="kw-2">&amp;</span>SQL_COMMENTS, <span class="string">&quot;\n&quot;</span>),
         (<span class="kw-2">&amp;</span>SQL_NORMALIZER_REGEX, <span class="string">&quot;$pre%s&quot;</span>),
+        (<span class="kw-2">&amp;</span>SQL_WHITESPACE, <span class="string">&quot; &quot;</span>),
+        (<span class="kw-2">&amp;</span>SQL_PARENS, <span class="string">&quot;$pre$post&quot;</span>),
         (<span class="kw-2">&amp;</span>SQL_COLLAPSE_PLACEHOLDERS, <span class="string">&quot;$pre%s$post&quot;</span>),
         (<span class="kw-2">&amp;</span>SQL_COLLAPSE_ENTITIES, <span class="string">&quot;$entity_name&quot;</span>),
         (<span class="kw-2">&amp;</span>SQL_COLLAPSE_SELECT, <span class="string">&quot;$select .. $from&quot;</span>),
@@ -1109,7 +1167,7 @@
                 <span class="kw">let </span>json = <span class="macro">format!</span>(
                     <span class="string">r#&quot;
                     {{
-                        &quot;description&quot;: &quot;{}&quot;,
+                        &quot;description&quot;: &quot;&quot;,
                         &quot;span_id&quot;: &quot;bd2eb23da2beb459&quot;,
                         &quot;start_timestamp&quot;: 1597976393.4619668,
                         &quot;timestamp&quot;: 1597976393.4718769,
@@ -1117,24 +1175,17 @@
                         &quot;op&quot;: &quot;{}&quot;
                     }}
                 &quot;#</span>,
-                    <span class="macro-nonterminal">$description_in</span>, <span class="macro-nonterminal">$op_in
+                    <span class="macro-nonterminal">$op_in
                 </span>);
 
                 <span class="kw">let </span><span class="kw-2">mut </span>span = Annotated::&lt;Span&gt;::from_json(<span class="kw-2">&amp;</span>json).unwrap();
+                span.value_mut()
+                    .as_mut()
+                    .unwrap()
+                    .description
+                    .set_value(<span class="prelude-val">Some</span>(<span class="macro-nonterminal">$description_in</span>.into()));
 
                 scrub_span_description(span.value_mut().as_mut().unwrap(), <span class="kw-2">&amp;</span><span class="macro">vec!</span>[]);
-
-                <span class="comment">// The input description may contain escaped characters, and the
-                // default formatter (when taking the value from the span
-                // description) automatically escapes them. The goal is to
-                // compute raw values, so we want to get rid of character
-                // escaping, and the debug formatter does that. The debug
-                // formatter doesn&#39;t remove the leading and trailing `&quot;`s, so we
-                // manually add them to the input literal.
-                </span><span class="macro">assert_eq!</span>(
-                    <span class="macro">format!</span>(<span class="string">&quot;\&quot;{}\&quot;&quot;</span>, <span class="macro-nonterminal">$description_in</span>),
-                    <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, span.value().unwrap().description.value().unwrap())
-                );
 
                 <span class="kw">if </span><span class="macro-nonterminal">$output </span>== <span class="string">&quot;&quot; </span>{
                     <span class="macro">assert!</span>(span
@@ -1144,15 +1195,12 @@
                         .is_none());
                 } <span class="kw">else </span>{
                     <span class="macro">assert_eq!</span>(
-                        <span class="macro">format!</span>(<span class="string">&quot;\&quot;{}\&quot;&quot;</span>, <span class="macro-nonterminal">$output</span>),
-                        <span class="macro">format!</span>(
-                            <span class="string">&quot;{:?}&quot;</span>,
-                            span.value()
-                                .and_then(|span| span.data.value())
-                                .and_then(|data| data.get(<span class="string">&quot;description.scrubbed&quot;</span>))
-                                .and_then(|an_value| an_value.as_str())
-                                .unwrap()
-                        )
+                        <span class="macro-nonterminal">$output</span>,
+                        span.value()
+                            .and_then(|span| span.data.value())
+                            .and_then(|data| data.get(<span class="string">&quot;description.scrubbed&quot;</span>))
+                            .and_then(|an_value| an_value.as_str())
+                            .unwrap()
                     );
                 }
             }
@@ -1260,6 +1308,13 @@
     </span>);
 
     <span class="macro">span_description_test!</span>(
+        php_placeholders,
+        <span class="string">r&quot;SELECT x FROM y WHERE (z = :c0 AND w = :c1) LIMIT 1&quot;</span>,
+        <span class="string">&quot;db.sql.query&quot;</span>,
+        <span class="string">&quot;SELECT x FROM y WHERE (z = %s AND w = %s) LIMIT %s&quot;
+    </span>);
+
+    <span class="macro">span_description_test!</span>(
         span_description_scrub_various_parameterized_ins_lowercase,
         <span class="string">&quot;select count() from table where id in (100, 101, 102)&quot;</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
@@ -1331,42 +1386,42 @@
 
     <span class="macro">span_description_test!</span>(
         span_description_scrub_single_quoted_string_finished,
-        <span class="string">r#&quot;SELECT * FROM table WHERE quote = &#39;it\\&#39;s a string&#39;&quot;#</span>,
+        <span class="string">r&quot;SELECT * FROM table WHERE quote = &#39;it\\&#39;s a string&#39;&quot;</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
         <span class="string">&quot;SELECT * FROM table WHERE quote = %s&quot;
     </span>);
 
     <span class="macro">span_description_test!</span>(
         span_description_scrub_single_quoted_string_unfinished,
-        <span class="string">r#&quot;SELECT * FROM table WHERE quote = &#39;it\\&#39;s a string&quot;#</span>,
+        <span class="string">r&quot;SELECT * FROM table WHERE quote = &#39;it\\&#39;s a string&quot;</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
         <span class="string">&quot;SELECT * FROM table WHERE quote = %s&quot;
     </span>);
 
     <span class="macro">span_description_test!</span>(
         span_description_dont_scrub_double_quoted_strings_format_postgres,
-        <span class="string">r#&quot;SELECT * from \&quot;table\&quot; WHERE sku = %s&quot;#</span>,
+        <span class="string">r#&quot;SELECT * from &quot;table&quot; WHERE sku = %s&quot;#</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
         <span class="string">r#&quot;SELECT * from table WHERE sku = %s&quot;#
     </span>);
 
     <span class="macro">span_description_test!</span>(
         span_description_strip_prefixes,
-        <span class="string">r#&quot;SELECT \&quot;table\&quot;.\&quot;foo\&quot;, \&quot;table\&quot;.\&quot;bar\&quot;, count(*) from \&quot;table\&quot; WHERE sku = %s&quot;#</span>,
+        <span class="string">r#&quot;SELECT &quot;table&quot;.&quot;foo&quot;, &quot;table&quot;.&quot;bar&quot;, count(*) from &quot;table&quot; WHERE sku = %s&quot;#</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
         <span class="string">r#&quot;SELECT foo, bar, count(*) from table WHERE sku = %s&quot;#
     </span>);
 
     <span class="macro">span_description_test!</span>(
         span_description_strip_prefixes_truncated,
-        <span class="string">r#&quot;SELECT foo = %s FROM \&quot;db\&quot;.\&quot;ba&quot;#</span>,
+        <span class="string">r#&quot;SELECT foo = %s FROM &quot;db&quot;.&quot;ba&quot;#</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
         <span class="string">r#&quot;SELECT foo = %s FROM ba&quot;#
     </span>);
 
     <span class="macro">span_description_test!</span>(
         span_description_dont_scrub_double_quoted_strings_format_mysql,
-        <span class="string">r#&quot;SELECT * from table WHERE sku = \&quot;foo\&quot;&quot;#</span>,
+        <span class="string">r#&quot;SELECT * from table WHERE sku = &quot;foo&quot;&quot;#</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
         <span class="string">&quot;SELECT * from table WHERE sku = foo&quot;
     </span>);
@@ -1465,7 +1520,7 @@
     <span class="macro">span_description_test!</span>(
         span_description_collapse_columns,
         <span class="comment">// Simple lists of columns will be collapsed
-        </span><span class="string">r#&quot;SELECT myfield1, \&quot;a\&quot;.\&quot;b\&quot;, another_field FROM table WHERE %s&quot;#</span>,
+        </span><span class="string">r#&quot;SELECT myfield1, &quot;a&quot;.&quot;b&quot;, another_field FROM table WHERE %s&quot;#</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
         <span class="string">&quot;SELECT .. FROM table WHERE %s&quot;
     </span>);
@@ -1489,7 +1544,7 @@
     <span class="macro">span_description_test!</span>(
         span_description_do_not_collapse_columns,
         <span class="comment">// Leave select untouched if it contains more complex expressions
-        </span><span class="string">r#&quot;SELECT myfield1, \&quot;a\&quot;.\&quot;b\&quot;, count(*) AS c, another_field FROM table WHERE %s&quot;#</span>,
+        </span><span class="string">r#&quot;SELECT myfield1, &quot;a&quot;.&quot;b&quot;, count(*) AS c, another_field FROM table WHERE %s&quot;#</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
         <span class="string">&quot;SELECT myfield1, b, count(*) AS c, another_field FROM table WHERE %s&quot;
     </span>);
@@ -1499,6 +1554,14 @@
         <span class="string">r#&quot;SELECT DISTINCT a, b, c FROM table WHERE %s&quot;#</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
         <span class="string">&quot;SELECT DISTINCT .. FROM table WHERE %s&quot;
+    </span>);
+
+    <span class="macro">span_description_test!</span>(
+        span_description_collapse_columns_with_as,
+        <span class="comment">// Simple lists of columns will be collapsed.
+        </span><span class="string">r#&quot;SELECT myfield1, &quot;a&quot;.&quot;b&quot; AS a__b, another_field as bar FROM table WHERE %s&quot;#</span>,
+        <span class="string">&quot;db.sql.query&quot;</span>,
+        <span class="string">&quot;SELECT .. FROM table WHERE %s&quot;
     </span>);
 
     <span class="macro">span_description_test!</span>(
@@ -1527,6 +1590,25 @@
         <span class="string">&quot;INSERT INTO a (b, c, d) VALUES (&#39;foo&#39;::date, 123::bigint[], %s::bigint[])&quot;</span>,
         <span class="string">&quot;db.sql.query&quot;</span>,
         <span class="string">&quot;INSERT INTO a (b, c, d) VALUES (%s)&quot;
+    </span>);
+
+    <span class="macro">span_description_test!</span>(
+        whitespace_and_comments,
+        <span class="string">&quot;
+            select a,  b, c, d
+            from (
+                select *
+                -- Some comment here.
+                from (
+                    -- Another comment.
+                    select a, b, c, d from x where foo = 1
+                ) srpe
+                where x = %s --inline comment
+            ) srpe
+            inner join foo on foo.id = foo_id
+        &quot;</span>,
+        <span class="string">&quot;db.sql.query&quot;</span>,
+        <span class="string">&quot;select .. from (select * from (select .. from x where foo = %s) srpe where x = %s) srpe inner join foo on foo.id = foo_id&quot;
     </span>);
 
     <span class="macro">span_description_test!</span>(

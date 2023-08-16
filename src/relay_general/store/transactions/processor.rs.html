@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-general/src/store/transactions/processor.rs`."><title>processor.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="relay_general" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../relay_general/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-general/src/store/transactions/processor.rs`."><title>processor.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../" data-static-root-path="../../../../static.files/" data-current-crate="relay_general" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.1 (eb26296b5 2023-08-03)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../../source-files.js"></script><script defer src="../../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../relay_general/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2432,33 +2432,6 @@
 <a href="#2432" id="2432">2432</a>
 <a href="#2433" id="2433">2433</a>
 <a href="#2434" id="2434">2434</a>
-<a href="#2435" id="2435">2435</a>
-<a href="#2436" id="2436">2436</a>
-<a href="#2437" id="2437">2437</a>
-<a href="#2438" id="2438">2438</a>
-<a href="#2439" id="2439">2439</a>
-<a href="#2440" id="2440">2440</a>
-<a href="#2441" id="2441">2441</a>
-<a href="#2442" id="2442">2442</a>
-<a href="#2443" id="2443">2443</a>
-<a href="#2444" id="2444">2444</a>
-<a href="#2445" id="2445">2445</a>
-<a href="#2446" id="2446">2446</a>
-<a href="#2447" id="2447">2447</a>
-<a href="#2448" id="2448">2448</a>
-<a href="#2449" id="2449">2449</a>
-<a href="#2450" id="2450">2450</a>
-<a href="#2451" id="2451">2451</a>
-<a href="#2452" id="2452">2452</a>
-<a href="#2453" id="2453">2453</a>
-<a href="#2454" id="2454">2454</a>
-<a href="#2455" id="2455">2455</a>
-<a href="#2456" id="2456">2456</a>
-<a href="#2457" id="2457">2457</a>
-<a href="#2458" id="2458">2458</a>
-<a href="#2459" id="2459">2459</a>
-<a href="#2460" id="2460">2460</a>
-<a href="#2461" id="2461">2461</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::borrow::Cow;
 
 <span class="kw">use </span>once_cell::sync::Lazy;
@@ -2470,7 +2443,6 @@
 <span class="kw">use </span><span class="kw">crate</span>::protocol::{Event, EventType, Span, Timestamp, TraceContext, TransactionSource};
 <span class="kw">use </span><span class="kw">crate</span>::store::normalize::span::description::scrub_span_description;
 <span class="kw">use </span><span class="kw">crate</span>::store::regexes::TRANSACTION_NAME_NORMALIZER_REGEX;
-<span class="kw">use </span><span class="kw">crate</span>::store::span::tag_extraction::{<span class="self">self</span>, extract_span_tags};
 <span class="kw">use </span><span class="kw">crate</span>::store::SpanDescriptionRule;
 <span class="kw">use </span><span class="kw">crate</span>::types::{Annotated, Meta, ProcessingAction, ProcessingResult, Remark, RemarkType};
 
@@ -2487,7 +2459,6 @@
     name_config: TransactionNameConfig&lt;<span class="lifetime">&#39;r</span>&gt;,
     span_desc_rules: Vec&lt;SpanDescriptionRule&gt;,
     enrich_spans: bool,
-    max_tag_value_size: usize,
 }
 
 <span class="kw">impl</span>&lt;<span class="lifetime">&#39;r</span>&gt; TransactionsProcessor&lt;<span class="lifetime">&#39;r</span>&gt; {
@@ -2495,7 +2466,6 @@
         name_config: TransactionNameConfig&lt;<span class="lifetime">&#39;r</span>&gt;,
         enrich_spans: bool,
         span_description_rules: <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>Vec&lt;SpanDescriptionRule&gt;&gt;,
-        max_tag_value_size: usize,
     ) -&gt; <span class="self">Self </span>{
         <span class="kw">let </span><span class="kw-2">mut </span>span_desc_rules = <span class="kw">if let </span><span class="prelude-val">Some</span>(span_desc_rules) = span_description_rules {
             span_desc_rules.clone()
@@ -2511,7 +2481,6 @@
             name_config,
             span_desc_rules,
             enrich_spans,
-            max_tag_value_size,
         }
     }
 
@@ -2573,8 +2542,7 @@
         <span class="macro">matches!</span>(
             source,
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>TransactionSource::Url | <span class="kw-2">&amp;</span>TransactionSource::Sanitized)
-        ) || (<span class="macro">matches!</span>(source, <span class="prelude-val">None</span>)
-            &amp;&amp; event.transaction.value().map_or(<span class="bool-val">false</span>, |t| t.contains(<span class="string">&#39;/&#39;</span>)))
+        ) || (source.is_none() &amp;&amp; event.transaction.value().map_or(<span class="bool-val">false</span>, |t| t.contains(<span class="string">&#39;/&#39;</span>)))
     }
 
     <span class="kw">fn </span>normalize_transaction_name(<span class="kw-2">&amp;</span><span class="self">self</span>, event: <span class="kw-2">&amp;mut </span>Event) -&gt; ProcessingResult {
@@ -2876,16 +2844,6 @@
         end_all_spans(event)<span class="question-mark">?</span>;
 
         event.process_child_values(<span class="self">self</span>, state)<span class="question-mark">?</span>;
-
-        <span class="comment">// After processing spans, add span tags:
-        </span><span class="kw">if </span><span class="self">self</span>.enrich_spans {
-            extract_span_tags(
-                event,
-                <span class="kw-2">&amp;</span>tag_extraction::Config {
-                    max_tag_value_size: <span class="self">self</span>.max_tag_value_size,
-                },
-            );
-        }
 
         <span class="prelude-val">Ok</span>(())
     }
@@ -3238,7 +3196,7 @@
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/&quot;,
@@ -3257,7 +3215,7 @@
           },
           &quot;spans&quot;: []
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -3339,7 +3297,7 @@
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/&quot;,
@@ -3358,7 +3316,7 @@
           },
           &quot;spans&quot;: []
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -3561,7 +3519,7 @@
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/&quot;,
@@ -3588,13 +3546,13 @@
             }
           ]
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_default_transaction_source_unknown() {
         <span class="kw">let </span><span class="kw-2">mut </span>event = Annotated::&lt;Event&gt;::from_json(
-            <span class="string">r###&quot;
+            <span class="string">r#&quot;
             {
                 &quot;type&quot;: &quot;transaction&quot;,
                 &quot;transaction&quot;: &quot;/&quot;,
@@ -3613,7 +3571,7 @@
                 },
                 &quot;spans&quot;: []
             }
-            &quot;###</span>,
+            &quot;#</span>,
         )
         .unwrap();
 
@@ -3646,7 +3604,7 @@
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/&quot;,
@@ -3673,7 +3631,7 @@
             }
           ]
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -3694,7 +3652,7 @@
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;&lt;unlabeled transaction&gt;&quot;,
@@ -3721,7 +3679,7 @@
             }
           ]
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -3742,7 +3700,7 @@
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;&lt;unlabeled transaction&gt;&quot;,
@@ -3769,7 +3727,7 @@
             }
           ]
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -3854,7 +3812,7 @@
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/foo/*/user/*/0&quot;,
@@ -3901,7 +3859,7 @@
             }
           }
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="doccomment">/// When no identifiers are scrubbed, we should not set an original value in _meta.
@@ -3972,7 +3930,7 @@
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/foo/*/user/*/0&quot;,
@@ -4013,7 +3971,7 @@
             }
           }
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -4048,7 +4006,7 @@
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/foo/bar/user/john/0&quot;,
@@ -4068,7 +4026,7 @@
           },
           &quot;spans&quot;: []
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -4124,13 +4082,12 @@
                 },
                 <span class="bool-val">false</span>,
                 <span class="prelude-val">None</span>,
-                usize::MAX,
             ),
             ProcessingState::root(),
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
          {
            &quot;type&quot;: &quot;transaction&quot;,
            &quot;transaction&quot;: &quot;/foo/*/user/*/0/&quot;,
@@ -4175,7 +4132,7 @@
              }
            }
          }
-         &quot;###</span>);
+         &quot;#</span>);
 
         <span class="kw">let </span><span class="kw-2">mut </span>event = Annotated::&lt;Event&gt;::from_json(json).unwrap();
 
@@ -4190,13 +4147,12 @@
                 },
                 <span class="bool-val">false</span>,
                 <span class="prelude-val">None</span>,
-                usize::MAX,
             ),
             ProcessingState::root(),
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/foo/*/user/*/0/&quot;,
@@ -4241,7 +4197,7 @@
             }
           }
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -4280,11 +4236,10 @@
             },
             <span class="bool-val">false</span>,
             <span class="prelude-val">None</span>,
-            usize::MAX,
         );
         process_value(<span class="kw-2">&amp;mut </span>event, <span class="kw-2">&amp;mut </span>processor, ProcessingState::root()).unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/foo/*/user/*/0/&quot;,
@@ -4322,13 +4277,13 @@
             }
           }
         }
-        &quot;###</span>);
+        &quot;#</span>);
 
         <span class="comment">// Process again:
         </span>process_value(<span class="kw-2">&amp;mut </span>event, <span class="kw-2">&amp;mut </span>processor, ProcessingState::root()).unwrap();
 
         <span class="comment">// _meta entry is unchanged, because only updated when &quot;transaction&quot; changed:
-        </span><span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        </span><span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/foo/*/user/*/0/&quot;,
@@ -4366,7 +4321,7 @@
             }
           }
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -4413,13 +4368,12 @@
                 },
                 <span class="bool-val">false</span>,
                 <span class="prelude-val">None</span>,
-                usize::MAX,
             ),
             ProcessingState::root(),
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/foo/2fd4e1c67a2d28fced849ee1bb76e7391b93eb12/user/123/0&quot;,
@@ -4439,7 +4393,7 @@
           },
           &quot;spans&quot;: []
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="kw">fn </span>run_with_unknown_source(sdk: <span class="kw-2">&amp;</span>str) -&gt; Annotated&lt;Event&gt; {
@@ -4482,7 +4436,6 @@
                 },
                 <span class="bool-val">false</span>,
                 <span class="prelude-val">None</span>,
-                usize::MAX,
             ),
             ProcessingState::root(),
         )
@@ -4494,7 +4447,7 @@
     </span><span class="kw">fn </span>test_normalize_legacy_javascript() {
         <span class="comment">// Javascript without source annotation gets sanitized.
         </span><span class="kw">let </span>event = run_with_unknown_source(<span class="string">&quot;sentry.javascript.browser&quot;</span>);
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/user/*/blog/&quot;,
@@ -4530,7 +4483,7 @@
             }
           }
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -4538,7 +4491,7 @@
         <span class="comment">// Python without source annotation does not get sanitized, because we assume it to be
         // low cardinality.
         </span><span class="kw">let </span>event = run_with_unknown_source(<span class="string">&quot;sentry.python&quot;</span>);
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
         {
           &quot;type&quot;: &quot;transaction&quot;,
           &quot;transaction&quot;: &quot;/user/jane/blog/&quot;,
@@ -4561,7 +4514,7 @@
           },
           &quot;spans&quot;: []
         }
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -4599,17 +4552,12 @@
 
         process_value(
             <span class="kw-2">&amp;mut </span>event,
-            <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(
-                TransactionNameConfig { rules: <span class="kw-2">&amp;</span>[rule] },
-                <span class="bool-val">false</span>,
-                <span class="prelude-val">None</span>,
-                usize::MAX,
-            ),
+            <span class="kw-2">&amp;mut </span>TransactionsProcessor::new(TransactionNameConfig { rules: <span class="kw-2">&amp;</span>[rule] }, <span class="bool-val">false</span>, <span class="prelude-val">None</span>),
             ProcessingState::root(),
         )
         .unwrap();
 
-        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r###&quot;
+        <span class="macro">assert_annotated_snapshot!</span>(event, @<span class="string">r#&quot;
          {
            &quot;type&quot;: &quot;transaction&quot;,
            &quot;transaction&quot;: &quot;/foo/*/user&quot;,
@@ -4648,7 +4596,7 @@
              }
            }
          }
-         &quot;###</span>);
+         &quot;#</span>);
     }
 
     <span class="attr">#[test]
@@ -4786,8 +4734,8 @@
     </span>);
     <span class="macro">transaction_name_test!</span>(
         test_transaction_name_normalize_windows_path,
-        <span class="string">r#&quot;C:\\\\Program Files\\1234\\Files&quot;#</span>,
-        <span class="string">r#&quot;C:\\Program Files\*\Files&quot;#
+        <span class="string">r&quot;C:\\\\Program Files\\1234\\Files&quot;</span>,
+        <span class="string">r&quot;C:\\Program Files\*\Files&quot;
     </span>);
     <span class="macro">transaction_name_test!</span>(test_transaction_name_skip_replace_all, <span class="string">&quot;12345&quot;</span>, <span class="string">&quot;12345&quot;</span>);
     <span class="macro">transaction_name_test!</span>(
@@ -4833,7 +4781,6 @@
                 },
                 <span class="bool-val">false</span>,
                 <span class="prelude-val">None</span>,
-                usize::MAX,
             ),
             ProcessingState::root(),
         )
@@ -4880,7 +4827,6 @@
                 },
                 <span class="bool-val">false</span>,
                 <span class="prelude-val">None</span>,
-                usize::MAX,
             ),
             ProcessingState::root(),
         )

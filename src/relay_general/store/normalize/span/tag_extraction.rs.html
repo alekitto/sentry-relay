@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-general/src/store/normalize/span/tag_extraction.rs`."><title>tag_extraction.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../../" data-static-root-path="../../../../../static.files/" data-current-crate="relay_general" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../../../source-files.js"></script><script defer src="../../../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../../relay_general/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-general/src/store/normalize/span/tag_extraction.rs`."><title>tag_extraction.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../../../" data-static-root-path="../../../../../static.files/" data-current-crate="relay_general" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.1 (eb26296b5 2023-08-03)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../../../source-files.js"></script><script defer src="../../../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../../../relay_general/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -537,6 +537,66 @@
 <a href="#537" id="537">537</a>
 <a href="#538" id="538">538</a>
 <a href="#539" id="539">539</a>
+<a href="#540" id="540">540</a>
+<a href="#541" id="541">541</a>
+<a href="#542" id="542">542</a>
+<a href="#543" id="543">543</a>
+<a href="#544" id="544">544</a>
+<a href="#545" id="545">545</a>
+<a href="#546" id="546">546</a>
+<a href="#547" id="547">547</a>
+<a href="#548" id="548">548</a>
+<a href="#549" id="549">549</a>
+<a href="#550" id="550">550</a>
+<a href="#551" id="551">551</a>
+<a href="#552" id="552">552</a>
+<a href="#553" id="553">553</a>
+<a href="#554" id="554">554</a>
+<a href="#555" id="555">555</a>
+<a href="#556" id="556">556</a>
+<a href="#557" id="557">557</a>
+<a href="#558" id="558">558</a>
+<a href="#559" id="559">559</a>
+<a href="#560" id="560">560</a>
+<a href="#561" id="561">561</a>
+<a href="#562" id="562">562</a>
+<a href="#563" id="563">563</a>
+<a href="#564" id="564">564</a>
+<a href="#565" id="565">565</a>
+<a href="#566" id="566">566</a>
+<a href="#567" id="567">567</a>
+<a href="#568" id="568">568</a>
+<a href="#569" id="569">569</a>
+<a href="#570" id="570">570</a>
+<a href="#571" id="571">571</a>
+<a href="#572" id="572">572</a>
+<a href="#573" id="573">573</a>
+<a href="#574" id="574">574</a>
+<a href="#575" id="575">575</a>
+<a href="#576" id="576">576</a>
+<a href="#577" id="577">577</a>
+<a href="#578" id="578">578</a>
+<a href="#579" id="579">579</a>
+<a href="#580" id="580">580</a>
+<a href="#581" id="581">581</a>
+<a href="#582" id="582">582</a>
+<a href="#583" id="583">583</a>
+<a href="#584" id="584">584</a>
+<a href="#585" id="585">585</a>
+<a href="#586" id="586">586</a>
+<a href="#587" id="587">587</a>
+<a href="#588" id="588">588</a>
+<a href="#589" id="589">589</a>
+<a href="#590" id="590">590</a>
+<a href="#591" id="591">591</a>
+<a href="#592" id="592">592</a>
+<a href="#593" id="593">593</a>
+<a href="#594" id="594">594</a>
+<a href="#595" id="595">595</a>
+<a href="#596" id="596">596</a>
+<a href="#597" id="597">597</a>
+<a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Logic for persisting items into `span.data` fields.
 //! These are then used for metrics extraction.
 </span><span class="kw">use </span>std::collections::BTreeMap;
@@ -550,7 +610,15 @@
 <span class="kw">use </span><span class="kw">crate</span>::store::utils::{
     extract_http_status_code, extract_transaction_op, get_eventuser_tag, http_status_code_from_span,
 };
-<span class="kw">use </span><span class="kw">crate</span>::types::Annotated;
+<span class="kw">use </span><span class="kw">crate</span>::types::{Annotated, Value};
+
+<span class="doccomment">/// Used to decide when to extract mobile-specific span tags.
+</span><span class="kw">const </span>MOBILE_SDKS: [<span class="kw-2">&amp;</span>str; <span class="number">4</span>] = [
+    <span class="string">&quot;sentry.cocoa&quot;</span>,
+    <span class="string">&quot;sentry.dart.flutter&quot;</span>,
+    <span class="string">&quot;sentry.java.android&quot;</span>,
+    <span class="string">&quot;sentry.javascript.react-native&quot;</span>,
+];
 
 <span class="attr">#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 </span><span class="kw">pub enum </span>SpanTagKey {
@@ -562,6 +630,9 @@
     TransactionMethod,
     TransactionOp,
     HttpStatusCode,
+    <span class="comment">// `true` if the transaction was sent by a mobile SDK.
+    </span>Mobile,
+    DeviceClass,
 
     <span class="comment">// Specific to spans
     </span>Description,
@@ -591,6 +662,8 @@
     SpanTagKey::TransactionMethod =&gt; <span class="string">&quot;transaction.method&quot;</span>,
     SpanTagKey::TransactionOp =&gt; <span class="string">&quot;transaction.op&quot;</span>,
     SpanTagKey::HttpStatusCode =&gt; <span class="string">&quot;http.status_code&quot;</span>,
+    SpanTagKey::Mobile =&gt; <span class="string">&quot;mobile&quot;</span>,
+    SpanTagKey::DeviceClass =&gt; <span class="string">&quot;device.class&quot;</span>,
 
     SpanTagKey::Description =&gt; <span class="string">&quot;span.description&quot;</span>,
     SpanTagKey::Group =&gt; <span class="string">&quot;span.group&quot;</span>,
@@ -632,30 +705,30 @@
             shared_tags
                 .clone()
                 .into_iter()
-                .chain(tags.into_iter())
-                .map(|(k, v)| (k.to_string(), Annotated::new(v.into()))),
+                .chain(tags)
+                .map(|(k, v)| (k.to_string(), Annotated::new(v))),
         );
     }
 }
 
 <span class="doccomment">/// Extracts tags shared by every span.
-</span><span class="kw">fn </span>extract_shared_tags(event: <span class="kw-2">&amp;</span>Event) -&gt; BTreeMap&lt;SpanTagKey, String&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>tags = BTreeMap::new();
+</span><span class="kw">fn </span>extract_shared_tags(event: <span class="kw-2">&amp;</span>Event) -&gt; BTreeMap&lt;SpanTagKey, Value&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>tags = BTreeMap::&lt;SpanTagKey, Value&gt;::new();
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(release) = event.release.as_str() {
-        tags.insert(SpanTagKey::Release, release.to_owned());
+        tags.insert(SpanTagKey::Release, release.to_owned().into());
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(user) = event.user.value().and_then(get_eventuser_tag) {
-        tags.insert(SpanTagKey::User, user);
+        tags.insert(SpanTagKey::User, user.into());
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(environment) = event.environment.as_str() {
-        tags.insert(SpanTagKey::Environment, environment.to_owned());
+        tags.insert(SpanTagKey::Environment, environment.into());
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(transaction_name) = event.transaction.value() {
-        tags.insert(SpanTagKey::Transaction, transaction_name.to_owned());
+        tags.insert(SpanTagKey::Transaction, transaction_name.clone().into());
 
         <span class="kw">let </span>transaction_method_from_request = event
             .request
@@ -663,36 +736,52 @@
             .and_then(|r| r.method.value())
             .map(|m| m.to_uppercase());
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(transaction_method) = transaction_method_from_request
-            .or(http_method_from_transaction_name(transaction_name).map(|m| m.to_uppercase()))
-        {
-            tags.insert(SpanTagKey::TransactionMethod, transaction_method);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(transaction_method) = transaction_method_from_request.or_else(|| {
+            http_method_from_transaction_name(transaction_name).map(|m| m.to_uppercase())
+        }) {
+            tags.insert(SpanTagKey::TransactionMethod, transaction_method.into());
         }
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(trace_context) = event.context::&lt;TraceContext&gt;() {
         <span class="kw">if let </span><span class="prelude-val">Some</span>(op) = extract_transaction_op(trace_context) {
-            tags.insert(SpanTagKey::TransactionOp, op.to_lowercase());
+            tags.insert(SpanTagKey::TransactionOp, op.to_lowercase().into());
         }
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(transaction_http_status_code) = extract_http_status_code(event) {
-        tags.insert(SpanTagKey::HttpStatusCode, transaction_http_status_code);
+        tags.insert(
+            SpanTagKey::HttpStatusCode,
+            transaction_http_status_code.into(),
+        );
+    }
+
+    <span class="kw">if </span>MOBILE_SDKS.contains(<span class="kw-2">&amp;</span>event.sdk_name()) {
+        tags.insert(SpanTagKey::Mobile, <span class="bool-val">true</span>.into());
+    }
+
+    <span class="kw">if let </span><span class="prelude-val">Some</span>(device_class) = event.tag_value(<span class="string">&quot;device.class&quot;</span>) {
+        tags.insert(SpanTagKey::DeviceClass, device_class.into());
     }
 
     tags
 }
 
 <span class="doccomment">/// Writes fields into [`Span::data`].
-</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>extract_tags(span: <span class="kw-2">&amp;</span>Span, config: <span class="kw-2">&amp;</span>Config) -&gt; BTreeMap&lt;SpanTagKey, String&gt; {
-    <span class="kw">let </span><span class="kw-2">mut </span>span_tags = BTreeMap::new();
+///
+/// Generating new span data fields is based on a combination of looking at
+/// [span operations](https://develop.sentry.dev/sdk/performance/span-operations/) and
+/// existing [span data](https://develop.sentry.dev/sdk/performance/span-data-conventions/) fields,
+/// and rely on Sentry conventions and heuristics.
+</span><span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn </span>extract_tags(span: <span class="kw-2">&amp;</span>Span, config: <span class="kw-2">&amp;</span>Config) -&gt; BTreeMap&lt;SpanTagKey, Value&gt; {
+    <span class="kw">let </span><span class="kw-2">mut </span>span_tags: BTreeMap&lt;SpanTagKey, Value&gt; = BTreeMap::new();
     <span class="kw">if let </span><span class="prelude-val">Some</span>(unsanitized_span_op) = span.op.value() {
         <span class="kw">let </span>span_op = unsanitized_span_op.to_owned().to_lowercase();
 
-        span_tags.insert(SpanTagKey::SpanOp, span_op.to_owned());
+        span_tags.insert(SpanTagKey::SpanOp, span_op.to_owned().into());
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(category) = span_op_to_category(<span class="kw-2">&amp;</span>span_op) {
-            span_tags.insert(SpanTagKey::Category, category.to_owned());
+            span_tags.insert(SpanTagKey::Category, category.to_owned().into());
         }
 
         <span class="kw">let </span>span_module = <span class="kw">if </span>span_op.starts_with(<span class="string">&quot;http&quot;</span>) {
@@ -706,7 +795,7 @@
         </span>};
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(module) = span_module {
-            span_tags.insert(SpanTagKey::Module, module.to_owned());
+            span_tags.insert(SpanTagKey::Module, module.to_owned().into());
         }
 
         <span class="kw">let </span>scrubbed_description = span
@@ -715,15 +804,15 @@
             .and_then(|data| data.get(<span class="string">&quot;description.scrubbed&quot;</span>))
             .and_then(|value| value.as_str());
 
-        <span class="comment">// TODO(iker): we&#39;re relying on the existance of `http.method`
-        // or `db.operation`. This is not guaranteed, and we&#39;ll need to
-        // parse the span description in that case.
-        </span><span class="kw">let </span>action = <span class="kw">match </span>(span_module, span_op.as_str(), scrubbed_description) {
+        <span class="kw">let </span>action = <span class="kw">match </span>(span_module, span_op.as_str(), scrubbed_description) {
             (<span class="prelude-val">Some</span>(<span class="string">&quot;http&quot;</span>), <span class="kw">_</span>, <span class="kw">_</span>) =&gt; span
                 .data
                 .value()
-                <span class="comment">// TODO(iker): some SDKs extract this as method
-                </span>.and_then(|v| v.get(<span class="string">&quot;http.method&quot;</span>))
+                .and_then(|v| {
+                    v.get(<span class="string">&quot;http.request.method&quot;</span>)
+                        .or(v.get(<span class="string">&quot;http.method&quot;</span>))
+                        .or(v.get(<span class="string">&quot;method&quot;</span>))
+                })
                 .and_then(|method| method.as_str())
                 .map(|s| s.to_uppercase()),
             (<span class="kw">_</span>, <span class="string">&quot;db.redis&quot;</span>, <span class="prelude-val">Some</span>(desc)) =&gt; {
@@ -752,8 +841,8 @@
             <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
         };
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(act) = action.clone() {
-            span_tags.insert(SpanTagKey::Action, act);
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(act) = action {
+            span_tags.insert(SpanTagKey::Action, act.into());
         }
 
         <span class="kw">let </span>domain = <span class="kw">if </span>span_op == <span class="string">&quot;http.client&quot; </span>{
@@ -780,8 +869,8 @@
         </span>};
 
         <span class="kw">if </span>!span_op.starts_with(<span class="string">&quot;db.redis&quot;</span>) {
-            <span class="kw">if let </span><span class="prelude-val">Some</span>(dom) = domain.clone() {
-                span_tags.insert(SpanTagKey::Domain, dom);
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(dom) = domain {
+                span_tags.insert(SpanTagKey::Domain, dom.into());
             }
         }
 
@@ -793,10 +882,10 @@
 
             </span><span class="kw">let </span><span class="kw-2">mut </span>span_group = <span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, md5::compute(scrubbed_desc));
             span_group.truncate(<span class="number">16</span>);
-            span_tags.insert(SpanTagKey::Group, span_group);
+            span_tags.insert(SpanTagKey::Group, span_group.into());
 
             <span class="kw">let </span>truncated = truncate_string(scrubbed_desc.to_owned(), config.max_tag_value_size);
-            span_tags.insert(SpanTagKey::Description, truncated);
+            span_tags.insert(SpanTagKey::Description, truncated.into());
         }
     }
 
@@ -806,15 +895,15 @@
         .and_then(|v| v.get(<span class="string">&quot;db.system&quot;</span>))
         .and_then(|system| system.as_str());
     <span class="kw">if let </span><span class="prelude-val">Some</span>(sys) = system {
-        span_tags.insert(SpanTagKey::System, sys.to_lowercase());
+        span_tags.insert(SpanTagKey::System, sys.to_lowercase().into());
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(span_status) = span.status.value() {
-        span_tags.insert(SpanTagKey::Status, span_status.to_string());
+        span_tags.insert(SpanTagKey::Status, span_status.to_string().into());
     }
 
     <span class="kw">if let </span><span class="prelude-val">Some</span>(status_code) = http_status_code_from_span(span) {
-        span_tags.insert(SpanTagKey::StatusCode, status_code);
+        span_tags.insert(SpanTagKey::StatusCode, status_code.into());
     }
 
     span_tags
@@ -848,9 +937,10 @@
 
 <span class="doccomment">/// Regex with a capture group to extract the database action from a query.
 ///
-/// Currently, we&#39;re only interested in `SELECT`, `INSERT`, `DELETE` and `UPDATE` statements.
-</span><span class="kw">static </span>SQL_ACTION_EXTRACTOR_REGEX: Lazy&lt;Regex&gt; =
-    Lazy::new(|| Regex::new(<span class="string">r#&quot;(?i)(?P&lt;action&gt;(SELECT|INSERT|DELETE|UPDATE))&quot;#</span>).unwrap());
+/// Currently we have an explicit allow-list of database actions considered important.
+</span><span class="kw">static </span>SQL_ACTION_EXTRACTOR_REGEX: Lazy&lt;Regex&gt; = Lazy::new(|| {
+    Regex::new(<span class="string">r#&quot;(?i)(?P&lt;action&gt;(SELECT|INSERT|DELETE|UPDATE|SET|SAVEPOINT|RELEASE SAVEPOINT|ROLLBACK TO SAVEPOINT))&quot;#</span>).unwrap()
+});
 
 <span class="kw">fn </span>sql_action_from_query(query: <span class="kw-2">&amp;</span>str) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>str&gt; {
     extract_captured_substring(query, <span class="kw-2">&amp;</span>SQL_ACTION_EXTRACTOR_REGEX)
@@ -871,7 +961,7 @@
 
 <span class="doccomment">/// Regex with a capture group to extract the HTTP method from a string.
 </span><span class="kw">pub static </span>HTTP_METHOD_EXTRACTOR_REGEX: Lazy&lt;Regex&gt; = Lazy::new(|| {
-    Regex::new(<span class="string">r#&quot;(?i)^(?P&lt;method&gt;(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH))\b&quot;#</span>)
+    Regex::new(<span class="string">r&quot;(?i)^(?P&lt;method&gt;(GET|HEAD|POST|PUT|DELETE|CONNECT|OPTIONS|TRACE|PATCH))\b&quot;</span>)
         .unwrap()
 });
 
@@ -1074,6 +1164,36 @@
     </span><span class="kw">fn </span>extract_table_update() {
         <span class="kw">let </span>query = <span class="string">r#&quot;UPDATE &quot;a&quot; SET &quot;x&quot; = %s, &quot;y&quot; = %s WHERE &quot;z&quot; = %s&quot;#</span>;
         <span class="macro">assert_eq!</span>(sql_table_from_query(query).unwrap(), <span class="string">&quot;a&quot;</span>);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>extract_sql_action() {
+        <span class="kw">let </span>test_cases = <span class="macro">vec!</span>[
+            (
+                <span class="string">r#&quot;SELECT &quot;sentry_organization&quot;.&quot;id&quot; FROM &quot;sentry_organization&quot; WHERE &quot;sentry_organization&quot;.&quot;id&quot; = %s&quot;#</span>,
+                <span class="string">&quot;SELECT&quot;</span>,
+            ),
+            (
+                <span class="string">r#&quot;INSERT INTO &quot;sentry_groupseen&quot; (&quot;project_id&quot;, &quot;group_id&quot;, &quot;user_id&quot;, &quot;last_seen&quot;) VALUES (%s, %s, %s, %s) RETURNING &quot;sentry_groupseen&quot;.&quot;id&quot;#</span>,
+                <span class="string">&quot;INSERT&quot;</span>,
+            ),
+            (
+                <span class="string">r#&quot;UPDATE sentry_release SET date_released = %s WHERE id = %s&quot;#</span>,
+                <span class="string">&quot;UPDATE&quot;</span>,
+            ),
+            (
+                <span class="string">r#&quot;DELETE FROM &quot;sentry_groupinbox&quot; WHERE &quot;sentry_groupinbox&quot;.&quot;id&quot; IN (%s)&quot;#</span>,
+                <span class="string">&quot;DELETE&quot;</span>,
+            ),
+            (<span class="string">r#&quot;SET search_path TO my_schema, public&quot;#</span>, <span class="string">&quot;SET&quot;</span>),
+            (<span class="string">r#&quot;SAVEPOINT %s&quot;#</span>, <span class="string">&quot;SAVEPOINT&quot;</span>),
+            (<span class="string">r#&quot;RELEASE SAVEPOINT %s&quot;#</span>, <span class="string">&quot;RELEASE SAVEPOINT&quot;</span>),
+            (<span class="string">r#&quot;ROLLBACK TO SAVEPOINT %s&quot;#</span>, <span class="string">&quot;ROLLBACK TO SAVEPOINT&quot;</span>),
+        ];
+
+        <span class="kw">for </span>(query, expected) <span class="kw">in </span>test_cases {
+            <span class="macro">assert_eq!</span>(sql_action_from_query(query).unwrap(), expected)
+        }
     }
 }
 </code></pre></div></section></main></body></html>

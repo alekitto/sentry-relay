@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-server/src/actors/processor.rs`."><title>processor.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="relay_server" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.0 (8ede3aae2 2023-07-12)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../relay_server/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-server/src/actors/processor.rs`."><title>processor.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../../" data-static-root-path="../../../static.files/" data-current-crate="relay_server" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.1 (eb26296b5 2023-08-03)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../../source-files.js"></script><script defer src="../../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../../relay_server/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -3872,6 +3872,118 @@
 <a href="#3872" id="3872">3872</a>
 <a href="#3873" id="3873">3873</a>
 <a href="#3874" id="3874">3874</a>
+<a href="#3875" id="3875">3875</a>
+<a href="#3876" id="3876">3876</a>
+<a href="#3877" id="3877">3877</a>
+<a href="#3878" id="3878">3878</a>
+<a href="#3879" id="3879">3879</a>
+<a href="#3880" id="3880">3880</a>
+<a href="#3881" id="3881">3881</a>
+<a href="#3882" id="3882">3882</a>
+<a href="#3883" id="3883">3883</a>
+<a href="#3884" id="3884">3884</a>
+<a href="#3885" id="3885">3885</a>
+<a href="#3886" id="3886">3886</a>
+<a href="#3887" id="3887">3887</a>
+<a href="#3888" id="3888">3888</a>
+<a href="#3889" id="3889">3889</a>
+<a href="#3890" id="3890">3890</a>
+<a href="#3891" id="3891">3891</a>
+<a href="#3892" id="3892">3892</a>
+<a href="#3893" id="3893">3893</a>
+<a href="#3894" id="3894">3894</a>
+<a href="#3895" id="3895">3895</a>
+<a href="#3896" id="3896">3896</a>
+<a href="#3897" id="3897">3897</a>
+<a href="#3898" id="3898">3898</a>
+<a href="#3899" id="3899">3899</a>
+<a href="#3900" id="3900">3900</a>
+<a href="#3901" id="3901">3901</a>
+<a href="#3902" id="3902">3902</a>
+<a href="#3903" id="3903">3903</a>
+<a href="#3904" id="3904">3904</a>
+<a href="#3905" id="3905">3905</a>
+<a href="#3906" id="3906">3906</a>
+<a href="#3907" id="3907">3907</a>
+<a href="#3908" id="3908">3908</a>
+<a href="#3909" id="3909">3909</a>
+<a href="#3910" id="3910">3910</a>
+<a href="#3911" id="3911">3911</a>
+<a href="#3912" id="3912">3912</a>
+<a href="#3913" id="3913">3913</a>
+<a href="#3914" id="3914">3914</a>
+<a href="#3915" id="3915">3915</a>
+<a href="#3916" id="3916">3916</a>
+<a href="#3917" id="3917">3917</a>
+<a href="#3918" id="3918">3918</a>
+<a href="#3919" id="3919">3919</a>
+<a href="#3920" id="3920">3920</a>
+<a href="#3921" id="3921">3921</a>
+<a href="#3922" id="3922">3922</a>
+<a href="#3923" id="3923">3923</a>
+<a href="#3924" id="3924">3924</a>
+<a href="#3925" id="3925">3925</a>
+<a href="#3926" id="3926">3926</a>
+<a href="#3927" id="3927">3927</a>
+<a href="#3928" id="3928">3928</a>
+<a href="#3929" id="3929">3929</a>
+<a href="#3930" id="3930">3930</a>
+<a href="#3931" id="3931">3931</a>
+<a href="#3932" id="3932">3932</a>
+<a href="#3933" id="3933">3933</a>
+<a href="#3934" id="3934">3934</a>
+<a href="#3935" id="3935">3935</a>
+<a href="#3936" id="3936">3936</a>
+<a href="#3937" id="3937">3937</a>
+<a href="#3938" id="3938">3938</a>
+<a href="#3939" id="3939">3939</a>
+<a href="#3940" id="3940">3940</a>
+<a href="#3941" id="3941">3941</a>
+<a href="#3942" id="3942">3942</a>
+<a href="#3943" id="3943">3943</a>
+<a href="#3944" id="3944">3944</a>
+<a href="#3945" id="3945">3945</a>
+<a href="#3946" id="3946">3946</a>
+<a href="#3947" id="3947">3947</a>
+<a href="#3948" id="3948">3948</a>
+<a href="#3949" id="3949">3949</a>
+<a href="#3950" id="3950">3950</a>
+<a href="#3951" id="3951">3951</a>
+<a href="#3952" id="3952">3952</a>
+<a href="#3953" id="3953">3953</a>
+<a href="#3954" id="3954">3954</a>
+<a href="#3955" id="3955">3955</a>
+<a href="#3956" id="3956">3956</a>
+<a href="#3957" id="3957">3957</a>
+<a href="#3958" id="3958">3958</a>
+<a href="#3959" id="3959">3959</a>
+<a href="#3960" id="3960">3960</a>
+<a href="#3961" id="3961">3961</a>
+<a href="#3962" id="3962">3962</a>
+<a href="#3963" id="3963">3963</a>
+<a href="#3964" id="3964">3964</a>
+<a href="#3965" id="3965">3965</a>
+<a href="#3966" id="3966">3966</a>
+<a href="#3967" id="3967">3967</a>
+<a href="#3968" id="3968">3968</a>
+<a href="#3969" id="3969">3969</a>
+<a href="#3970" id="3970">3970</a>
+<a href="#3971" id="3971">3971</a>
+<a href="#3972" id="3972">3972</a>
+<a href="#3973" id="3973">3973</a>
+<a href="#3974" id="3974">3974</a>
+<a href="#3975" id="3975">3975</a>
+<a href="#3976" id="3976">3976</a>
+<a href="#3977" id="3977">3977</a>
+<a href="#3978" id="3978">3978</a>
+<a href="#3979" id="3979">3979</a>
+<a href="#3980" id="3980">3980</a>
+<a href="#3981" id="3981">3981</a>
+<a href="#3982" id="3982">3982</a>
+<a href="#3983" id="3983">3983</a>
+<a href="#3984" id="3984">3984</a>
+<a href="#3985" id="3985">3985</a>
+<a href="#3986" id="3986">3986</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::BTreeMap;
 <span class="kw">use </span>std::convert::TryFrom;
 <span class="kw">use </span>std::error::Error;
@@ -3913,7 +4025,7 @@
 };
 <span class="kw">use </span>relay_general::types::{Annotated, Array, Empty, FromValue, Object, ProcessingAction, Value};
 <span class="kw">use </span>relay_general::user_agent::RawUserAgentInfo;
-<span class="kw">use </span>relay_metrics::{Bucket, InsertMetrics, MergeBuckets, Metric};
+<span class="kw">use </span>relay_metrics::{Bucket, InsertMetrics, MergeBuckets, Metric, MetricNamespace};
 <span class="kw">use </span>relay_quotas::{DataCategory, ReasonCode};
 <span class="kw">use </span>relay_redis::RedisPool;
 <span class="kw">use </span>relay_replays::recording::RecordingScrubber;
@@ -4394,7 +4506,12 @@
 <span class="doccomment">/// Service implementing the [`EnvelopeProcessor`] interface.
 ///
 /// This service handles messages in a worker pool with configurable concurrency.
+</span><span class="attr">#[derive(Clone)]
 </span><span class="kw">pub struct </span>EnvelopeProcessorService {
+    inner: Arc&lt;InnerProcessor&gt;,
+}
+
+<span class="kw">struct </span>InnerProcessor {
     config: Arc&lt;Config&gt;,
     envelope_manager: Addr&lt;EnvelopeManager&gt;,
     project_cache: Addr&lt;ProjectCache&gt;,
@@ -4425,30 +4542,20 @@
             }
         });
 
-        <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
-        </span>{
-            <span class="kw">let </span>rate_limiter =
-                _redis.map(|pool| RedisRateLimiter::new(pool).max_limit(config.max_rate_limit()));
-
-            <span class="self">Self </span>{
-                config,
-                rate_limiter,
-                geoip_lookup,
-                envelope_manager,
-                outcome_aggregator,
-                project_cache,
-                upstream_relay,
-            }
-        }
-
-        <span class="attr">#[cfg(not(feature = <span class="string">&quot;processing&quot;</span>))]
-        </span><span class="self">Self </span>{
+        <span class="kw">let </span>inner = InnerProcessor {
+            <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
+            </span>rate_limiter: _redis
+                .map(|pool| RedisRateLimiter::new(pool).max_limit(config.max_rate_limit())),
             config,
-            geoip_lookup,
             envelope_manager,
-            outcome_aggregator,
             project_cache,
+            outcome_aggregator,
             upstream_relay,
+            geoip_lookup,
+        };
+
+        <span class="self">Self </span>{
+            inner: Arc::new(inner),
         }
     }
 
@@ -4498,13 +4605,13 @@
         received: DateTime&lt;Utc&gt;,
         timestamp: DateTime&lt;Utc&gt;,
     ) -&gt; bool {
-        <span class="kw">let </span>max_age = SignedDuration::seconds(<span class="self">self</span>.config.max_session_secs_in_past());
+        <span class="kw">let </span>max_age = SignedDuration::seconds(<span class="self">self</span>.inner.config.max_session_secs_in_past());
         <span class="kw">if </span>(received - timestamp) &gt; max_age {
             <span class="macro">relay_log::trace!</span>(<span class="string">&quot;skipping session older than {} days&quot;</span>, max_age.num_days());
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
 
-        <span class="kw">let </span>max_future = SignedDuration::seconds(<span class="self">self</span>.config.max_secs_in_future());
+        <span class="kw">let </span>max_future = SignedDuration::seconds(<span class="self">self</span>.inner.config.max_secs_in_future());
         <span class="kw">if </span>(timestamp - received) &gt; max_future {
             <span class="macro">relay_log::trace!</span>(
                 <span class="string">&quot;skipping session more than {}s in the future&quot;</span>,
@@ -4585,7 +4692,9 @@
             }
         }
 
-        <span class="kw">if </span><span class="self">self</span>.config.processing_enabled() &amp;&amp; <span class="macro">matches!</span>(session.status, SessionStatus::Unknown(<span class="kw">_</span>)) {
+        <span class="kw">if </span><span class="self">self</span>.inner.config.processing_enabled()
+            &amp;&amp; <span class="macro">matches!</span>(session.status, SessionStatus::Unknown(<span class="kw">_</span>))
+        {
             <span class="kw">return </span><span class="bool-val">false</span>;
         }
 
@@ -4797,9 +4906,9 @@
     </span><span class="kw">fn </span>process_client_reports(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState) {
         <span class="comment">// if client outcomes are disabled we leave the the client reports unprocessed
         // and pass them on.
-        </span><span class="kw">if </span>!<span class="self">self</span>.config.emit_outcomes().any() || !<span class="self">self</span>.config.emit_client_outcomes() {
+        </span><span class="kw">if </span>!<span class="self">self</span>.inner.config.emit_outcomes().any() || !<span class="self">self</span>.inner.config.emit_client_outcomes() {
             <span class="comment">// if a processing relay has client outcomes disabled we drop them.
-            </span><span class="kw">if </span><span class="self">self</span>.config.processing_enabled() {
+            </span><span class="kw">if </span><span class="self">self</span>.inner.config.processing_enabled() {
                 state.managed_envelope.retain_items(|item| <span class="kw">match </span>item.ty() {
                     ItemType::ClientReport =&gt; ItemAction::DropSilently,
                     <span class="kw">_ </span>=&gt; ItemAction::Keep,
@@ -4881,7 +4990,7 @@
             clock_drift_processor.process_timestamp(timestamp);
         }
 
-        <span class="kw">let </span>max_age = SignedDuration::seconds(<span class="self">self</span>.config.max_secs_in_past());
+        <span class="kw">let </span>max_age = SignedDuration::seconds(<span class="self">self</span>.inner.config.max_secs_in_past());
         <span class="comment">// also if we unable to parse the timestamp, we assume it&#39;s way too old here.
         </span><span class="kw">let </span>in_past = timestamp
             .as_datetime()
@@ -4895,7 +5004,7 @@
             <span class="kw">return</span>;
         }
 
-        <span class="kw">let </span>max_future = SignedDuration::seconds(<span class="self">self</span>.config.max_secs_in_future());
+        <span class="kw">let </span>max_future = SignedDuration::seconds(<span class="self">self</span>.inner.config.max_secs_in_future());
         <span class="comment">// also if we unable to parse the timestamp, we assume it&#39;s way far in the future here.
         </span><span class="kw">let </span>in_future = timestamp
             .as_datetime()
@@ -4918,7 +5027,7 @@
                 }
             };
 
-            <span class="self">self</span>.outcome_aggregator.send(TrackOutcome {
+            <span class="self">self</span>.inner.outcome_aggregator.send(TrackOutcome {
                 <span class="comment">// If we get to this point, the unwrap should not be used anymore, since we know by
                 // now that the timestamp can be parsed, but just incase we fallback to UTC current
                 // `DateTime`.
@@ -5000,7 +5109,7 @@
             ItemType::Profile =&gt; {
                 <span class="kw">match </span>relay_profiling::expand_profile(<span class="kw-2">&amp;</span>item.payload(), state.event.value()) {
                     <span class="prelude-val">Ok</span>((profile_id, payload)) =&gt; {
-                        <span class="kw">if </span>payload.len() &lt;= <span class="self">self</span>.config.max_profile_size() {
+                        <span class="kw">if </span>payload.len() &lt;= <span class="self">self</span>.inner.config.max_profile_size() {
                             <span class="kw">if let </span><span class="prelude-val">Some</span>(event) = state.event.value_mut() {
                                 <span class="kw">if </span>event.ty.value() == <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>EventType::Transaction) {
                                     <span class="kw">let </span>contexts = event.contexts.get_or_insert_with(Contexts::new);
@@ -5060,7 +5169,7 @@
         <span class="kw">let </span>client_addr = meta.client_addr();
         <span class="kw">let </span>event_id = state.envelope().event_id();
 
-        <span class="kw">let </span>limit = <span class="self">self</span>.config.max_replay_uncompressed_size();
+        <span class="kw">let </span>limit = <span class="self">self</span>.inner.config.max_replay_uncompressed_size();
         <span class="kw">let </span>config = project_state.config();
         <span class="kw">let </span>datascrubbing_config = config
             .datascrubbing_settings
@@ -5257,7 +5366,7 @@
         <span class="kw">let </span>envelope = <span class="kw-2">&amp;mut </span>state.envelope_mut();
 
         <span class="kw">if let </span><span class="prelude-val">Some</span>(item) = envelope.take_item_by(|item| item.ty() == <span class="kw-2">&amp;</span>ItemType::UnrealReport) {
-            utils::expand_unreal_envelope(item, envelope, <span class="kw-2">&amp;</span><span class="self">self</span>.config)<span class="question-mark">?</span>;
+            utils::expand_unreal_envelope(item, envelope, <span class="kw-2">&amp;</span><span class="self">self</span>.inner.config)<span class="question-mark">?</span>;
         }
 
         <span class="prelude-val">Ok</span>(())
@@ -5491,7 +5600,7 @@
             ItemType::RawSecurity =&gt; <span class="bool-val">true</span>,
 
             <span class="comment">// These should be removed conditionally:
-            </span>ItemType::UnrealReport =&gt; <span class="self">self</span>.config.processing_enabled(),
+            </span>ItemType::UnrealReport =&gt; <span class="self">self</span>.inner.config.processing_enabled(),
 
             <span class="comment">// These may be forwarded to upstream / store:
             </span>ItemType::Attachment =&gt; <span class="bool-val">false</span>,
@@ -5507,6 +5616,7 @@
             ItemType::ReplayEvent =&gt; <span class="bool-val">false</span>,
             ItemType::ReplayRecording =&gt; <span class="bool-val">false</span>,
             ItemType::CheckIn =&gt; <span class="bool-val">false</span>,
+            ItemType::Span =&gt; <span class="bool-val">false</span>,
 
             <span class="comment">// Without knowing more, `Unknown` items are allowed to be repeated
             </span>ItemType::Unknown(<span class="kw">_</span>) =&gt; <span class="bool-val">false</span>,
@@ -5575,7 +5685,12 @@
                 })<span class="question-mark">?
         </span>} <span class="kw">else if </span>attachment_item.is_some() || breadcrumbs1.is_some() || breadcrumbs2.is_some() {
             <span class="macro">relay_log::trace!</span>(<span class="string">&quot;extracting attached event data&quot;</span>);
-            <span class="self">Self</span>::event_from_attachments(<span class="kw-2">&amp;</span><span class="self">self</span>.config, attachment_item, breadcrumbs1, breadcrumbs2)<span class="question-mark">?
+            <span class="self">Self</span>::event_from_attachments(
+                <span class="kw-2">&amp;</span><span class="self">self</span>.inner.config,
+                attachment_item,
+                breadcrumbs1,
+                breadcrumbs2,
+            )<span class="question-mark">?
         </span>} <span class="kw">else if let </span><span class="prelude-val">Some</span>(item) = form_item {
             <span class="macro">relay_log::trace!</span>(<span class="string">&quot;extracting form data&quot;</span>);
             <span class="kw">let </span>len = item.len();
@@ -5638,11 +5753,11 @@
 
         <span class="kw">let </span>event = <span class="kw">match </span>state.event.value_mut() {
             <span class="prelude-val">Some</span>(event) =&gt; event,
-            <span class="prelude-val">None </span><span class="kw">if </span>!<span class="self">self</span>.config.processing_enabled() =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(()),
+            <span class="prelude-val">None </span><span class="kw">if </span>!<span class="self">self</span>.inner.config.processing_enabled() =&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(()),
             <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Err</span>(ProcessingError::NoEventPayload),
         };
 
-        <span class="kw">if </span>!<span class="self">self</span>.config.processing_enabled() {
+        <span class="kw">if </span>!<span class="self">self</span>.inner.config.processing_enabled() {
             <span class="kw">static </span>MY_VERSION_STRING: OnceCell&lt;String&gt; = OnceCell::new();
             <span class="kw">let </span>my_version = MY_VERSION_STRING.get_or_init(|| RelayVersion::current().to_string());
 
@@ -5652,7 +5767,8 @@
                 .push(Annotated::new(RelayInfo {
                     version: Annotated::new(my_version.clone()),
                     public_key: <span class="self">self
-                        </span>.config
+                        </span>.inner
+                        .config
                         .public_key()
                         .map_or(Annotated::empty(), |pk| Annotated::new(pk.to_string())),
                     other: Default::default(),
@@ -5670,7 +5786,7 @@
 
         <span class="comment">// In processing mode, also write metrics into the event. Most metrics have already been
         // collected at this state, except for the combined size of all attachments.
-        </span><span class="kw">if </span><span class="self">self</span>.config.processing_enabled() {
+        </span><span class="kw">if </span><span class="self">self</span>.inner.config.processing_enabled() {
             <span class="kw">let </span><span class="kw-2">mut </span>metrics = std::mem::take(<span class="kw-2">&amp;mut </span>state.metrics);
 
             <span class="kw">let </span>attachment_size = envelope
@@ -5794,8 +5910,8 @@
             protocol_version: <span class="prelude-val">Some</span>(envelope.meta().version().to_string()),
             grouping_config: project_state.config.grouping_config.clone(),
             user_agent: envelope.meta().user_agent().map(str::to_owned),
-            max_secs_in_future: <span class="prelude-val">Some</span>(<span class="self">self</span>.config.max_secs_in_future()),
-            max_secs_in_past: <span class="prelude-val">Some</span>(<span class="self">self</span>.config.max_secs_in_past()),
+            max_secs_in_future: <span class="prelude-val">Some</span>(<span class="self">self</span>.inner.config.max_secs_in_future()),
+            max_secs_in_past: <span class="prelude-val">Some</span>(<span class="self">self</span>.inner.config.max_secs_in_past()),
             enable_trimming: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
             is_renormalize: <span class="prelude-val">Some</span>(<span class="bool-val">false</span>),
             remove_other: <span class="prelude-val">Some</span>(<span class="bool-val">true</span>),
@@ -5809,7 +5925,8 @@
             client_hints: envelope.meta().client_hints().to_owned(),
         };
 
-        <span class="kw">let </span><span class="kw-2">mut </span>store_processor = StoreProcessor::new(store_config, <span class="self">self</span>.geoip_lookup.as_ref());
+        <span class="kw">let </span><span class="kw-2">mut </span>store_processor =
+            StoreProcessor::new(store_config, <span class="self">self</span>.inner.geoip_lookup.as_ref());
         <span class="macro">metric!</span>(timer(RelayTimers::EventProcessingProcess), {
             process_value(event, <span class="kw-2">&amp;mut </span>store_processor, ProcessingState::root())
                 .map_err(|<span class="kw">_</span>| ProcessingError::InvalidTransaction)<span class="question-mark">?</span>;
@@ -5878,7 +5995,7 @@
 
     <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
     </span><span class="kw">fn </span>enforce_quotas(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState) -&gt; <span class="prelude-ty">Result</span>&lt;(), ProcessingError&gt; {
-        <span class="kw">let </span>rate_limiter = <span class="kw">match </span><span class="self">self</span>.rate_limiter.as_ref() {
+        <span class="kw">let </span>rate_limiter = <span class="kw">match </span><span class="self">self</span>.inner.rate_limiter.as_ref() {
             <span class="prelude-val">Some</span>(rate_limiter) =&gt; rate_limiter,
             <span class="prelude-val">None </span>=&gt; <span class="kw">return </span><span class="prelude-val">Ok</span>(()),
         };
@@ -5910,7 +6027,8 @@
         </span>});
 
         <span class="kw">if </span>limits.is_limited() {
-            <span class="self">self</span>.project_cache
+            <span class="self">self</span>.inner
+                .project_cache
                 .send(UpdateRateLimits::new(scoping.project_key, limits));
         }
 
@@ -5922,7 +6040,7 @@
         enforcement.track_outcomes(
             state.envelope(),
             <span class="kw-2">&amp;</span>state.managed_envelope.scoping(),
-            <span class="self">self</span>.outcome_aggregator.clone(),
+            <span class="self">self</span>.inner.outcome_aggregator.clone(),
         );
 
         <span class="prelude-val">Ok</span>(())
@@ -5934,24 +6052,29 @@
     ///  - This functionality is incomplete. At this point, extraction is implemented only for
     ///    transaction events.
     </span><span class="kw">fn </span>extract_metrics(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState) -&gt; <span class="prelude-ty">Result</span>&lt;(), ProcessingError&gt; {
+        <span class="comment">// NOTE: This function requires a `metric_extraction` in the project config. Legacy configs
+        // will upsert this configuration from transaction and conditional tagging fields, even if
+        // it is not present in the actual project config payload. Once transaction metric
+        // extraction is moved to generic metrics, this can be converted into an early return.
+        </span><span class="kw">let </span>config = <span class="kw">match </span>state.project_state.config.metric_extraction {
+            ErrorBoundary::Ok(<span class="kw-2">ref </span>config) <span class="kw">if </span>config.is_enabled() =&gt; <span class="prelude-val">Some</span>(config),
+            <span class="kw">_ </span>=&gt; <span class="prelude-val">None</span>,
+        };
+
         <span class="comment">// TODO: Make span metrics extraction immutable
         </span><span class="kw">if let </span><span class="prelude-val">Some</span>(event) = state.event.value() {
             <span class="kw">if </span>state.event_metrics_extracted {
                 <span class="kw">return </span><span class="prelude-val">Ok</span>(());
             }
 
-            <span class="kw">match </span>state.project_state.config.metric_extraction {
-                ErrorBoundary::Ok(<span class="kw-2">ref </span>config) <span class="kw">if </span>config.is_enabled() =&gt; {
-                    <span class="kw">let </span>metrics =
-                        <span class="kw">crate</span>::metrics_extraction::event::extract_event_metrics(event, config);
-                    state.event_metrics_extracted |= !metrics.is_empty();
-                    state.extracted_metrics.project_metrics.extend(metrics);
-                }
-                <span class="kw">_ </span>=&gt; (),
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(config) = config {
+                <span class="kw">let </span>metrics = <span class="kw">crate</span>::metrics_extraction::event::extract_metrics(event, config);
+                state.event_metrics_extracted |= !metrics.is_empty();
+                state.extracted_metrics.project_metrics.extend(metrics);
             }
 
             <span class="kw">match </span>state.project_state.config.transaction_metrics {
-                <span class="prelude-val">Some</span>(ErrorBoundary::Ok(<span class="kw-2">ref </span>config)) <span class="kw">if </span>config.is_enabled() =&gt; {
+                <span class="prelude-val">Some</span>(ErrorBoundary::Ok(<span class="kw-2">ref </span>tx_config)) <span class="kw">if </span>tx_config.is_enabled() =&gt; {
                     <span class="kw">let </span>transaction_from_dsc = state
                         .managed_envelope
                         .envelope()
@@ -5959,38 +6082,18 @@
                         .and_then(|dsc| dsc.transaction.as_deref());
 
                     <span class="kw">let </span>extractor = TransactionExtractor {
-                        aggregator_config: <span class="self">self</span>.config.aggregator_config(),
-                        config,
+                        aggregator_config: <span class="self">self</span>.inner.config.aggregator_config(),
+                        config: tx_config,
+                        generic_tags: config.map(|c| c.tags.as_slice()).unwrap_or_default(),
                         transaction_from_dsc,
                         sampling_result: <span class="kw-2">&amp;</span>state.sampling_result,
                         has_profile: state.has_profile,
                     };
 
-                    <span class="kw">let </span><span class="kw-2">mut </span>extracted = extractor.extract(event)<span class="question-mark">?</span>;
-
-                    <span class="comment">// TODO: Move conditional tagging to generic metrics extraction
-                    </span><span class="kw">let </span>tagging_config = <span class="kw-2">&amp;</span>state.project_state.config.metric_conditional_tagging;
-                    <span class="kw">crate</span>::metrics_extraction::conditional_tagging::run_conditional_tagging(
-                        event,
-                        tagging_config,
-                        <span class="kw-2">&amp;mut </span>extracted.project_metrics,
-                    );
-
-                    state.extracted_metrics.extend(extracted);
+                    state.extracted_metrics.extend(extractor.extract(event)<span class="question-mark">?</span>);
                     state.event_metrics_extracted |= <span class="bool-val">true</span>;
                 }
                 <span class="kw">_ </span>=&gt; (),
-            }
-
-            <span class="kw">if </span>state
-                .project_state
-                .has_feature(Feature::SpanMetricsExtraction)
-            {
-                <span class="kw">let </span>metrics = <span class="kw">crate</span>::metrics_extraction::spans::extract_span_metrics(
-                    <span class="self">self</span>.config.aggregator_config(),
-                    event,
-                )<span class="question-mark">?</span>;
-                state.extracted_metrics.project_metrics.extend(metrics);
             }
 
             <span class="kw">if </span>state.event_metrics_extracted {
@@ -6106,6 +6209,43 @@
         <span class="prelude-val">Ok</span>(())
     }
 
+    <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
+    </span><span class="kw">fn </span>extract_spans(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState) {
+        <span class="comment">// For now, drop any spans submitted by the SDK.
+        </span>state.managed_envelope.retain_items(|item| <span class="kw">match </span>item.ty() {
+            ItemType::Span =&gt; ItemAction::DropSilently,
+            <span class="kw">_ </span>=&gt; ItemAction::Keep,
+        });
+
+        <span class="comment">// Only extract spans from transactions (not errors).
+        </span><span class="kw">if </span>state.event_type() != <span class="prelude-val">Some</span>(EventType::Transaction) {
+            <span class="kw">return</span>;
+        };
+
+        <span class="comment">// Check feature flag.
+        </span><span class="kw">if </span>!state
+            .project_state
+            .has_feature(Feature::ExtractStandaloneSpans)
+        {
+            <span class="kw">return</span>;
+        };
+
+        <span class="comment">// Extract.
+        </span><span class="kw">let </span><span class="prelude-val">Some</span>(spans) = state.event.value().and_then(|e| e.spans.value()) <span class="kw">else </span>{ <span class="kw">return </span>};
+        <span class="kw">for </span>span <span class="kw">in </span>spans {
+            <span class="kw">let </span>span = <span class="kw">match </span>span.to_json() {
+                <span class="prelude-val">Ok</span>(span) =&gt; span,
+                <span class="prelude-val">Err</span>(e) =&gt; {
+                    <span class="macro">relay_log::error!</span>(error = <span class="kw-2">&amp;</span>e <span class="kw">as </span><span class="kw-2">&amp;</span><span class="kw">dyn </span>Error, <span class="string">&quot;Failed to serialize span&quot;</span>);
+                    <span class="kw">continue</span>;
+                }
+            };
+            <span class="kw">let </span><span class="kw-2">mut </span>item = Item::new(ItemType::Span);
+            item.set_payload(ContentType::Json, span);
+            state.managed_envelope.envelope_mut().add_item(item);
+        }
+    }
+
     <span class="doccomment">/// Computes the sampling decision on the incoming event
     </span><span class="kw">fn </span>run_dynamic_sampling(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState) {
         <span class="comment">// Running dynamic sampling involves either:
@@ -6116,8 +6256,15 @@
                 <span class="self">self</span>.tag_error_with_sampling_decision(state);
             }
             EventType::Transaction =&gt; {
-                <span class="self">self</span>.compute_sampling_decision(state);
+                <span class="kw">if let </span><span class="prelude-val">Some</span>(ErrorBoundary::Ok(config)) =
+                    <span class="kw-2">&amp;</span>state.project_state.config.transaction_metrics
+                {
+                    <span class="kw">if </span>config.is_enabled() {
+                        <span class="self">self</span>.compute_sampling_decision(state);
+                    }
+                }
             }
+
             <span class="kw">_ </span>=&gt; {}
         }
     }
@@ -6125,7 +6272,7 @@
     <span class="doccomment">/// Computes the sampling decision on the incoming transaction.
     </span><span class="kw">fn </span>compute_sampling_decision(<span class="kw-2">&amp;</span><span class="self">self</span>, state: <span class="kw-2">&amp;mut </span>ProcessEnvelopeState) {
         state.sampling_result = utils::get_sampling_result(
-            <span class="self">self</span>.config.processing_enabled(),
+            <span class="self">self</span>.inner.config.processing_enabled(),
             <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span>state.project_state),
             state.sampling_project_state.as_deref(),
             state.envelope().dsc(),
@@ -6144,7 +6291,7 @@
         }
 
         <span class="kw">let </span>sampled = utils::is_trace_fully_sampled(
-            <span class="self">self</span>.config.processing_enabled(),
+            <span class="self">self</span>.inner.config.processing_enabled(),
             state.sampling_project_state.as_deref(),
             state.envelope().dsc(),
         );
@@ -6204,10 +6351,11 @@
                     client_hints: request_meta.client_hints().as_deref(),
                 },
                 received_at: <span class="prelude-val">Some</span>(state.managed_envelope.received_at()),
-                max_secs_in_past: <span class="prelude-val">Some</span>(<span class="self">self</span>.config.max_secs_in_past()),
-                max_secs_in_future: <span class="prelude-val">Some</span>(<span class="self">self</span>.config.max_secs_in_future()),
+                max_secs_in_past: <span class="prelude-val">Some</span>(<span class="self">self</span>.inner.config.max_secs_in_past()),
+                max_secs_in_future: <span class="prelude-val">Some</span>(<span class="self">self</span>.inner.config.max_secs_in_future()),
                 max_name_and_unit_len: <span class="prelude-val">Some</span>(
-                    <span class="self">self</span>.config
+                    <span class="self">self</span>.inner
+                        .config
                         .aggregator_config()
                         .max_name_length
                         .saturating_sub(MeasurementsConfig::MEASUREMENT_MRI_OVERHEAD),
@@ -6224,11 +6372,15 @@
                 enrich_spans: state
                     .project_state
                     .has_feature(Feature::SpanMetricsExtraction),
-                max_tag_value_length: <span class="self">self</span>.config.aggregator_config().max_tag_value_length,
+                max_tag_value_length: <span class="self">self
+                    </span>.inner
+                    .config
+                    .aggregator_config_for(MetricNamespace::Spans)
+                    .max_tag_value_length,
                 is_renormalize: <span class="bool-val">false</span>,
                 light_normalize_spans,
                 span_description_rules: state.project_state.config.span_description_rules.as_ref(),
-                geoip_lookup: <span class="self">self</span>.geoip_lookup.as_ref(),
+                geoip_lookup: <span class="self">self</span>.inner.geoip_lookup.as_ref(),
                 enable_trimming: <span class="bool-val">true</span>,
             };
 
@@ -6245,7 +6397,7 @@
         <span class="macro">macro_rules! </span>if_processing {
             (<span class="macro-nonterminal">$if_true</span>:block) =&gt; {
                 <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)] </span>{
-                    <span class="kw">if </span><span class="self">self</span>.config.processing_enabled() <span class="macro-nonterminal">$if_true
+                    <span class="kw">if </span><span class="self">self</span>.inner.config.processing_enabled() <span class="macro-nonterminal">$if_true
                 </span>}
             };
         }
@@ -6295,6 +6447,9 @@
         <span class="kw">if </span>state.has_event() {
             <span class="self">self</span>.scrub_event(state)<span class="question-mark">?</span>;
             <span class="self">self</span>.serialize_event(state)<span class="question-mark">?</span>;
+            <span class="macro">if_processing!</span>({
+                <span class="self">self</span>.extract_spans(state);
+            });
         }
 
         <span class="self">self</span>.scrub_attachments(state);
@@ -6332,7 +6487,7 @@
 
                         state.extracted_metrics.send_metrics(
                             state.managed_envelope.envelope(),
-                            <span class="self">self</span>.project_cache.clone(),
+                            <span class="self">self</span>.inner.project_cache.clone(),
                         );
 
                         <span class="kw">let </span>envelope_response = <span class="kw">if </span>state.managed_envelope.envelope().is_empty() {
@@ -6359,7 +6514,7 @@
                         <span class="kw">if </span>err.should_keep_metrics() {
                             state.extracted_metrics.send_metrics(
                                 state.managed_envelope.envelope(),
-                                <span class="self">self</span>.project_cache.clone(),
+                                <span class="self">self</span>.inner.project_cache.clone(),
                             );
                         }
 
@@ -6382,7 +6537,7 @@
         <span class="kw">match </span>result {
             <span class="prelude-val">Ok</span>(response) =&gt; {
                 <span class="kw">if let </span><span class="prelude-val">Some</span>(managed_envelope) = response.envelope {
-                    <span class="self">self</span>.envelope_manager.send(SubmitEnvelope {
+                    <span class="self">self</span>.inner.envelope_manager.send(SubmitEnvelope {
                         envelope: managed_envelope,
                     })
                 };
@@ -6425,7 +6580,8 @@
                     Metric::parse_all(<span class="kw-2">&amp;</span>payload, timestamp).filter_map(|result| result.ok());
 
                 <span class="macro">relay_log::trace!</span>(<span class="string">&quot;inserting metrics into project cache&quot;</span>);
-                <span class="self">self</span>.project_cache
+                <span class="self">self</span>.inner
+                    .project_cache
                     .send(InsertMetrics::new(public_key, metrics));
             } <span class="kw">else if </span>item.ty() == <span class="kw-2">&amp;</span>ItemType::MetricBuckets {
                 <span class="kw">match </span>Bucket::parse_all(<span class="kw-2">&amp;</span>payload) {
@@ -6435,7 +6591,8 @@
                         }
 
                         <span class="macro">relay_log::trace!</span>(<span class="string">&quot;merging metric buckets into project cache&quot;</span>);
-                        <span class="self">self</span>.project_cache
+                        <span class="self">self</span>.inner
+                            .project_cache
                             .send(MergeBuckets::new(public_key, buckets));
                     }
                     <span class="prelude-val">Err</span>(error) =&gt; {
@@ -6467,7 +6624,7 @@
 
         <span class="kw">let </span>scoping = <span class="kw-2">*</span>bucket_limiter.scoping();
 
-        <span class="kw">if let </span><span class="prelude-val">Some</span>(rate_limiter) = <span class="self">self</span>.rate_limiter.as_ref() {
+        <span class="kw">if let </span><span class="prelude-val">Some</span>(rate_limiter) = <span class="self">self</span>.inner.rate_limiter.as_ref() {
             <span class="kw">let </span>item_scoping = ItemScoping {
                 category: DataCategory::Transaction,
                 scoping: <span class="kw-2">&amp;</span>scoping,
@@ -6485,13 +6642,14 @@
 
             <span class="kw">let </span>was_enforced = bucket_limiter.enforce_limits(
                 rate_limits.as_ref().map_err(|<span class="kw">_</span>| ()),
-                <span class="self">self</span>.outcome_aggregator.clone(),
+                <span class="self">self</span>.inner.outcome_aggregator.clone(),
             );
 
             <span class="kw">if </span>was_enforced {
                 <span class="kw">if let </span><span class="prelude-val">Ok</span>(limits) = rate_limits {
                     <span class="comment">// Update the rate limits in the project cache.
-                    </span><span class="self">self</span>.project_cache
+                    </span><span class="self">self</span>.inner
+                        .project_cache
                         .send(UpdateRateLimits::new(scoping.project_key, limits));
                 }
             }
@@ -6500,7 +6658,7 @@
         <span class="kw">let </span>buckets = bucket_limiter.into_metrics();
         <span class="kw">if </span>!buckets.is_empty() {
             <span class="comment">// Forward buckets to envelope manager to send them to upstream or kafka:
-            </span><span class="self">self</span>.envelope_manager.send(SendMetrics {
+            </span><span class="self">self</span>.inner.envelope_manager.send(SendMetrics {
                 buckets,
                 scoping,
                 partition_key,
@@ -6545,7 +6703,7 @@
             }
             <span class="prelude-val">Ok</span>(envelope_body) =&gt; {
                 request.envelope_body = envelope_body;
-                <span class="self">self</span>.upstream_relay.send(SendRequest(request));
+                <span class="self">self</span>.inner.upstream_relay.send(SendRequest(request));
             }
         }
     }
@@ -6567,17 +6725,17 @@
     <span class="kw">type </span>Interface = EnvelopeProcessor;
 
     <span class="kw">fn </span>spawn_handler(<span class="self">self</span>, <span class="kw-2">mut </span>rx: relay_system::Receiver&lt;<span class="self">Self</span>::Interface&gt;) {
-        <span class="kw">let </span>thread_count = <span class="self">self</span>.config.cpu_concurrency();
+        <span class="kw">let </span>thread_count = <span class="self">self</span>.inner.config.cpu_concurrency();
         <span class="macro">relay_log::info!</span>(<span class="string">&quot;starting {thread_count} envelope processing workers&quot;</span>);
 
         tokio::spawn(<span class="kw">async move </span>{
-            <span class="kw">let </span>service = Arc::new(<span class="self">self</span>);
             <span class="kw">let </span>semaphore = Arc::new(Semaphore::new(thread_count));
 
             <span class="kw">while let </span>(<span class="prelude-val">Some</span>(message), <span class="prelude-val">Ok</span>(permit)) =
                 <span class="macro">tokio::join!</span>(rx.recv(), semaphore.clone().acquire_owned())
             {
-                <span class="kw">let </span>service = service.clone();
+                <span class="kw">let </span>service = <span class="self">self</span>.clone();
+
                 tokio::task::spawn_blocking(<span class="kw">move </span>|| {
                     service.handle_message(message);
                     drop(permit);
@@ -6764,6 +6922,81 @@
     }
 
     <span class="attr">#[tokio::test]
+    </span><span class="kw">async fn </span>test_dsc_respects_metrics_extracted() {
+        relay_test::setup();
+        <span class="kw">let </span>(outcome_aggregator, test_store) = services();
+
+        <span class="kw">let </span>config = Config::from_json_value(<span class="macro">serde_json::json!</span>({
+            <span class="string">&quot;processing&quot;</span>: {
+                <span class="string">&quot;enabled&quot;</span>: <span class="bool-val">true</span>,
+                <span class="string">&quot;kafka_config&quot;</span>: [],
+            }
+        }))
+        .unwrap();
+
+        <span class="kw">let </span>service: EnvelopeProcessorService = create_test_processor(config);
+
+        <span class="comment">// Gets a ProcessEnvelopeState, either with or without the metrics_exracted flag toggled.
+        </span><span class="kw">let </span>get_state = |version: <span class="prelude-ty">Option</span>&lt;u16&gt;| {
+            <span class="kw">let </span>event = Event {
+                id: Annotated::new(EventId::new()),
+                ty: Annotated::new(EventType::Transaction),
+                transaction: Annotated::new(<span class="string">&quot;testing&quot;</span>.to_owned()),
+                ..Event::default()
+            };
+
+            <span class="kw">let </span><span class="kw-2">mut </span>project_state = state_with_rule_and_condition(
+                <span class="prelude-val">Some</span>(<span class="number">0.0</span>),
+                RuleType::Transaction,
+                RuleCondition::all(),
+            );
+
+            <span class="kw">if let </span><span class="prelude-val">Some</span>(version) = version {
+                project_state.config.transaction_metrics =
+                    ErrorBoundary::Ok(relay_dynamic_config::TransactionMetricsConfig {
+                        version,
+                        ..Default::default()
+                    })
+                    .into();
+            }
+
+            ProcessEnvelopeState {
+                event: Annotated::from(event),
+                metrics: Default::default(),
+                sample_rates: <span class="prelude-val">None</span>,
+                sampling_result: SamplingResult::Keep,
+                extracted_metrics: Default::default(),
+                project_state: Arc::new(project_state),
+                sampling_project_state: <span class="prelude-val">None</span>,
+                project_id: ProjectId::new(<span class="number">42</span>),
+                managed_envelope: ManagedEnvelope::new(
+                    new_envelope(<span class="bool-val">false</span>, <span class="string">&quot;foo&quot;</span>),
+                    TestSemaphore::new(<span class="number">42</span>).try_acquire().unwrap(),
+                    outcome_aggregator.clone(),
+                    test_store.clone(),
+                ),
+                has_profile: <span class="bool-val">false</span>,
+                event_metrics_extracted: <span class="bool-val">false</span>,
+            }
+        };
+
+        <span class="comment">// None represents no TransactionMetricsConfig, DS will not be run
+        </span><span class="kw">let </span><span class="kw-2">mut </span>state = get_state(<span class="prelude-val">None</span>);
+        service.run_dynamic_sampling(<span class="kw-2">&amp;mut </span>state);
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(state.sampling_result, SamplingResult::Keep));
+
+        <span class="comment">// Current version is 1, so it won&#39;t run DS if it&#39;s outdated
+        </span><span class="kw">let </span><span class="kw-2">mut </span>state = get_state(<span class="prelude-val">Some</span>(<span class="number">0</span>));
+        service.run_dynamic_sampling(<span class="kw-2">&amp;mut </span>state);
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(state.sampling_result, SamplingResult::Keep));
+
+        <span class="comment">// Dynamic sampling is run, as the transactionmetrics version is up to date.
+        </span><span class="kw">let </span><span class="kw-2">mut </span>state = get_state(<span class="prelude-val">Some</span>(<span class="number">1</span>));
+        service.run_dynamic_sampling(<span class="kw-2">&amp;mut </span>state);
+        <span class="macro">assert!</span>(<span class="macro">matches!</span>(state.sampling_result, SamplingResult::Drop(<span class="kw">_</span>)));
+    }
+
+    <span class="attr">#[tokio::test]
     </span><span class="kw">async fn </span>test_it_keeps_or_drops_transactions() {
         relay_test::setup();
 
@@ -6790,7 +7023,6 @@
             <span class="kw">let </span>project_state = state_with_rule_and_condition(
                 <span class="prelude-val">Some</span>(sample_rate),
                 RuleType::Transaction,
-                SamplingMode::Received,
                 RuleCondition::all(),
             );
 
@@ -6946,15 +7178,19 @@
         <span class="kw">let </span>(outcome_aggregator, <span class="kw">_</span>) = mock_service(<span class="string">&quot;outcome_aggregator&quot;</span>, (), |<span class="kw-2">&amp;mut </span>(), <span class="kw">_</span>| {});
         <span class="kw">let </span>(project_cache, <span class="kw">_</span>) = mock_service(<span class="string">&quot;project_cache&quot;</span>, (), |<span class="kw-2">&amp;mut </span>(), <span class="kw">_</span>| {});
         <span class="kw">let </span>(upstream_relay, <span class="kw">_</span>) = mock_service(<span class="string">&quot;upstream_relay&quot;</span>, (), |<span class="kw-2">&amp;mut </span>(), <span class="kw">_</span>| {});
-        EnvelopeProcessorService {
+        <span class="kw">let </span>inner = InnerProcessor {
             config: Arc::new(config),
             envelope_manager,
-            outcome_aggregator,
             project_cache,
+            outcome_aggregator,
             upstream_relay,
             <span class="attr">#[cfg(feature = <span class="string">&quot;processing&quot;</span>)]
             </span>rate_limiter: <span class="prelude-val">None</span>,
             geoip_lookup: <span class="prelude-val">None</span>,
+        };
+
+        EnvelopeProcessorService {
+            inner: Arc::new(inner),
         }
     }
 
@@ -6973,7 +7209,7 @@
 
         envelope.add_item({
             <span class="kw">let </span><span class="kw-2">mut </span>item = Item::new(ItemType::UserReport);
-            item.set_payload(ContentType::Json, <span class="string">r###&quot;{&quot;foo&quot;: &quot;bar&quot;}&quot;###</span>);
+            item.set_payload(ContentType::Json, <span class="string">r#&quot;{&quot;foo&quot;: &quot;bar&quot;}&quot;#</span>);
             item
         });
 
@@ -7184,7 +7420,7 @@
                 <span class="kw">let </span><span class="kw-2">mut </span>item = Item::new(ItemType::Event);
                 item.set_payload(
                     ContentType::Json,
-                    <span class="string">r###&quot;
+                    <span class="string">r#&quot;
                     {
                         &quot;request&quot;: {
                             &quot;headers&quot;: [
@@ -7192,7 +7428,7 @@
                             ]
                         }
                     }
-                &quot;###</span>,
+                &quot;#</span>,
                 );
                 item
             });
@@ -7205,13 +7441,13 @@
 
         <span class="comment">// Make sure to mask any IP-like looking data
         </span><span class="kw">let </span>pii_config = PiiConfig::from_json(
-            <span class="string">r##&quot;
+            <span class="string">r#&quot;
                 {
                     &quot;applications&quot;: {
                         &quot;**&quot;: [&quot;@ip:mask&quot;]
                     }
                 }
-                &quot;##</span>,
+                &quot;#</span>,
         )
         .unwrap();
 
@@ -7282,13 +7518,13 @@
             <span class="kw">let </span><span class="kw-2">mut </span>item = Item::new(ItemType::ClientReport);
             item.set_payload(
                 ContentType::Json,
-                <span class="string">r###&quot;
+                <span class="string">r#&quot;
                     {
                         &quot;discarded_events&quot;: [
                             [&quot;queue_full&quot;, &quot;error&quot;, 42]
                         ]
                     }
-                &quot;###</span>,
+                &quot;#</span>,
             );
             item
         });
@@ -7330,13 +7566,13 @@
             <span class="kw">let </span><span class="kw-2">mut </span>item = Item::new(ItemType::ClientReport);
             item.set_payload(
                 ContentType::Json,
-                <span class="string">r###&quot;
+                <span class="string">r#&quot;
                     {
                         &quot;discarded_events&quot;: [
                             [&quot;queue_full&quot;, &quot;error&quot;, 42]
                         ]
                     }
-                &quot;###</span>,
+                &quot;#</span>,
             );
             item
         });
@@ -7386,13 +7622,13 @@
             <span class="kw">let </span><span class="kw-2">mut </span>item = Item::new(ItemType::ClientReport);
             item.set_payload(
                 ContentType::Json,
-                <span class="string">r###&quot;
+                <span class="string">r#&quot;
                     {
                         &quot;discarded_events&quot;: [
                             [&quot;queue_full&quot;, &quot;error&quot;, 42]
                         ]
                     }
-                &quot;###</span>,
+                &quot;#</span>,
             );
             item
         });
@@ -7443,20 +7679,11 @@
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_from_outcome_type_sampled() {
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            outcome_from_parts(ClientReportField::FilteredSampling, <span class="string">&quot;adsf&quot;</span>),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>)
-        ));
+        <span class="macro">assert!</span>(outcome_from_parts(ClientReportField::FilteredSampling, <span class="string">&quot;adsf&quot;</span>).is_err());
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            outcome_from_parts(ClientReportField::FilteredSampling, <span class="string">&quot;Sampled:&quot;</span>),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>)
-        ));
+        <span class="macro">assert!</span>(outcome_from_parts(ClientReportField::FilteredSampling, <span class="string">&quot;Sampled:&quot;</span>).is_err());
 
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            outcome_from_parts(ClientReportField::FilteredSampling, <span class="string">&quot;Sampled:foo&quot;</span>),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>)
-        ));
+        <span class="macro">assert!</span>(outcome_from_parts(ClientReportField::FilteredSampling, <span class="string">&quot;Sampled:foo&quot;</span>).is_err());
 
         <span class="macro">assert!</span>(<span class="macro">matches!</span>(
             outcome_from_parts(ClientReportField::FilteredSampling, <span class="string">&quot;Sampled:&quot;</span>),
@@ -7493,10 +7720,7 @@
             outcome_from_parts(ClientReportField::Filtered, <span class="string">&quot;error-message&quot;</span>),
             <span class="prelude-val">Ok</span>(Outcome::Filtered(FilterStatKey::ErrorMessage))
         ));
-        <span class="macro">assert!</span>(<span class="macro">matches!</span>(
-            outcome_from_parts(ClientReportField::Filtered, <span class="string">&quot;adsf&quot;</span>),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>)
-        ));
+        <span class="macro">assert!</span>(outcome_from_parts(ClientReportField::Filtered, <span class="string">&quot;adsf&quot;</span>).is_err());
     }
 
     <span class="attr">#[test]
@@ -7521,7 +7745,7 @@
 
     <span class="kw">fn </span>capture_test_event(transaction_name: <span class="kw-2">&amp;</span>str, source: TransactionSource) -&gt; Vec&lt;String&gt; {
         <span class="kw">let </span><span class="kw-2">mut </span>event = Annotated::&lt;Event&gt;::from_json(
-            <span class="string">r###&quot;
+            <span class="string">r#&quot;
             {
                 &quot;type&quot;: &quot;transaction&quot;,
                 &quot;transaction&quot;: &quot;/foo/&quot;,
@@ -7539,7 +7763,7 @@
                     &quot;source&quot;: &quot;url&quot;
                 }
             }
-            &quot;###</span>,
+            &quot;#</span>,
         )
         .unwrap();
         <span class="kw">let </span>e = event.value_mut().as_mut().unwrap();
@@ -7575,51 +7799,51 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_log_transaction_metrics_none() {
         <span class="kw">let </span>captures = capture_test_event(<span class="string">&quot;/nothing&quot;</span>, TransactionSource::Url);
-        <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r###&quot;
+        <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r#&quot;
         [
             &quot;event.transaction_name_changes:1|c|#source_in:url,changes:none,source_out:sanitized,is_404:false&quot;,
         ]
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_log_transaction_metrics_rule() {
         <span class="kw">let </span>captures = capture_test_event(<span class="string">&quot;/foo/john/denver&quot;</span>, TransactionSource::Url);
-        <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r###&quot;
+        <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r#&quot;
         [
             &quot;event.transaction_name_changes:1|c|#source_in:url,changes:rule,source_out:sanitized,is_404:false&quot;,
         ]
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_log_transaction_metrics_pattern() {
         <span class="kw">let </span>captures = capture_test_event(<span class="string">&quot;/something/12345&quot;</span>, TransactionSource::Url);
-        <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r###&quot;
+        <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r#&quot;
         [
             &quot;event.transaction_name_changes:1|c|#source_in:url,changes:pattern,source_out:sanitized,is_404:false&quot;,
         ]
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_log_transaction_metrics_both() {
         <span class="kw">let </span>captures = capture_test_event(<span class="string">&quot;/foo/john/12345&quot;</span>, TransactionSource::Url);
-        <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r###&quot;
+        <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r#&quot;
         [
             &quot;event.transaction_name_changes:1|c|#source_in:url,changes:both,source_out:sanitized,is_404:false&quot;,
         ]
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_log_transaction_metrics_no_match() {
         <span class="kw">let </span>captures = capture_test_event(<span class="string">&quot;/foo/john/12345&quot;</span>, TransactionSource::Route);
-        <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r###&quot;
+        <span class="macro">insta::assert_debug_snapshot!</span>(captures, @<span class="string">r#&quot;
         [
             &quot;event.transaction_name_changes:1|c|#source_in:route,changes:none,source_out:route,is_404:false&quot;,
         ]
-        &quot;###</span>);
+        &quot;#</span>);
     }
 
     <span class="doccomment">/// This is a stand-in test to assert panicking behavior for spawn_blocking.
@@ -7691,7 +7915,7 @@
     <span class="attr">#[test]
     </span><span class="kw">fn </span>test_geo_in_light_normalize() {
         <span class="kw">let </span><span class="kw-2">mut </span>event = Annotated::&lt;Event&gt;::from_json(
-            <span class="string">r###&quot;
+            <span class="string">r#&quot;
             {
                 &quot;type&quot;: &quot;transaction&quot;,
                 &quot;transaction&quot;: &quot;/foo/&quot;,
@@ -7712,7 +7936,7 @@
                     &quot;ip_address&quot;: &quot;2.125.160.216&quot;
                 }
             }
-            &quot;###</span>,
+            &quot;#</span>,
         )
         .unwrap();
 
