@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["extract_http_status_code","extract_transaction_op","get_eventuser_tag","http_status_code_from_span"]};

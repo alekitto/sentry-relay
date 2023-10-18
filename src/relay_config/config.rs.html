@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-config/src/config.rs`."><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relay_config" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.1 (eb26296b5 2023-08-03)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relay_config/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-config/src/config.rs`."><title>config.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relay_config" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relay_config/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -2052,6 +2052,41 @@
 <a href="#2052" id="2052">2052</a>
 <a href="#2053" id="2053">2053</a>
 <a href="#2054" id="2054">2054</a>
+<a href="#2055" id="2055">2055</a>
+<a href="#2056" id="2056">2056</a>
+<a href="#2057" id="2057">2057</a>
+<a href="#2058" id="2058">2058</a>
+<a href="#2059" id="2059">2059</a>
+<a href="#2060" id="2060">2060</a>
+<a href="#2061" id="2061">2061</a>
+<a href="#2062" id="2062">2062</a>
+<a href="#2063" id="2063">2063</a>
+<a href="#2064" id="2064">2064</a>
+<a href="#2065" id="2065">2065</a>
+<a href="#2066" id="2066">2066</a>
+<a href="#2067" id="2067">2067</a>
+<a href="#2068" id="2068">2068</a>
+<a href="#2069" id="2069">2069</a>
+<a href="#2070" id="2070">2070</a>
+<a href="#2071" id="2071">2071</a>
+<a href="#2072" id="2072">2072</a>
+<a href="#2073" id="2073">2073</a>
+<a href="#2074" id="2074">2074</a>
+<a href="#2075" id="2075">2075</a>
+<a href="#2076" id="2076">2076</a>
+<a href="#2077" id="2077">2077</a>
+<a href="#2078" id="2078">2078</a>
+<a href="#2079" id="2079">2079</a>
+<a href="#2080" id="2080">2080</a>
+<a href="#2081" id="2081">2081</a>
+<a href="#2082" id="2082">2082</a>
+<a href="#2083" id="2083">2083</a>
+<a href="#2084" id="2084">2084</a>
+<a href="#2085" id="2085">2085</a>
+<a href="#2086" id="2086">2086</a>
+<a href="#2087" id="2087">2087</a>
+<a href="#2088" id="2088">2088</a>
+<a href="#2089" id="2089">2089</a>
 </pre></div><pre class="rust"><code><span class="kw">use </span>std::collections::{BTreeMap, HashMap};
 <span class="kw">use </span>std::convert::TryInto;
 <span class="kw">use </span>std::error::Error;
@@ -2064,14 +2099,17 @@
 
 <span class="kw">use </span>anyhow::Context;
 <span class="kw">use </span>relay_auth::{generate_key_pair, generate_relay_id, PublicKey, RelayId, SecretKey};
-<span class="kw">use </span>relay_common::{Dsn, Uuid};
+<span class="kw">use </span>relay_common::Dsn;
 <span class="kw">use </span>relay_kafka::{
     ConfigError <span class="kw">as </span>KafkaConfigError, KafkaConfig, KafkaConfigParam, KafkaTopic, TopicAssignments,
 };
-<span class="kw">use </span>relay_metrics::{AggregatorConfig, Condition, Field, MetricNamespace, ScopedAggregatorConfig};
+<span class="kw">use </span>relay_metrics::{
+    AggregatorServiceConfig, Condition, Field, MetricNamespace, ScopedAggregatorConfig,
+};
 <span class="kw">use </span>relay_redis::RedisConfig;
 <span class="kw">use </span>serde::de::{DeserializeOwned, Unexpected, Visitor};
 <span class="kw">use </span>serde::{Deserialize, Deserializer, Serialize, Serializer};
+<span class="kw">use </span>uuid::Uuid;
 
 <span class="kw">use </span><span class="kw">crate</span>::byte_size::ByteSize;
 <span class="kw">use </span><span class="kw">crate</span>::upstream::UpstreamDescriptor;
@@ -2494,10 +2532,13 @@
     <span class="doccomment">/// The port to bind for the unencrypted relay HTTP server.
     </span><span class="kw">pub </span>port: u16,
     <span class="doccomment">/// Optional port to bind for the encrypted relay HTTPS server.
+    </span><span class="attr">#[serde(skip_serializing)]
     </span><span class="kw">pub </span>tls_port: <span class="prelude-ty">Option</span>&lt;u16&gt;,
     <span class="doccomment">/// The path to the identity (DER-encoded PKCS12) to use for TLS.
+    </span><span class="attr">#[serde(skip_serializing)]
     </span><span class="kw">pub </span>tls_identity_path: <span class="prelude-ty">Option</span>&lt;PathBuf&gt;,
     <span class="doccomment">/// Password for the PKCS12 archive.
+    </span><span class="attr">#[serde(skip_serializing)]
     </span><span class="kw">pub </span>tls_identity_password: <span class="prelude-ty">Option</span>&lt;String&gt;,
     <span class="doccomment">/// Always override project IDs from the URL and DSN with the identifier used at the upstream.
     ///
@@ -2759,6 +2800,10 @@
     /// During a network outage relay will try to reconnect and will buffer all upstream messages
     /// until it manages to reconnect.
     </span>outage_grace_period: u64,
+    <span class="doccomment">/// The time Relay waits before retrying an upstream request, in seconds.
+    ///
+    /// This time is only used before going into a network outage mode.
+    </span>retry_delay: u64,
     <span class="doccomment">/// Content encoding to apply to upstream store requests.
     ///
     /// By default, Relay applies `gzip` content encoding to compress upstream requests. Compression
@@ -2785,10 +2830,16 @@
             </span>host_header: <span class="prelude-val">None</span>,
             auth_interval: <span class="prelude-val">Some</span>(<span class="number">600</span>), <span class="comment">// 10 minutes
             </span>outage_grace_period: DEFAULT_NETWORK_OUTAGE_GRACE_PERIOD,
+            retry_delay: default_retry_delay(),
             encoding: HttpEncoding::Gzip,
         }
     }
 }
+
+<span class="doccomment">/// Default for unavailable upstream retry period, 1s.
+</span><span class="kw">fn </span>default_retry_delay() -&gt; u64 {
+    <span class="number">1
+</span>}
 
 <span class="doccomment">/// Default for max memory size, 500 MB.
 </span><span class="kw">fn </span>spool_envelopes_max_memory_size() -&gt; ByteSize {
@@ -2887,6 +2938,8 @@
     </span>file_interval: u32,
     <span class="doccomment">/// Interval for evicting outdated project configs from memory.
     </span>eviction_interval: u32,
+    <span class="doccomment">/// Interval for fetching new global configs from the upstream, in seconds.
+    </span>global_config_fetch_interval: u32,
 }
 
 <span class="kw">impl </span>Default <span class="kw">for </span>Cache {
@@ -2900,8 +2953,9 @@
             miss_expiry: <span class="number">60</span>,     <span class="comment">// 1 minute
             </span>batch_interval: <span class="number">100</span>, <span class="comment">// 100ms
             </span>batch_size: <span class="number">500</span>,
-            file_interval: <span class="number">10</span>,     <span class="comment">// 10 seconds
-            </span>eviction_interval: <span class="number">60</span>, <span class="comment">// 60 seconds
+            file_interval: <span class="number">10</span>,                <span class="comment">// 10 seconds
+            </span>eviction_interval: <span class="number">60</span>,            <span class="comment">// 60 seconds
+            </span>global_config_fetch_interval: <span class="number">10</span>, <span class="comment">// 10 seconds
         </span>}
     }
 }
@@ -3275,7 +3329,7 @@
     <span class="attr">#[serde(default)]
     </span>outcomes: Outcomes,
     <span class="attr">#[serde(default)]
-    </span>aggregator: AggregatorConfig,
+    </span>aggregator: AggregatorServiceConfig,
     <span class="attr">#[serde(default)]
     </span>secondary_aggregators: Vec&lt;ScopedAggregatorConfig&gt;,
     <span class="attr">#[serde(default)]
@@ -3508,9 +3562,11 @@
     <span class="doccomment">/// Regenerates the relay credentials.
     ///
     /// This also writes the credentials back to the file.
-    </span><span class="kw">pub fn </span>regenerate_credentials(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; anyhow::Result&lt;()&gt; {
+    </span><span class="kw">pub fn </span>regenerate_credentials(<span class="kw-2">&amp;mut </span><span class="self">self</span>, save: bool) -&gt; anyhow::Result&lt;()&gt; {
         <span class="kw">let </span>creds = Credentials::generate();
-        creds.save(<span class="kw-2">&amp;</span><span class="self">self</span>.path)<span class="question-mark">?</span>;
+        <span class="kw">if </span>save {
+            creds.save(<span class="kw-2">&amp;</span><span class="self">self</span>.path)<span class="question-mark">?</span>;
+        }
         <span class="self">self</span>.credentials = <span class="prelude-val">Some</span>(creds);
         <span class="prelude-val">Ok</span>(())
     }
@@ -3644,6 +3700,14 @@
     /// it has encountered a network outage.
     </span><span class="kw">pub fn </span>http_outage_grace_period(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Duration {
         Duration::from_secs(<span class="self">self</span>.values.http.outage_grace_period)
+    }
+
+    <span class="doccomment">/// Time Relay waits before retrying an upstream request.
+    ///
+    /// Before going into a network outage, Relay may fail to make upstream
+    /// requests. This is the time Relay waits before retrying the same request.
+    </span><span class="kw">pub fn </span>http_retry_delay(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Duration {
+        Duration::from_secs(<span class="self">self</span>.values.http.retry_delay)
     }
 
     <span class="doccomment">/// Content encoding of upstream requests.
@@ -3805,6 +3869,12 @@
     /// memory when expired.
     </span><span class="kw">pub fn </span>cache_eviction_interval(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Duration {
         Duration::from_secs(<span class="self">self</span>.values.cache.eviction_interval.into())
+    }
+
+    <span class="doccomment">/// Returns the interval in seconds in which fresh global configs should be
+    /// fetched from  upstream.
+    </span><span class="kw">pub fn </span>global_config_fetch_interval(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Duration {
+        Duration::from_secs(<span class="self">self</span>.values.cache.global_config_fetch_interval.into())
     }
 
     <span class="doccomment">/// Returns the path of the buffer file if the `cache.persistent_envelope_buffer.path` is configured.
@@ -4022,8 +4092,8 @@
         <span class="self">self</span>.values.processing.max_rate_limit.map(u32::into)
     }
 
-    <span class="doccomment">/// Returns configuration for the metrics [aggregator](relay_metrics::Aggregator).
-    </span><span class="kw">pub fn </span>aggregator_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>AggregatorConfig {
+    <span class="doccomment">/// Returns configuration for the default metrics [aggregator](relay_metrics::Aggregator).
+    </span><span class="kw">pub fn </span>default_aggregator_config(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>AggregatorServiceConfig {
         <span class="kw-2">&amp;</span><span class="self">self</span>.values.aggregator
     }
 
@@ -4033,7 +4103,7 @@
     }
 
     <span class="doccomment">/// Returns aggregator config for a given metrics namespace.
-    </span><span class="kw">pub fn </span>aggregator_config_for(<span class="kw-2">&amp;</span><span class="self">self</span>, namespace: MetricNamespace) -&gt; <span class="kw-2">&amp;</span>AggregatorConfig {
+    </span><span class="kw">pub fn </span>aggregator_config_for(<span class="kw-2">&amp;</span><span class="self">self</span>, namespace: MetricNamespace) -&gt; <span class="kw-2">&amp;</span>AggregatorServiceConfig {
         <span class="kw">for </span>entry <span class="kw">in </span><span class="kw-2">&amp;</span><span class="self">self</span>.values.secondary_aggregators {
             <span class="kw">match </span>entry.condition {
                 Condition::Eq(Field::Namespace(ns)) <span class="kw">if </span>ns == namespace =&gt; <span class="kw">return </span><span class="kw-2">&amp;</span>entry.config,

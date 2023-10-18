@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-dynamic-config/src/metrics.rs`."><title>metrics.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-f3501f0f5ae15dfb.css" id="mainThemeStyle"><div id="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relay_dynamic_config" data-themes="" data-resource-suffix="" data-rustdoc-version="1.71.1 (eb26296b5 2023-08-03)" data-search-js="search-4926e5fc22a5646a.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-0f8c037637f9eb3e.css" data-theme-dark-css="dark-1097f8e92a01e3cf.css" data-theme-ayu-css="ayu-614652228113ac93.css" ></div><script src="../../static.files/storage-62ce34ea385b278a.js"></script><script defer src="../../static.files/source-script-11255107d0a65077.js"></script><script defer src="../../source-files.js"></script><script defer src="../../static.files/main-f0540c1d82cde29b.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-0f8c037637f9eb3e.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-1097f8e92a01e3cf.css"><link rel="stylesheet" href="../../static.files/noscript-13285aec31fa243e.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relay_dynamic_config/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `relay-dynamic-config/src/metrics.rs`."><title>metrics.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Regular-46f98efaafac5295.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Regular-018c141bf0843ffd.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/FiraSans-Medium-8f9a781e4970d388.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Regular-562dcc5011b6de7d.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceSerif4-Bold-a2c9cd1067f8b328.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../static.files/SourceCodePro-Semibold-d899c5a5c4aeb14a.ttf.woff2"><link rel="stylesheet" href="../../static.files/normalize-76eba96aa4d2e634.css"><link rel="stylesheet" href="../../static.files/rustdoc-cb6f1f67f1bcd037.css" id="mainThemeStyle"><meta name="rustdoc-vars" data-root-path="../../" data-static-root-path="../../static.files/" data-current-crate="relay_dynamic_config" data-themes="" data-resource-suffix="" data-rustdoc-version="1.73.0 (cc66ad468 2023-10-03)" data-channel="1.73.0" data-search-js="search-6dfdfced5eff6596.js" data-settings-js="settings-de11bff964e9d4e5.js" data-settings-css="settings-8c76f75bfb6bd192.css" data-theme-light-css="light-1596385f77d47ef2.css" data-theme-dark-css="dark-0a43001d3fc2282c.css" data-theme-ayu-css="ayu-fd19013d6ce078bf.css" ><script src="../../static.files/storage-db41da1a38ea3cb8.js"></script><script defer src="../../static.files/src-script-3280b574d94e47b4.js"></script><script defer src="../../src-files.js"></script><script defer src="../../static.files/main-0795b7d26be81095.js"></script><noscript><link rel="stylesheet" media="(prefers-color-scheme:light)" href="../../static.files/light-1596385f77d47ef2.css"><link rel="stylesheet" media="(prefers-color-scheme:dark)" href="../../static.files/dark-0a43001d3fc2282c.css"><link rel="stylesheet" href="../../static.files/noscript-cffde32267a19fd6.css"></noscript><link rel="icon" href="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png"></head><body class="rustdoc src"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><nav class="sub"><a class="sub-logo-container" href="../../relay_dynamic_config/index.html"><img src="https://raw.githubusercontent.com/getsentry/relay/master/artwork/relay-icon.png" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" aria-label="Run search in the documentation" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../static.files/wheel-7b819b6101059cd0.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><div data-nosnippet><pre class="src-line-numbers"><a href="#1" id="1">1</a>
 <a href="#2" id="2">2</a>
 <a href="#3" id="3">3</a>
 <a href="#4" id="4">4</a>
@@ -434,13 +434,21 @@
 <a href="#434" id="434">434</a>
 <a href="#435" id="435">435</a>
 <a href="#436" id="436">436</a>
+<a href="#437" id="437">437</a>
+<a href="#438" id="438">438</a>
+<a href="#439" id="439">439</a>
+<a href="#440" id="440">440</a>
+<a href="#441" id="441">441</a>
+<a href="#442" id="442">442</a>
+<a href="#443" id="443">443</a>
+<a href="#444" id="444">444</a>
 </pre></div><pre class="rust"><code><span class="doccomment">//! Dynamic configuration for metrics extraction from sessions and transactions.
 
 </span><span class="kw">use </span>std::collections::BTreeSet;
 
-<span class="kw">use </span>relay_common::DataCategory;
-<span class="kw">use </span>relay_general::store::LazyGlob;
-<span class="kw">use </span>relay_sampling::RuleCondition;
+<span class="kw">use </span>relay_base_schema::data_category::DataCategory;
+<span class="kw">use </span>relay_common::glob2::LazyGlob;
+<span class="kw">use </span>relay_protocol::RuleCondition;
 <span class="kw">use </span>serde::{Deserialize, Serialize};
 
 <span class="kw">use </span><span class="kw">crate</span>::project::ProjectConfig;
@@ -514,8 +522,13 @@
 
 <span class="doccomment">/// Maximum supported version of metrics extraction from transactions.
 ///
-/// The version is an integer scalar, incremented by one on each new version.
-</span><span class="kw">const </span>TRANSACTION_EXTRACT_VERSION: u16 = <span class="number">1</span>;
+/// The version is an integer scalar, incremented by one on each new version:
+///  - 1: Initial version.
+///  - 2: Moves `acceptTransactionNames` to global config.
+///  - 3:
+///      - Emit a `usage` metric and use it for rate limiting.
+///      - Delay metrics extraction for indexed transactions.
+</span><span class="kw">const </span>TRANSACTION_EXTRACT_VERSION: u16 = <span class="number">3</span>;
 
 <span class="doccomment">/// Deprecated. Defines whether URL transactions should be considered low cardinality.
 </span><span class="attr">#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
@@ -564,6 +577,11 @@
     </span><span class="kw">pub fn </span>is_enabled(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
         <span class="self">self</span>.version &gt; <span class="number">0 </span>&amp;&amp; <span class="self">self</span>.version &lt;= TRANSACTION_EXTRACT_VERSION
     }
+
+    <span class="doccomment">/// Returns `true` if usage should be tracked through a dedicated metric.
+    </span><span class="kw">pub fn </span>usage_metric(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; bool {
+        <span class="self">self</span>.version &gt;= <span class="number">3
+    </span>}
 }
 
 <span class="doccomment">/// Configuration for generic extraction of metrics from all data categories.
@@ -649,9 +667,8 @@
     <span class="doccomment">/// A path to the field to extract the metric from.
     ///
     /// This value contains a fully qualified expression pointing at the data field in the payload
-    /// to extract the metric from. It follows the
-    /// [`FieldValueProvider`](relay_sampling::FieldValueProvider) syntax that is also used for
-    /// dynamic sampling.
+    /// to extract the metric from. It follows the `Getter` syntax that is also used for dynamic
+    /// sampling.
     ///
     /// How the value is treated depends on the metric type:
     ///
@@ -726,8 +743,7 @@
 
     <span class="doccomment">/// Path to a field containing the tag&#39;s value.
     ///
-    /// It follows the [`FieldValueProvider`](relay_sampling::FieldValueProvider) syntax to read
-    /// data from the payload.
+    /// It follows the `Getter` syntax to read data from the payload.
     ///
     /// Mutually exclusive with `value`.
     </span><span class="attr">#[serde(default, skip_serializing_if = <span class="string">&quot;Option::is_none&quot;</span>)]
@@ -769,40 +785,6 @@
     </span>Field(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a </span>str),
     <span class="doccomment">/// An unsupported or unknown source.
     </span>Unknown,
-}
-
-<span class="attr">#[cfg(test)]
-</span><span class="kw">mod </span>tests {
-    <span class="kw">use super</span>::<span class="kw-2">*</span>;
-    <span class="kw">use </span>similar_asserts::assert_eq;
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>parse_tag_spec_value() {
-        <span class="kw">let </span>json = <span class="string">r#&quot;{&quot;key&quot;:&quot;foo&quot;,&quot;value&quot;:&quot;bar&quot;}&quot;#</span>;
-        <span class="kw">let </span>spec: TagSpec = serde_json::from_str(json).unwrap();
-        <span class="macro">assert_eq!</span>(spec.source(), TagSource::Literal(<span class="string">&quot;bar&quot;</span>));
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>parse_tag_spec_field() {
-        <span class="kw">let </span>json = <span class="string">r#&quot;{&quot;key&quot;:&quot;foo&quot;,&quot;field&quot;:&quot;bar&quot;}&quot;#</span>;
-        <span class="kw">let </span>spec: TagSpec = serde_json::from_str(json).unwrap();
-        <span class="macro">assert_eq!</span>(spec.source(), TagSource::Field(<span class="string">&quot;bar&quot;</span>));
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>parse_tag_spec_unsupported() {
-        <span class="kw">let </span>json = <span class="string">r#&quot;{&quot;key&quot;:&quot;foo&quot;,&quot;somethingNew&quot;:&quot;bar&quot;}&quot;#</span>;
-        <span class="kw">let </span>spec: TagSpec = serde_json::from_str(json).unwrap();
-        <span class="macro">assert_eq!</span>(spec.source(), TagSource::Unknown);
-    }
-
-    <span class="attr">#[test]
-    </span><span class="kw">fn </span>parse_tag_mapping() {
-        <span class="kw">let </span>json = <span class="string">r#&quot;{&quot;metrics&quot;: [&quot;d:spans/*&quot;], &quot;tags&quot;: [{&quot;key&quot;:&quot;foo&quot;,&quot;field&quot;:&quot;bar&quot;}]}&quot;#</span>;
-        <span class="kw">let </span>mapping: TagMapping = serde_json::from_str(json).unwrap();
-        <span class="macro">assert!</span>(mapping.metrics[<span class="number">0</span>].compiled().is_match(<span class="string">&quot;d:spans/foo&quot;</span>));
-    }
 }
 
 <span class="doccomment">/// Converts the given tagging rules from `conditional_tagging` to the newer metric extraction
@@ -868,6 +850,40 @@
                 tags: std::mem::take(<span class="kw-2">&amp;mut </span><span class="self">self</span>.tags),
             });
         }
+    }
+}
+
+<span class="attr">#[cfg(test)]
+</span><span class="kw">mod </span>tests {
+    <span class="kw">use super</span>::<span class="kw-2">*</span>;
+    <span class="kw">use </span>similar_asserts::assert_eq;
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>parse_tag_spec_value() {
+        <span class="kw">let </span>json = <span class="string">r#&quot;{&quot;key&quot;:&quot;foo&quot;,&quot;value&quot;:&quot;bar&quot;}&quot;#</span>;
+        <span class="kw">let </span>spec: TagSpec = serde_json::from_str(json).unwrap();
+        <span class="macro">assert_eq!</span>(spec.source(), TagSource::Literal(<span class="string">&quot;bar&quot;</span>));
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>parse_tag_spec_field() {
+        <span class="kw">let </span>json = <span class="string">r#&quot;{&quot;key&quot;:&quot;foo&quot;,&quot;field&quot;:&quot;bar&quot;}&quot;#</span>;
+        <span class="kw">let </span>spec: TagSpec = serde_json::from_str(json).unwrap();
+        <span class="macro">assert_eq!</span>(spec.source(), TagSource::Field(<span class="string">&quot;bar&quot;</span>));
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>parse_tag_spec_unsupported() {
+        <span class="kw">let </span>json = <span class="string">r#&quot;{&quot;key&quot;:&quot;foo&quot;,&quot;somethingNew&quot;:&quot;bar&quot;}&quot;#</span>;
+        <span class="kw">let </span>spec: TagSpec = serde_json::from_str(json).unwrap();
+        <span class="macro">assert_eq!</span>(spec.source(), TagSource::Unknown);
+    }
+
+    <span class="attr">#[test]
+    </span><span class="kw">fn </span>parse_tag_mapping() {
+        <span class="kw">let </span>json = <span class="string">r#&quot;{&quot;metrics&quot;: [&quot;d:spans/*&quot;], &quot;tags&quot;: [{&quot;key&quot;:&quot;foo&quot;,&quot;field&quot;:&quot;bar&quot;}]}&quot;#</span>;
+        <span class="kw">let </span>mapping: TagMapping = serde_json::from_str(json).unwrap();
+        <span class="macro">assert!</span>(mapping.metrics[<span class="number">0</span>].compiled().is_match(<span class="string">&quot;d:spans/foo&quot;</span>));
     }
 }
 </code></pre></div></section></main></body></html>
